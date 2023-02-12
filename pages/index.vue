@@ -1,12 +1,41 @@
 <template>
-  <div>
-    <h1 class="text-3xl font-bold underline">
-      Hello world! <nuxt-icon name="thumbs-up" filled />
-    </h1>
-  </div>
+  <main class="container px-4 py-12 sm:px-6">
+    <section
+      v-for="(resource, resourceKey) in resources"
+      :key="`resource-${resourceKey}`"
+    >
+      <header>
+        <span>{{ resource.label }}</span>
+        <h2>{{ resource.title }}</h2>
+        <h3>{{ resource.description }}</h3>
+      </header>
+    </section>
+  </main>
 </template>
 
 <script lang="ts" setup>
+const resources = [
+  {
+    type: 'hamburgueria',
+    label: 'Hamburgueria',
+    title: 'Delícias de carne e sabores incríveis! 🤤',
+    description: 'Aqui algumas recomendações de hamburguerias na cidade',
+    items: Array(5).fill({
+      slug: 'dom-catuto-burger',
+      images: Array(5).fill({
+        src: 'https://via.placeholder.com/1080x1350.png',
+        alt: '',
+      }),
+    }),
+  },
+  {
+    type: 'doces-guloseimas',
+    label: 'Doces & Guloseimas',
+    title: 'Delícias de carne e sabores incríveis! 🤤',
+    description: 'Aqui algumas recomendações de hamburguerias na cidade',
+  },
+]
+
 useHead({
   title: 'OndeVamos.app',
   meta: [
