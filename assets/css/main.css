@@ -1,3 +1,30 @@
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Inter.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Arial');
+  ascent-override: 90.00%;
+  descent-override: 22.43%;
+  line-gap-override: 0.00%;
+  size-adjust: 107.64%;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance:none;
+}
