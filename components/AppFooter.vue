@@ -1,5 +1,5 @@
 <template>
-  <footer class="px-4 pt-8 pb-6 text-center text-white bg-gray-800 sm:px-6">
+  <footer class="px-4 pt-8 pb-6 text-center text-white bg-gray-800">
     <div class="container flex flex-col items-center max-w-sm gap-4 mx-auto">
       <a href="/" class="flex-1">
         <span class="sr-only">ondevamos.app</span>

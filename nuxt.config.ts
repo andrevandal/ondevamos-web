@@ -24,5 +24,5 @@ export default defineNuxtConfig({
       gaHost: GA_HOST,
     },
   },
-  modules: ['nuxt-icons'],
+  modules: ['nuxt-icons', '@vueuse/nuxt'],
 })

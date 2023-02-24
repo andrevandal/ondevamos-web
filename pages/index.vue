@@ -1,5 +1,5 @@
 <template>
-  <main class="container max-w-sm px-4 py-12 mx-auto sm:px-6">
+  <main class="container max-w-sm px-4 py-12 mx-auto">
     <section
       v-for="(resource, resourceKey) in resources"
       :key="`resource-${resourceKey}`"
