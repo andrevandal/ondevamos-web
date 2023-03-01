@@ -77,7 +77,7 @@
         <NuxtLink
           :href="`/${item.slug}/`"
           :class="[
-            'absolute inline-flex items-center gap-2 p-2 m-1 transition-all ease-in-out bottom-1 left-1 right-1 backdrop-blur rounded-xl bg-gray-800/80 border-t-white/20 ring-3 ring-transparent hover:ring-orange-500',
+            'absolute inline-flex items-center gap-2 p-2 m-1 transition-all ease-in-out bottom-1 left-1 right-1 backdrop-blur rounded-xl bg-gray-800/80 border-t-white/20 ring-3 ring-transparent hover:ring-white/25 hover:bg-gray-800/90',
             { 'text-center justify-center py-5': !item?.images?.length },
           ]"
         >
