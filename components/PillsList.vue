@@ -9,16 +9,19 @@
     ]"
   >
     <li
-      v-for="(resource, resourceKey) in list"
+      v-for="(resource, resourceKey) in resourcesList"
       :key="`resource-${resourceKey}`"
       class="snap-center first-of-type:ml-4 last-of-type:mr-4"
     >
       <a
         href="#"
-        class="inline-flex items-center gap-3 px-4 py-2 text-white border-t border-white rounded-lg border-opacity-5 bg-opacity-5 whitespace-nowrap bg-gradient-to-r from-white/5 to-white/5 hover:from-[#FBAD3F]/10 hover:to-[#FF8157]/10 transition-all duration-500 ease-in-out"
+        class="inline-flex items-center gap-3 px-4 py-3 text-white border-t border-white rounded-lg border-opacity-5 bg-opacity-5 whitespace-nowrap bg-gradient-to-r from-white/5 to-white/5 hover:from-[#FBAD3F]/10 hover:to-[#FF8157]/10 transition-all duration-500 ease-in-out leading-5"
       >
-        <NuxtIcon :name="resource.icon" />
-        <span>{{ resource.label }}</span>
+        <NuxtIcon
+          :name="resource.icon"
+          class="text-2xl leading-6 -mb-[.125em]"
+        />
+        <span class="text-base">{{ resource.label }}</span>
       </a>
     </li>
   </ul>
@@ -79,7 +82,8 @@ export default defineComponent({
     return {
       isDown,
       isMouseActive,
-      list: props.resources,
+      resourcesList: props.resources,
+      list,
     }
   },
 })

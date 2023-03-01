@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { resolve } from 'pathe'
+
 const { API_BASE_URL, GA_MEASUREMENT_ID, GA_HOST } = process.env
 
 export default defineNuxtConfig({
@@ -25,4 +27,14 @@ export default defineNuxtConfig({
     },
   },
   modules: ['nuxt-icons', '@vueuse/nuxt'],
+  // plugins: [{ src: '~/plugins/vue-swipe-modal.ts', mode: 'client' }],
+  hooks: {
+    'pages:extend'(routes) {
+      routes.push({
+        name: 'custom',
+        path: '/[...slug]',
+        file: resolve(__dirname, 'pages/index.vue'),
+      })
+    },
+  },
 })

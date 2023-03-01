@@ -74,8 +74,8 @@
             height="1350"
           />
         </div>
-        <a
-          href="#"
+        <NuxtLink
+          :href="`/${item.slug}/`"
           :class="[
             'absolute inline-flex items-center gap-2 p-2 m-1 transition-all ease-in-out bottom-1 left-1 right-1 backdrop-blur rounded-xl bg-gray-800/80 border-t-white/20 ring-3 ring-transparent hover:ring-orange-500',
             { 'text-center justify-center py-5': !item?.images?.length },
@@ -103,13 +103,25 @@
           <h3 class="text-base font-medium leading-5 text-white">
             {{ !item?.images?.length ? 'Ver mais' : item.name }}
           </h3>
-        </a>
+        </NuxtLink>
       </article>
     </section>
+    <Teleport to="body">
+      <BaseModal
+        v-model="shouldShowSwipeModal"
+        contents-height="50vh"
+        border-top-radius="16px"
+        @update:model-value="onClose"
+      >
+        <BaseSingle :slug="slug" />
+      </BaseModal>
+    </Teleport>
   </main>
 </template>
 
 <script lang="ts" setup>
+import { useRouteParams } from '@vueuse/router'
+
 const resources = [
   {
     type: 'hamburgueria',
@@ -130,7 +142,7 @@ const resources = [
         }),
       }),
       {
-        slug: 'dom-catuto-burger',
+        slug: 'dom-catuto-burger2',
         name: 'Dom Catulo Burguer',
         avatar: 'https://picsum.photos/40',
         available: true,
@@ -210,4 +222,24 @@ useHead({
     },
   ],
 })
+
+// const route = useRoute()
+
+const slug = useRouteParams('slug')
+
+const shouldShowSwipeModal = ref(false || !!slug.value)
+
+const router = useRouter()
+
+watch(slug, (newSlug, _oldSlug) => {
+  if (newSlug) {
+    shouldShowSwipeModal.value = true
+  }
+})
+
+const onClose = () => {
+  return router.push({
+    path: '/',
+  })
+}
 </script>

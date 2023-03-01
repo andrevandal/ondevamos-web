@@ -86,8 +86,6 @@ module.exports = {
         },
         html: {
           scrollBehavior: 'smooth',
-          overflow: 'scroll',
-          overflowX: 'hidden',
         },
       })
     }),
