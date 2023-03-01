@@ -32,7 +32,7 @@ export default defineNuxtConfig({
     'pages:extend'(routes) {
       routes.push({
         name: 'custom',
-        path: '/[...slug]',
+        path: '/:slug',
         file: resolve(__dirname, 'pages/index.vue'),
       })
     },
