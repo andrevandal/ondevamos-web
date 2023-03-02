@@ -109,7 +109,7 @@
     <Teleport to="body">
       <BaseModal
         v-model="shouldShowSwipeModal"
-        contents-height="50vh"
+        contents-height="80vh"
         border-top-radius="16px"
         @update:model-value="onClose"
       >

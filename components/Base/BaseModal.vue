@@ -1,16 +1,13 @@
 <template>
-  <div
-    id="swipe-modal-takumaru-vue-swipe-modal"
+  <section
+    class="fixed scrollbar-hide z-[15]"
     @mousemove="mouseMove"
     @mouseup="mouseUp"
   >
     <transition name="swipe-modal-background" appear>
       <div
         v-if="modelValue"
-        class="modal-background"
-        :style="{
-          backgroundColor: backgroundColor,
-        }"
+        class="fixed z-[11] left-0 top-0 right-0 bottom-0 bg-black/70"
         @mouseup="persistent ? null : close()"
         @click="onClickOutside"
       />
@@ -19,19 +16,21 @@
       <div
         v-if="modelValue"
         ref="target"
-        class="modal-contents"
-        :style="styles"
+        class="w-full bg-white fixed z-[12] max-h-full modal-contents rounded-t-2xl overflow-y-scroll backface-hidden scrollbar-hide drop-shadow"
         @touchstart="touchStart"
         @touchmove="touchMove"
         @touchend="touchEnd"
       >
-        <div class="modal-contents-chip-wrapper" @mousedown="mouseDown">
-          <div class="modal-contents-chip" />
+        <div
+          class="sticky top-0 z-20 flex items-center justify-center w-full h-10 cursor-s-resize bg-white/50 backdrop-blur"
+          @mousedown="mouseDown"
+        >
+          <div class="w-10 h-1 bg-gray-300 rounded-full" />
         </div>
         <slot />
       </div>
     </transition>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -47,55 +46,19 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    dark: {
-      type: Boolean,
-      default: false,
-    },
     // modal_background
     persistent: {
       type: Boolean,
       default: false,
-    },
-    backgroundColor: {
-      type: String,
-      default: '#80808080',
     },
     // modal_contents
     fullscreen: {
       type: Boolean,
       default: false,
     },
-    contentsWidth: {
-      type: String,
-      default: '100%',
-    },
     contentsHeight: {
       type: String,
       default: '30vh',
-    },
-    borderTopRadius: {
-      type: String,
-      default: null,
-    },
-    borderTopLeftRadius: {
-      type: String,
-      default: '0px',
-    },
-    borderTopRightRadius: {
-      type: String,
-      default: '0px',
-    },
-    contentsColor: {
-      type: String,
-      default: 'white',
-    },
-    tipColor: {
-      type: String,
-      default: '#c8c8c8',
-    },
-    darkContentsColor: {
-      type: String,
-      default: '#1E1E1E',
     },
   },
   emits: ['update:modelValue'],
@@ -106,6 +69,7 @@ export default defineComponent({
     const isTouch = ref<boolean>(false)
     const modalQuery = ref<any>(null)
     const modalHeight = ref<number>(0)
+    const virtualContentsHeight = ref<string>('30vh')
     const contentsBottomPosition = ref<string>('0px')
     const moveStartPosition = ref<number>(0)
     const nowMovePosition = ref<number>(0)
@@ -113,23 +77,6 @@ export default defineComponent({
     const modal = computed({
       get: () => propsRef.modelValue.value,
       set: (value: any) => context.emit('update:modelValue', value),
-    })
-    const styles = computed(() => {
-      return {
-        width: propsRef.contentsWidth.value,
-        borderTopLeftRadius: propsRef.borderTopRadius.value
-          ? propsRef.borderTopRadius.value
-          : propsRef.borderTopLeftRadius.value,
-        borderTopRightRadius: propsRef.borderTopRadius
-          ? propsRef.borderTopRadius.value
-          : propsRef.borderTopRightRadius.value,
-        backgroundColor: propsRef.dark.value
-          ? propsRef.darkContentsColor.value
-          : propsRef.contentsColor.value,
-        color: propsRef.dark.value ? 'white' : 'black',
-        /* '--contents-height': propsRef.fullscreen.value? '100%' : modalHeight.value > 0 ? modalHeight.value + 'px' : propsRef.contentsHeight.value,
-        '--contents-bottom-position': contentsBottomPosition.value ? contentsBottomPosition.value : '0px', */
-      }
     })
     // watch
     watch(
@@ -149,18 +96,11 @@ export default defineComponent({
       contentsBottomPosition.value = '0px'
       moveStartPosition.value = 0
       nowMovePosition.value = 0
-      document.documentElement.style.setProperty(
-        '--contents-height',
-        propsRef.fullscreen.value
-          ? '100%'
-          : modalHeight.value > 0
-          ? modalHeight.value + 'px'
-          : propsRef.contentsHeight.value,
-      )
-      document.documentElement.style.setProperty(
-        '--contents-bottom-position',
-        contentsBottomPosition.value ? contentsBottomPosition.value : '0px',
-      )
+      virtualContentsHeight.value = propsRef.fullscreen.value
+        ? '100%'
+        : modalHeight.value > 0
+        ? modalHeight.value + 'px'
+        : propsRef.contentsHeight.value
     }
     const open = () => {
       init()
@@ -186,10 +126,6 @@ export default defineComponent({
             ? moveStartPosition.value - nowMovePosition.value
             : 0) + 'px'
       }
-      document.documentElement.style.setProperty(
-        '--contents-bottom-position',
-        contentsBottomPosition.value ? contentsBottomPosition.value : '0px',
-      )
     }
     const mouseUp = () => {
       isMouseDown.value = false
@@ -224,10 +160,6 @@ export default defineComponent({
             ? moveStartPosition.value - nowMovePosition.value
             : 0) + 'px'
       }
-      document.documentElement.style.setProperty(
-        '--contents-bottom-position',
-        contentsBottomPosition.value ? contentsBottomPosition.value : '0px',
-      )
     }
     const touchEnd = () => {
       isTouch.value = false
@@ -241,7 +173,11 @@ export default defineComponent({
       }
     }
     // lifeCycle
-    onMounted(() => {})
+    onMounted(() => {
+      if (propsRef.modelValue.value) {
+        open()
+      }
+    })
     const onClickOutside = (_event: PointerEvent) => {
       close()
     }
@@ -250,7 +186,6 @@ export default defineComponent({
       modal,
       modalHeight,
       contentsBottomPosition,
-      styles,
       close,
       mouseDown,
       mouseMove,
@@ -259,127 +194,74 @@ export default defineComponent({
       touchMove,
       touchEnd,
       onClickOutside,
+      virtualContentsHeight,
     }
   },
 })
 </script>
 
-<style>
-:root {
-  --contents-height: 30vh;
-  --contents-bottom-position: 0%;
+<style scoped>
+.modal-contents {
+  min-height: v-bind(virtualContentsHeight);
+  bottom: v-bind(contentsBottomPosition);
 }
-#swipe-modal-takumaru-vue-swipe-modal {
-  position: fixed;
-  scrollbar-width: none;
-  z-index: 15;
-  .modal-background {
-    position: fixed;
-    z-index: 11;
-    width: 100vw;
-    height: 100vh;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  .modal-contents {
-    position: fixed;
-    z-index: 12;
-    min-height: var(--contents-height);
-    max-height: 100vh;
-    bottom: var(--contents-bottom-position);
-    left: 50%;
-    transform: translateX(-50%) translateY(0%);
-    overflow-y: scroll;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    filter: drop-shadow(0px 16px 40px rgba(0, 37, 80, 0.2));
-    &::-webkit-scrollbar {
-      width: 0px;
+.swipe-modal-background {
+  &-enter {
+    & {
+      @apply opacity-0;
     }
-    &-chip-wrapper {
-      z-index: 12;
-      display: flex;
-      justify-items: center;
-      align-items: center;
-      justify-content: center;
-      align-content: center;
-      position: relative;
-      top: 0px;
-      height: 4px;
-      width: 100%;
-      padding-top: 8px;
-      padding-bottom: 8px;
-      cursor: s-resize;
+    &-from {
+      @apply opacity-0;
     }
-    &-chip {
-      --tip-color: #c8c8c8;
-      width: 40px;
-      height: 100%;
-      border-radius: 4px;
-      background-color: var(--tip-color);
+    &-active {
+      @apply transition-all;
+    }
+    &-to {
+      @apply opacity-100;
     }
   }
-  .swipe-modal-background {
-    &-enter {
-      & {
-        opacity: 0;
-      }
-      &-from {
-        opacity: 0;
-      }
-      &-active {
-        transition: all 0.2s ease-out;
-      }
-      &-to {
-        opacity: 1;
-      }
+  &-leave {
+    & {
+      @apply opacity-100;
     }
-    &-leave {
-      & {
-        opacity: 1;
-      }
-      &-from {
-        opacity: 1;
-      }
-      &-active {
-        transition: all 0.2s ease-out;
-      }
-      &-to {
-        opacity: 0;
-      }
+    &-from {
+      @apply opacity-100;
+    }
+    &-active {
+      @apply transition-all;
+    }
+    &-to {
+      @apply opacity-0;
     }
   }
-  .swipe-modal-contents {
-    &-enter {
-      & {
-        bottom: calc(-1 * var(--contents-height)) !important;
-      }
-      &-from {
-        bottom: calc(-1 * var(--contents-height)) !important;
-      }
-      &-active {
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      }
-      &-to {
-        bottom: var(--contents-bottom-position) !important;
-      }
+}
+.swipe-modal-contents {
+  &-enter {
+    & {
+      bottom: calc(-1 * v-bind(virtualContentsHeight)) !important;
     }
-    &-leave {
-      & {
-        bottom: var(--contents-bottom-position) !important;
-      }
-      &-from {
-        bottom: var(--contents-bottom-position) !important;
-      }
-      &-active {
-        transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-      }
-      &-to {
-        bottom: calc(-1 * var(--contents-height)) !important;
-      }
+    &-from {
+      bottom: calc(-1 * v-bind(virtualContentsHeight)) !important;
+    }
+    &-active {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    &-to {
+      bottom: v-bind(contentsBottomPosition) !important;
+    }
+  }
+  &-leave {
+    & {
+      bottom: v-bind(contentsBottomPosition) !important;
+    }
+    &-from {
+      bottom: v-bind(contentsBottomPosition) !important;
+    }
+    &-active {
+      transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    &-to {
+      bottom: calc(-1 * v-bind(virtualContentsHeight)) !important;
     }
   }
 }

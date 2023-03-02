@@ -55,6 +55,7 @@
     "@takuma-ru/vue-swipe-modal": "^4.0.0",
     "@vueuse/router": "^9.13.0",
     "vue": "^3.2.47",
-    "vue-gtag-next": "^1.14.0"
+    "vue-gtag-next": "^1.14.0",
+    "vue3-perfect-scrollbar": "^1.6.1"
   }
 }
