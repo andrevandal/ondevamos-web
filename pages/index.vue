@@ -7,10 +7,10 @@
     >
       <header class="mb-6 text-center text-gray-800">
         <span class="px-4 py-2 leading-5 bg-orange-50">{{
-          resource.label
+          resource.title
         }}</span>
         <h2 class="block my-2 text-2xl font-extrabold leading-7 tracking-tight">
-          {{ resource.title }}
+          {{ resource.label }}
         </h2>
         <p class="tracking-tight text-gray-500">
           {{ resource.description }}
@@ -25,7 +25,7 @@
           <img
             v-if="!item?.images?.length"
             :src="item.avatar"
-            :alt="item.name"
+            :alt="item.title"
             class="object rounded-2xl aspect-[1080/1350]"
             width="1080"
             height="1350"
@@ -39,7 +39,7 @@
             <div class="relative rounded-full">
               <img
                 :src="item.avatar"
-                :alt="item.name"
+                :alt="item.title"
                 class="rounded-full"
                 width="64"
                 height="64"
@@ -56,7 +56,7 @@
               </div>
             </div>
             <h3 class="mt-4 font-bold text-gray-800">
-              {{ item.name }}
+              {{ item.title }}
             </h3>
             <span class="text-gray-600">
               {{ item.description }}
@@ -84,7 +84,7 @@
           <div v-if="!!item?.images?.length" class="relative rounded-full">
             <img
               :src="item.avatar"
-              :alt="item.name"
+              :alt="item.title"
               class="rounded-full"
               width="40"
               height="40"
@@ -101,7 +101,7 @@
             </div>
           </div>
           <h3 class="text-base font-medium leading-5 text-white">
-            {{ !item?.images?.length ? 'Ver mais' : item.name }}
+            {{ !item?.images?.length ? 'Ver mais' : item.title }}
           </h3>
         </NuxtLink>
       </article>
@@ -122,53 +122,52 @@
 <script lang="ts" setup>
 import { useRouteParams } from '@vueuse/router'
 
-const resources = [
-  {
-    type: 'hamburgueria',
-    label: 'Hamburgueria',
-    title: 'Delícias de carne e sabores incríveis! 🤤',
-    description: 'Aqui algumas recomendações de hamburguerias na cidade',
-    items: [
-      ...Array(2).fill({
-        slug: 'dom-catuto-burger',
-        name: 'Dom Catulo Burguer',
-        avatar: 'https://via.placeholder.com/40x40.png',
-        available: true,
-        description:
-          'Lorem ipsum dolor sit amet consectetur. Venenatis egestas.',
-        images: Array(1).fill({
-          src: 'https://via.placeholder.com/1080x1350.png',
-          alt: '',
-        }),
-      }),
-      {
-        slug: 'dom-catuto-burger2',
-        name: 'Dom Catulo Burguer',
-        avatar: 'https://picsum.photos/40',
-        available: true,
-        description:
-          'Lorem ipsum dolor sit amet consectetur. Venenatis egestas.',
-      },
-    ],
-  },
-  // {
-  //   type: 'doces-guloseimas',
-  //   label: 'Doces & Guloseimas',
-  //   title: 'Delícias de carne e sabores incríveis! 🤤',
-  //   description: 'Aqui algumas recomendações de hamburguerias na cidade',
-  // items: Array(5).fill({
-  //   slug: 'dom-catuto-burger',
-  //   name: 'Dom Catulo Burguer',
-  //   avatar: 'https://via.placeholder.com/40x40.png',
-  //   available: true,
-  //   description: "Lorem ipsum dolor sit amet consectetur. Venenatis egestas.",
-  //   images: Array(1).fill({
-  //     src: 'https://via.placeholder.com/1080x1350.png',
-  //     alt: '',
-  //   }),
-  // }),
-  // },
-]
+type Provider = {
+  slug: string
+  title: string
+  avatar: string
+  available: boolean
+  images: {
+    src: string
+    alt: string
+  }[]
+  description: string
+  items: Provider[]
+}
+
+type Resource = {
+  slug: string
+  title: string
+  label: string
+  description: string
+  items: Provider[]
+}
+
+const { data: resources } = await useAsyncData('resources', async () => {
+  const resources = [] as Resource[]
+  const rawResources = (await queryContent('/resources')
+    .where({ draft: { $eq: false } })
+    .limit(5)
+    .sort({ title: 1 })
+    .only(['slug', 'label', 'title', 'description'])
+    .find()) as Resource[]
+
+  for await (const resource of rawResources) {
+    const items = (await queryContent('/providers')
+      .where({
+        resourcesProvided: { $contains: resource.slug },
+        draft: { $eq: false },
+      })
+      .limit(5)
+      .sort({ title: 1 })
+      .only(['slug', 'title', 'avatar', 'available', 'images', 'description'])
+      .find()) as Provider[]
+    if (items.length > 0) {
+      resources.push({ ...resource, items })
+    }
+  }
+  return resources
+})
 
 useHead({
   title: 'OndeVamos.app',

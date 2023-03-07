@@ -26,15 +26,18 @@ export default defineNuxtConfig({
       gaHost: GA_HOST,
     },
   },
-  modules: ['nuxt-icons', '@vueuse/nuxt'],
+  modules: ['nuxt-icons', '@vueuse/nuxt', '@nuxt/content'],
   // plugins: [{ src: '~/plugins/vue-swipe-modal.ts', mode: 'client' }],
   hooks: {
     'pages:extend'(routes) {
       routes.push({
         name: 'custom',
-        path: '/:slug',
+        path: '/:slug/',
         file: resolve(__dirname, 'pages/index.vue'),
       })
     },
+  },
+  content: {
+    // https://content.nuxtjs.org/api/configuration
   },
 })
