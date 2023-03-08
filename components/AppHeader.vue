@@ -1,5 +1,5 @@
 <template>
-  <header class="py-3 bg-gray-800">
+  <header class="pt-3 pb-6 bg-gray-800">
     <nav
       class="container flex flex-row justify-between max-w-sm gap-2 px-4 mx-auto"
     >
