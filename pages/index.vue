@@ -132,7 +132,6 @@ type Provider = {
     alt: string
   }[]
   description: string
-  items: Provider[]
 }
 
 type Resource = {
@@ -143,30 +142,51 @@ type Resource = {
   items: Provider[]
 }
 
-const { data: resources } = await useAsyncData('resources', async () => {
-  const resources = [] as Resource[]
-  const rawResources = (await queryContent('/resources')
-    .where({ draft: { $eq: false } })
-    .limit(5)
-    .sort({ title: 1 })
-    .only(['slug', 'label', 'title', 'description'])
-    .find()) as Resource[]
-
-  for await (const resource of rawResources) {
-    const items = (await queryContent('/providers')
-      .where({
-        resourcesProvided: { $contains: resource.slug },
-        draft: { $eq: false },
-      })
+const { data: resources, refresh } = await useAsyncData(
+  'resources',
+  async () => {
+    const resources = (await queryContent('/resources')
+      .where({ draft: { $eq: false } })
       .limit(5)
       .sort({ title: 1 })
-      .only(['slug', 'title', 'avatar', 'available', 'images', 'description'])
-      .find()) as Provider[]
-    if (items.length > 0) {
-      resources.push({ ...resource, items })
-    }
+      .only(['slug', 'label', 'title', 'description'])
+      .find()) as Resource[]
+
+    const providers = (
+      await Promise.allSettled(
+        resources.map(
+          (resource) =>
+            queryContent('/providers')
+              .where({
+                resourcesProvided: { $contains: resource.slug },
+                draft: { $eq: false },
+              })
+              .limit(5)
+              .sort({ title: 1 })
+              .only([
+                'slug',
+                'title',
+                'avatar',
+                'available',
+                'images',
+                'description',
+              ])
+              .find() as Promise<Provider[]>,
+        ),
+      )
+    ).map((el: any) => el.value)
+
+    return resources.map((resource, index) => ({
+      ...resource,
+      items: providers[index],
+    }))
+  },
+)
+
+onMounted(() => {
+  if (!resources.value?.length) {
+    refresh()
   }
-  return resources
 })
 
 useHead({

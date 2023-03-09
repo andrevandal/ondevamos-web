@@ -16,18 +16,20 @@
       <div
         v-if="modelValue"
         ref="target"
-        class="w-full bg-white fixed z-[12] max-h-full modal-contents rounded-t-2xl overflow-y-scroll backface-hidden scrollbar-hide drop-shadow"
+        class="w-full fixed z-[12] max-h-full modal-contents rounded-t-2xl backface-hidden scrollbar-hide drop-shadow scroll-pt-10"
         @touchstart="touchStart"
         @touchmove="touchMove"
         @touchend="touchEnd"
       >
         <div
-          class="sticky top-0 z-20 flex items-center justify-center w-full h-10 cursor-s-resize bg-white/50 backdrop-blur"
+          class="sticky top-0 z-20 flex items-center justify-center w-full h-10 bg-white cursor-s-resize backdrop-blur rounded-t-2xl"
           @mousedown="mouseDown"
         >
           <div class="w-10 h-1 bg-gray-300 rounded-full" />
         </div>
-        <slot />
+        <div class="bg-white">
+          <slot />
+        </div>
       </div>
     </transition>
   </section>
@@ -202,7 +204,7 @@ export default defineComponent({
 
 <style scoped>
 .modal-contents {
-  min-height: v-bind(virtualContentsHeight);
+  max-height: v-bind(virtualContentsHeight);
   bottom: v-bind(contentsBottomPosition);
 }
 .swipe-modal-background {
