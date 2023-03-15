@@ -2,10 +2,10 @@
   <perfect-scrollbar class="max-h-[80vh]">
     <article>
       <div class="flex flex-col">
-        <header class="w-full">
+        <header class="w-full mb-6">
           <img :src="cover.url" :alt="cover.alt" class="w-full h-auto" />
           <div
-            class="relative rounded-full w-[100px] h-[100px] -translate-y-1/2 z-10 border-4 border-white ml-4"
+            class="relative rounded-full w-[100px] h-[100px] -translate-y-1/2 -mb-[50px] z-10 border-4 border-white ml-4"
           >
             <img
               :src="avatar"
@@ -22,22 +22,26 @@
                 },
               ]"
             >
-              <span class="sr-only">Opend</span>
+              <span class="sr-only">Opened</span>
             </div>
           </div>
         </header>
-        <div>
-          <h1 class="text-base font-medium leading-5 text-white">
+        <div class="px-4 pb-14">
+          <h1 class="pb-2 text-2xl font-semibold leading-7 text-gray-800">
             {{ title }}
           </h1>
-          <a href="#">{{ address }}</a>
-          <ul class="flex justify-center">
+          <a
+            href="#"
+            class="text-[#055FC8] text-sm block leading-4 max-w-[calc(100%-.5rem)] text-ellipsis overflow-hidden whitespace-nowrap pb-2"
+            >{{ address }}</a
+          >
+          <ul class="flex text-yellow-500">
             <li>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                class="w-5 h-5 mr-1 text-warning"
+                class="w-5 h-5 mr-1"
               >
                 <path
                   fill-rule="evenodd"
@@ -51,7 +55,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                class="w-5 h-5 mr-1 text-warning"
+                class="w-5 h-5 mr-1"
               >
                 <path
                   fill-rule="evenodd"
@@ -65,7 +69,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                class="w-5 h-5 mr-1 text-warning"
+                class="w-5 h-5 mr-1"
               >
                 <path
                   fill-rule="evenodd"
@@ -81,7 +85,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-5 h-5 mr-1 text-warning"
+                class="w-5 h-5 mr-1"
               >
                 <path
                   stroke-linecap="round"
@@ -97,7 +101,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-5 h-5 mr-1 text-warning"
+                class="w-5 h-5 mr-1"
               >
                 <path
                   stroke-linecap="round"
@@ -107,19 +111,50 @@
               </svg>
             </li>
           </ul>
-          <div>
-            <h2>Sobre</h2>
-            <p>{{ description }}</p>
+          <div class="flex-col gap-1 py-4">
+            <h2 class="font-bold leading-5 text-gray-800">Sobre</h2>
+            <p class="leading-5 text-gray-500">{{ description }}</p>
           </div>
-          <ul>
-            <li><a href="#">Como chegar</a></li>
-            <li><a href="#">Instagram</a></li>
+          <ul class="flex flex-row gap-1 mb-8">
+            <li v-for="(action, index) in actions" :key="`action-${index}`">
+              <a
+                href="#"
+                :class="[
+                  'inline-flex items-center gap-2 px-3 text-gray-800 rounded-lg',
+                  { 'py-2 bg-orange-500': !index, 'py-3 bg-gray-100': !!index },
+                ]"
+              >
+                <NuxtIcon :name="action.icon" filled class="-mb-[.125em]" />
+                <span
+                  :class="{
+                    'sr-only': !!index,
+                  }"
+                  >{{ action.label }}
+                </span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                class="inline-flex items-center gap-2 px-3 py-3 text-gray-800 bg-gray-100 rounded-lg"
+              >
+                <NuxtIcon
+                  name="curve-arrow-pointing-left"
+                  filled
+                  class="-mb-[.125em]"
+                />
+                <span class="sr-only">Compartilhar </span>
+              </a>
+            </li>
+            <!-- <li><a href="#">Instagram</a></li>
             <li><a href="#">Whatsapp</a></li>
-            <li><a href="#">Share</a></li>
+            <li><a href="#">Share</a></li> -->
           </ul>
           <!-- Aberto agora-->
 
-          <div>
+          <div
+            class="flex flex-row py-8 overflow-hidden gap-x-3 flex-nowrap snap-x snap-proximity"
+          >
             <img
               v-for="(featuredMedia, featuredMediaIndex) in featuredMedias"
               :key="`featured-media-index-${featuredMediaIndex}`"
@@ -127,16 +162,31 @@
               :alt="featuredMedia.alt"
             />
           </div>
-          <div>
-            <h2>Principais atrações</h2>
-            <ul>
+          <div class="flex flex-col gap-y-4">
+            <h2 class="font-bold leading-5 text-gray-800">
+              Principais atrações
+            </h2>
+            <ul class="flex flex-col">
               <li
                 v-for="(attraction, attractionIndex) in mainAttractions"
                 :key="`attraction-index-${attractionIndex}`"
+                class="flex flex-row py-2 gap-x-4"
               >
-                <img :src="attraction.image.src" :alt="attraction.image.alt" />
-                <h3>{{ attraction.title }}</h3>
-                <p>{{ attraction.description }}</p>
+                <img
+                  :src="attraction.image.src"
+                  :alt="attraction.image.alt"
+                  width="64"
+                  height="64"
+                  class="w-[64] h-[64] aspect-square rounded"
+                />
+                <div class="flex flex-col justify-center pl-2 gap-y-1">
+                  <h3 class="text-sm font-semibold text-gray-800">
+                    {{ attraction.title }}
+                  </h3>
+                  <p class="text-sm text-gray-500">
+                    {{ attraction.description }}
+                  </p>
+                </div>
               </li>
             </ul>
           </div>
@@ -165,35 +215,40 @@ export default defineComponent({
     // Mo-Su 9:00-13:00 16:00-20:00
     return {
       cover: {
-        url: 'https://via.placeholder.com/375x165.png',
+        url: '/images//375x165.png',
         alt: '',
       },
       title: 'Dom Catulo Burguer',
-      avatar: 'https://via.placeholder.com/100x100.png',
+      avatar: '/images//100x100.png',
       available: true,
       address: 'Rod. Hélio Smidt, Check-in B - Aeroporto, Guarulhos - SP',
       description: 'Lorem ipsum dolor sit amet consectetur. Venenatis egestas.',
       rating: 5,
       featuredMedias: Array(3).fill({
         type: 'image',
-        src: 'https://via.placeholder.com/270x338.png',
+        src: '/images//270x338.png',
         alt: '',
       }),
-      socialNetworks: [
+      actions: [
         {
-          type: 'instagram',
-          label: '@pedrohenri.ms',
-          url: 'https://www.instagram.com/pedrohenri.ms',
+          icon: 'map-pin-outline',
+          label: 'Como chegar',
+          href: 'https://www.google.com/maps?q=',
         },
         {
-          type: 'whatsapp',
+          icon: 'instagram',
+          label: '@pedrohenri.ms',
+          href: 'https://www.instagram.com/pedrohenri.ms',
+        },
+        {
+          icon: 'whatsapp',
           label: '(44) 99144-1919',
-          url: 'https://wa.me/+5544991441919',
+          href: 'https://wa.me/+5544991441919',
         },
       ],
       mainAttractions: Array(2).fill({
         image: {
-          src: 'https://via.placeholder.com/270x338.png',
+          src: '/images//270x338.png',
           alt: '',
         },
         title: 'Deliciosos Cookies',

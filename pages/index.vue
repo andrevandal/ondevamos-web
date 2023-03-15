@@ -122,72 +122,84 @@
 <script lang="ts" setup>
 import { useRouteParams } from '@vueuse/router'
 
-type Provider = {
-  slug: string
-  title: string
-  avatar: string
-  available: boolean
-  images: {
-    src: string
-    alt: string
-  }[]
-  description: string
-}
+// type Provider = {
+//   slug: string
+//   title: string
+//   avatar: string
+//   available: boolean
+//   images: {
+//     src: string
+//     alt: string
+//   }[]
+//   description: string
+// }
 
-type Resource = {
-  slug: string
-  title: string
-  label: string
-  description: string
-  items: Provider[]
-}
+// type Resource = {
+//   slug: string
+//   title?: string
+//   label?: string
+//   description?: string
+//   items?: Provider[]
+// }
 
-const { data: resources, refresh } = await useAsyncData(
-  'resources',
-  async () => {
-    const resources = (await queryContent('/resources')
-      .where({ draft: { $eq: false } })
-      .limit(5)
-      .sort({ title: 1 })
-      .only(['slug', 'label', 'title', 'description'])
-      .find()) as Resource[]
-
-    const providers = (
-      await Promise.allSettled(
-        resources.map(
-          (resource) =>
-            queryContent('/providers')
-              .where({
-                resourcesProvided: { $contains: resource.slug },
-                draft: { $eq: false },
-              })
-              .limit(5)
-              .sort({ title: 1 })
-              .only([
-                'slug',
-                'title',
-                'avatar',
-                'available',
-                'images',
-                'description',
-              ])
-              .find() as Promise<Provider[]>,
-        ),
-      )
-    ).map((el: any) => el.value)
-
-    return resources.map((resource, index) => ({
-      ...resource,
-      items: providers[index],
-    }))
+const resources = [
+  {
+    type: 'hamburgueria',
+    title: 'Hamburgueria',
+    label: 'Delícias de carne e sabores incríveis! 🤤',
+    description: 'Aqui algumas recomendações de hamburguerias na cidade',
+    items: [
+      ...Array(2).fill({
+        slug: 'dom-catuto-burger',
+        title: 'Dom Catulo Burguer',
+        avatar: '/images/40x40.png',
+        available: true,
+        description:
+          'Lorem ipsum dolor sit amet consectetur. Venenatis egestas.',
+        images: Array(1).fill({
+          src: '/images/1080x1350.png',
+          alt: '',
+        }),
+      }),
+      {
+        slug: 'dom-catuto-burger2',
+        title: 'Dom Catulo Burguer',
+        avatar: '/images/40x40.png',
+        available: true,
+        description:
+          'Lorem ipsum dolor sit amet consectetur. Venenatis egestas.',
+      },
+    ],
   },
-)
-
-onMounted(() => {
-  if (!resources.value?.length) {
-    refresh()
-  }
-})
+  {
+    type: 'doces-guloseimas',
+    label: 'Delícias de doces e guloseimas com sabores incríveis! 🤤',
+    title: 'Doces & Guloseimas',
+    description: 'Aqui algumas recomendações de hamburguerias na cidade',
+    items: [
+      ...Array(2).fill({
+        slug: 'dom-catuto-burger',
+        title: 'Dom Catulo Burguer',
+        avatar: '/images/40x40.png',
+        available: true,
+        description:
+          'Lorem ipsum dolor sit amet consectetur. Venenatis egestas.',
+        images: Array(1).fill({
+          src: '/images/1080x1350.png',
+          alt: '',
+        }),
+      }),
+      {
+        slug: 'dom-catuto-burger2',
+        title: 'Dom Catulo Burguer',
+        avatar: '/images/40x40.png',
+        available: true,
+        description:
+          'Lorem ipsum dolor sit amet consectetur. Venenatis egestas.',
+      },
+    ],
+  },
+]
 
 useHead({
   title: 'OndeVamos.app',
