@@ -146,9 +146,6 @@
                 <span class="sr-only">Compartilhar </span>
               </a>
             </li>
-            <!-- <li><a href="#">Instagram</a></li>
-            <li><a href="#">Whatsapp</a></li>
-            <li><a href="#">Share</a></li> -->
           </ul>
           <!-- Aberto agora-->
 

@@ -1,9 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { resolve } from 'pathe'
 
-const { API_BASE_URL, GA_MEASUREMENT_ID, GA_HOST } = process.env
+const { API_BASE_URL, GA_MEASUREMENT_ID, GA_HOST, STRAPI_URL } = process.env
 
 export default defineNuxtConfig({
+  experimental: { payloadExtraction: false },
   css: ['~/assets/css/main.css'],
   postcss: {
     plugins: {
@@ -27,9 +28,12 @@ export default defineNuxtConfig({
       apiBaseUrl: API_BASE_URL,
       gaMeasurementID: GA_MEASUREMENT_ID,
       gaHost: GA_HOST,
+      strapi: {
+        url: STRAPI_URL,
+      },
     },
   },
-  modules: ['nuxt-icons', '@vueuse/nuxt', '@nuxt/content'],
+  modules: ['nuxt-icons', '@vueuse/nuxt', '@nuxtjs/strapi'],
   // plugins: [{ src: '~/plugins/vue-swipe-modal.ts', mode: 'client' }],
   hooks: {
     'pages:extend'(routes) {
@@ -39,8 +43,5 @@ export default defineNuxtConfig({
         file: resolve(__dirname, 'pages/index.vue'),
       })
     },
-  },
-  content: {
-    // https://content.nuxtjs.org/api/configuration
   },
 })
