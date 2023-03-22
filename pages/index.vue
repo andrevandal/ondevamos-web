@@ -17,7 +17,7 @@
         </p>
       </header>
       <article
-        v-for="(item, itemKey) in resource.attributes?.places.data"
+        v-for="(item, itemKey) in resource.attributes.places.data"
         :key="`item-${itemKey}`"
         class="relative mb-4 last-of-type:mb-0"
       >
@@ -27,7 +27,7 @@
         >
           <img
             v-if="!item?.attributes.medias?.data?.length"
-            :src="`${$config.strapi.url}${item.attributes.avatar.data.attributes.url}`"
+            :src="fullUrl(item.attributes.avatar.data.attributes.url)"
             :alt="item.attributes.avatar.data.attributes.alternativeText"
             class="object rounded-2xl aspect-[1080/1350]"
             width="1080"
@@ -41,7 +41,7 @@
           >
             <div class="relative rounded-full">
               <img
-                :src="`${$config.strapi.url}${item.attributes.avatar.data.attributes.url}`"
+                :src="fullUrl(item.attributes.avatar.data.attributes.url)"
                 :alt="item.attributes.avatar.data.attributes.alternativeText"
                 class="rounded-full"
                 width="64"
@@ -70,7 +70,7 @@
           <img
             v-for="(image, imageKey) in item.attributes.medias?.data"
             :key="`image-${imageKey}`"
-            :src="`${$config.strapi.url}${image.attributes.url}`"
+            :src="fullUrl(image.attributes.url)"
             :alt="image.attributes.alternativeText"
             class="rounded-2xl aspect-[1080/1350]"
             width="1080"
@@ -92,7 +92,7 @@
             class="relative rounded-full"
           >
             <img
-              :src="`${$config.strapi.url}${item.attributes.avatar.data.attributes.url}`"
+              :src="fullUrl(item.attributes.avatar.data.attributes.url)"
               :alt="item.attributes.avatar.data.attributes.alternativeText"
               class="rounded-full"
               width="40"
@@ -134,20 +134,114 @@
 </template>
 
 <script lang="ts" setup>
+// import consola from 'consola'
 import { useRouteParams } from '@vueuse/router'
-import { ApiResourceResource } from '@/schemas'
+const runtimeConfig = useRuntimeConfig()
 
 const { find } = useStrapi()
 
+type StrapiMediaFormatsContent = {
+  ext: string
+  url: string
+  hash: string
+  mime: string
+  name: string
+  path: string
+  size: number
+  width: number
+  height: number
+}
+
+type StrapiMediaFormats = {
+  large: StrapiMediaFormatsContent
+  small: StrapiMediaFormatsContent
+  medium: StrapiMediaFormatsContent
+  thumbnail: StrapiMediaFormatsContent
+}
+
+type StrapiPlaces = {
+  data: {
+    id: number
+    attributes: {
+      title: string
+      slug: string
+      available: boolean
+      description: string
+      createdAt: string
+      updatedAt: string
+      publishedAt: string
+      avatar: {
+        data: {
+          id: 1
+          attributes: {
+            name: string
+            alternativeText: string
+            caption: string
+            width: number
+            height: number
+            formats: any
+            hash: string
+            ext: string
+            mime: string
+            size: number
+            url: string
+            previewUrl: string
+            provider: string
+            provider_metadata: any
+            createdAt: string
+            updatedAt: string
+          }
+        }
+      }
+      medias: {
+        data: {
+          id: number
+          attributes: {
+            name: string
+            alternativeText?: string
+            caption?: string
+            width: number
+            height: number
+            formats: StrapiMediaFormats
+            hash: string
+            ext: string
+            mime: string
+            size: number
+            url: string
+            previewUrl: string
+            provider: string
+            provider_metadata: any
+            createdAt: string
+            updatedAt: string
+          }
+        }[]
+      }
+    }
+  }[]
+}
+
+type StrapiApiResources = {
+  id: number
+  attributes: {
+    slug: string
+    title: string
+    label: string
+    description: string
+    createdAt: string
+    updatedAt: string
+    places: StrapiPlaces
+  }
+}[]
+
 const { data: resources } = await useAsyncData('resources', async () => {
-  const { data } = await find<ApiResourceResource>('resources', {
+  const { data } = await find('resources', {
     populate: {
       places: {
         populate: ['avatar', 'medias'],
       },
     },
   })
-  return data
+  return data as StrapiApiResources
 })
 
 useHead({
@@ -202,6 +296,9 @@ useHead({
     },
   ],
 })
+
+const fullUrl = (string: string) =>
+  new URL(string, runtimeConfig.strapi.url).toString()
 
 const slug = await useRouteParams('slug')
 
