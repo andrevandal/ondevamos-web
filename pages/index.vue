@@ -120,14 +120,8 @@
       </article>
     </section>
     <Teleport to="body">
-      <BaseModal
-        v-if="shouldShowSwipeModal"
-        contents-height="80vh"
-        border-top-radius="16px"
-        @close="onClose"
-      >
-        <div>a</div>
-        <!-- <BaseSingle :slug="slug" /> -->
+      <BaseModal v-model="shouldShowSwipeModal" @close="onClose">
+        <BaseSingle :slug="slug" />
       </BaseModal>
     </Teleport>
   </main>
