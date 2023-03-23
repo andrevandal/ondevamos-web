@@ -7,7 +7,6 @@
     <transition name="swipe-modal-background" appear>
       <div
         v-if="modelValue"
-        ref="target"
         class="fixed z-[11] left-0 top-0 right-0 bottom-0 bg-black/70"
         @mouseup="close()"
       />
@@ -15,6 +14,7 @@
     <transition name="swipe-modal-contents" appear>
       <div
         v-if="modelValue"
+        ref="target"
         class="w-full fixed z-[12] max-h-full modal-contents rounded-t-2xl backface-hidden scrollbar-hide drop-shadow scroll-pt-10"
         @touchstart="touchStart"
         @touchmove="touchMove"
