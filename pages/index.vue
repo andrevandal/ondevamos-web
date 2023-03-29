@@ -1,7 +1,7 @@
 <template>
   <main class="container max-w-sm px-4 py-12 mx-auto">
     <section
-      v-for="(resource, resourceKey) in resources"
+      v-for="(resource, resourceKey) in resources?.data"
       :key="`resource-${resourceKey}`"
       class="mb-12"
     >
@@ -129,10 +129,15 @@
 
 <script lang="ts" setup>
 // import consola from 'consola'
+import * as qs from 'qs'
+
 import { useRouteParams } from '@vueuse/router'
 const runtimeConfig = useRuntimeConfig()
 
-const { find } = useStrapi()
+const fullUrl = (string: string) =>
+  new URL(string, runtimeConfig.strapi.url).toString()
+
+// const { find } = useStrapi()
 
 type StrapiMediaFormatsContent = {
   ext: string
@@ -215,28 +220,45 @@ type StrapiPlaces = {
 }
 
 type StrapiApiResources = {
-  id: number
-  attributes: {
-    slug: string
-    title: string
-    label: string
-    description: string
-    createdAt: string
-    updatedAt: string
-    places: StrapiPlaces
+  data: {
+    id: number
+    attributes: {
+      slug: string
+      title: string
+      label: string
+      description: string
+      createdAt: string
+      updatedAt: string
+      places: StrapiPlaces
+    }
+  }[]
+  meta: {
+    pagination: {
+      page: number
+      pageSize: number
+      pageCount: number
+      total: number
+    }
   }
-}[]
+}
 
-const { data: resources } = await useAsyncData('resources', async () => {
-  const { data } = await find('resources', {
-    populate: {
-      places: {
-        populate: ['avatar', 'medias'],
+const { data: resources } = await useFetch<StrapiApiResources>(
+  fullUrl(
+    `/api/resources?${qs.stringify(
+      {
+        sort: ['title:asc'],
+        populate: {
+          places: {
+            populate: ['avatar', 'medias'],
+          },
+        },
       },
-    },
-  })
-  return data as StrapiApiResources
-})
+      {
+        encodeValuesOnly: true, // prettify URL
+      },
+    )}`,
+  ),
+)
 
 useHead({
   title: 'OndeVamos.app',
@@ -290,9 +312,6 @@ useHead({
     },
   ],
 })
-
-const fullUrl = (string: string) =>
-  new URL(string, runtimeConfig.strapi.url).toString()
 
 const slug = await useRouteParams('slug')
 

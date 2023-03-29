@@ -33,7 +33,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  modules: ['nuxt-icons', '@vueuse/nuxt', '@nuxtjs/strapi'],
+  modules: ['nuxt-icons', '@vueuse/nuxt'],
   // plugins: [{ src: '~/plugins/vue-swipe-modal.ts', mode: 'client' }],
   hooks: {
     'pages:extend'(routes) {
