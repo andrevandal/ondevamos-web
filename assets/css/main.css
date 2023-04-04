@@ -28,3 +28,7 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
   -webkit-appearance:none;
 }
+
+.nuxt-icon svg {
+  margin-bottom: 0 !important;
+}
