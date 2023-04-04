@@ -1,5 +1,5 @@
 <template>
-  <footer class="px-4 pt-8 pb-6 text-center text-white bg-gray-800">
+  <footer class="px-4 pt-8 pb-6 text-center text-white bg-gray-900">
     <div class="container flex flex-col items-center max-w-sm gap-4 mx-auto">
       <a href="/" class="flex-1">
         <span class="sr-only">ondevamos.app</span>
@@ -24,14 +24,14 @@
           Feito com 💚️ por<br />
           <a
             href="https://andrevandal.dev"
-            class="underline transition-all underline-offset-2 decoration-orange-500 hover:decoration-transparent hover:text-orange-500"
+            class="underline transition-all underline-offset-2 decoration-yellow-500 hover:decoration-transparent hover:text-yellow-500"
             target="_blank"
             >André Vandal</a
           >
           &
           <a
             href="https://instagram.com/pedrohenri.dsgn"
-            class="underline transition-all underline-offset-2 decoration-orange-500 hover:decoration-transparent hover:text-orange-500"
+            class="underline transition-all underline-offset-2 decoration-yellow-500 hover:decoration-transparent hover:text-yellow-500"
             target="_blank"
             >Pedro Henri</a
           >
