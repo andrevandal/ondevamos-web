@@ -27,12 +27,12 @@
           </div>
         </header>
         <div class="px-4 pb-14">
-          <h1 class="pb-2 text-2xl font-semibold leading-7 text-gray-800">
+          <h1 class="pb-2 text-2xl font-semibold leading-7 text-gray-900">
             {{ title }}
           </h1>
           <a
             href="#"
-            class="text-[#055FC8] text-sm block leading-4 max-w-[calc(100%-.5rem)] text-ellipsis overflow-hidden whitespace-nowrap pb-2"
+            class="text-blue text-sm block leading-4 max-w-[calc(100%-.5rem)] text-ellipsis overflow-hidden whitespace-nowrap pb-2"
             >{{ address }}</a
           >
           <ul class="flex text-yellow-500">
@@ -112,7 +112,7 @@
             </li>
           </ul>
           <div class="flex-col gap-1 py-4">
-            <h2 class="font-bold leading-5 text-gray-800">Sobre</h2>
+            <h2 class="font-bold leading-5 text-gray-900">Sobre</h2>
             <p class="leading-5 text-gray-500">{{ description }}</p>
           </div>
           <ul class="flex flex-row gap-1 mb-8">
@@ -120,8 +120,8 @@
               <a
                 href="#"
                 :class="[
-                  'inline-flex items-center gap-2 px-3 text-gray-800 rounded-lg',
-                  { 'py-2 bg-orange-500': !index, 'py-3 bg-gray-100': !!index },
+                  'inline-flex items-center gap-2 px-3 text-gray-900 rounded-lg',
+                  { 'py-2 bg-yellow-500': !index, 'py-3 bg-gray-100': !!index },
                 ]"
               >
                 <NuxtIcon :name="action.icon" filled class="-mb-[.125em]" />
@@ -136,7 +136,7 @@
             <li>
               <a
                 href="#"
-                class="inline-flex items-center gap-2 px-3 py-3 text-gray-800 bg-gray-100 rounded-lg"
+                class="inline-flex items-center gap-2 px-3 py-3 text-gray-900 bg-gray-100 rounded-lg"
               >
                 <NuxtIcon
                   name="curve-arrow-pointing-left"
@@ -160,7 +160,7 @@
             />
           </div>
           <div class="flex flex-col gap-y-4">
-            <h2 class="font-bold leading-5 text-gray-800">
+            <h2 class="font-bold leading-5 text-gray-900">
               Principais atrações
             </h2>
             <ul class="flex flex-col">
@@ -177,7 +177,7 @@
                   class="w-[64] h-[64] aspect-square rounded"
                 />
                 <div class="flex flex-col justify-center pl-2 gap-y-1">
-                  <h3 class="text-sm font-semibold text-gray-800">
+                  <h3 class="text-sm font-semibold text-gray-900">
                     {{ attraction.title }}
                   </h3>
                   <p class="text-sm text-gray-500">

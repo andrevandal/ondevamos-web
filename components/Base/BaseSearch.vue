@@ -5,7 +5,7 @@
     >
       <input
         type="search"
-        class="z-10 w-auto col-start-1 col-end-2 pl-6 py-3 font-medium leading-5 text-gray-800 bg-white rounded-l-[.4rem] outline-none placeholder:text-gray-400 flex-1 max-w-[calc(100%-68px)]"
+        class="z-10 w-auto col-start-1 col-end-2 pl-6 py-3 font-medium leading-5 text-gray-900 bg-white rounded-l-[.4rem] outline-none placeholder:text-gray-400 flex-1 max-w-[calc(100%-68px)]"
         placeholder="Onde vamos hoje? 🤭"
       />
       <button

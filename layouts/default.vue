@@ -7,6 +7,8 @@
 </template>
 
 <script lang="ts" setup>
+import { AppHeader } from '#components'
+
 useHead({
   title: 'OndeVamos.app',
   link: [

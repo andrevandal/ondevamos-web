@@ -5,8 +5,8 @@
       :key="`resource-${resourceKey}`"
       class="mb-12"
     >
-      <header class="mb-6 text-center text-gray-800">
-        <span class="px-4 py-2 leading-5 bg-orange-50">{{
+      <header class="mb-6 text-center text-gray-900">
+        <span class="px-4 py-2 leading-5 bg-yellow-50">{{
           resource.attributes?.title
         }}</span>
         <h2 class="block my-2 text-2xl font-extrabold leading-7 tracking-tight">
@@ -58,7 +58,7 @@
                 <span class="sr-only">Opend</span>
               </div>
             </div>
-            <h3 class="mt-4 font-bold text-gray-800">
+            <h3 class="mt-4 font-bold text-gray-900">
               {{ item.attributes.title }}
             </h3>
             <span class="text-gray-600">
@@ -80,7 +80,7 @@
         <NuxtLink
           :href="`/${item.attributes.slug}/`"
           :class="[
-            'absolute inline-flex items-center gap-2 p-2 m-1 transition-all ease-in-out bottom-1 left-1 right-1 backdrop-blur rounded-xl bg-gray-800/80 border-t-white/20 ring-3 ring-transparent hover:ring-white/25 hover:bg-gray-800/90',
+            'absolute inline-flex items-center gap-2 p-2 m-1 transition-all ease-in-out bottom-1 left-1 right-1 backdrop-blur rounded-xl bg-gray-900/80 border-t-white/20 ring-3 ring-transparent hover:ring-white/25 hover:bg-gray-900/90',
             {
               'text-center justify-center py-5':
                 !item?.attributes.medias?.data?.length,
