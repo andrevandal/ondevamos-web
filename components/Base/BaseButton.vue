@@ -58,11 +58,9 @@ export default defineComponent({
       },
     ]
 
-    const tag = props.href ? NuxtLink : 'a'
-
     return () =>
       h(
-        tag,
+        NuxtLink,
         {
           href: props?.href,
           class: classList,

@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "@vueuse/router": "^9.13.0",
+    "ofetch": "^1.0.1",
     "qs": "^6.11.1",
     "vue": "^3.2.47",
     "vue-gtag-next": "^1.14.0",

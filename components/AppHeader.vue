@@ -1,8 +1,12 @@
 <template>
-  <header 
-  :class="['py-3 bg-gray-900', {
-    'pb-6': !props.onlyNavigation
-  }]">
+  <header
+    :class="[
+      'py-3 bg-gray-900',
+      {
+        'pb-6': !props.onlyNavigation,
+      },
+    ]"
+  >
     <AppNavigation :user="user" />
     <BaseSection v-if="!props.onlyNavigation">
       <template #before>
@@ -27,12 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  AppNavigation,
-  BaseSection,
-  BaseAd,
-  BaseSearch,
-} from '#components'
+import { AppNavigation, BaseSection, BaseAd, BaseSearch } from '#components'
 
 type User = {
   id: string
