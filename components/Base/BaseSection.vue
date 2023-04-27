@@ -3,7 +3,7 @@
     <div class="container p-4 mx-auto">
       <slot name="before" />
       <slot />
-      <slot name="after" />
     </div>
+    <slot name="after" />
   </section>
 </template>
