@@ -61,10 +61,13 @@
         </div>
       </div>
       <div>
-        <h3 class="mb-1 text-base font-medium leading-5 text-white link-title">
+        <h3 class="text-base font-medium leading-5 text-white link-title">
           {{ nuxtLinkLabel }}
         </h3>
-        <div v-if="hasMedias" class="flex flex-row gap-x-2">
+        <div
+          v-if="hasMedias && (item.ratingLevel || item.priceLevel)"
+          class="flex flex-row mt-1 gap-x-2"
+        >
           <BaseRating v-if="item.ratingLevel" :level="item.ratingLevel" />
           <BasePriceLevel v-if="item.priceLevel" :level="item.priceLevel" />
         </div>
