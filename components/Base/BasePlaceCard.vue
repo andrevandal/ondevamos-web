@@ -13,7 +13,7 @@
         class="absolute top-0 bottom-0 left-0 right-0 rounded-lg overlay-blur bg-white/20 backdrop-blur mix-blend-normal"
       ></div>
       <div
-        class="absolute top-0 bottom-0 left-0 right-0 flex flex-col items-center justify-center p-4 text-base leading-5 text-center rounded-lg thumbnail-content bg-white/40"
+        class="absolute top-0 bottom-0 left-0 right-0 flex flex-col items-center justify-center p-4 text-base leading-5 text-center rounded-lg thumbnail-content bg-white/40 gap-y-2"
       >
         <div class="relative rounded-full avatar-box">
           <img
@@ -28,6 +28,10 @@
           </div>
         </div>
         <h3 class="mt-4 font-bold text-gray-900">{{ itemTitle }}</h3>
+        <div class="flex flex-row gap-x-2">
+          <BaseRating v-if="item.ratingLevel" :level="item.ratingLevel" />
+          <BasePriceLevel v-if="item.priceLevel > 0" :level="item.priceLevel" />
+        </div>
         <span class="text-gray-600">{{ itemDescription }}</span>
       </div>
     </div>
@@ -56,9 +60,15 @@
           <span class="sr-only">Opened</span>
         </div>
       </div>
-      <h3 class="text-base font-medium leading-5 text-white link-title">
-        {{ nuxtLinkLabel }}
-      </h3>
+      <div>
+        <h3 class="mb-1 text-base font-medium leading-5 text-white link-title">
+          {{ nuxtLinkLabel }}
+        </h3>
+        <div v-if="hasMedias" class="flex flex-row gap-x-2">
+          <BaseRating v-if="item.ratingLevel" :level="item.ratingLevel" />
+          <BasePriceLevel v-if="item.priceLevel" :level="item.priceLevel" />
+        </div>
+      </div>
     </NuxtLink>
   </article>
 </template>
@@ -87,6 +97,8 @@ type Place = {
   description?: string
   avatar?: Avatar
   medias?: Media[]
+  ratingLevel: number
+  priceLevel: number
 }
 
 const props = defineProps({
@@ -111,11 +123,12 @@ const nuxtLinkLabel = computed(() =>
 )
 
 const availabilityClass = computed(() => {
-  return {
-    'availability-dot absolute bg-[#0D8047] w-3 h-3 border-2 border-white rounded-full bottom-0 right-0':
-      true,
-    hidden: !props.item.available,
-  }
+  return [
+    'availability-dot absolute bg-[#0D8047] w-3 h-3 border-2 border-white rounded-full bottom-0 right-0',
+    {
+      hidden: !props.item.available,
+    },
+  ]
 })
 
 const nuxtLinkClass = computed(() => {

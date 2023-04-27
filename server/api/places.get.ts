@@ -31,7 +31,7 @@ type StrapiPlaces = {
       createdAt: string
       updatedAt: string
       publishedAt: string
-      avatar: {
+      avatar?: {
         data: {
           id: 1
           attributes: {
@@ -77,6 +77,8 @@ type StrapiPlaces = {
           }
         }[]
       }
+      ratingLevel: number
+      priceLevel: number
     }
   }[]
 }
@@ -125,6 +127,8 @@ type Places = {
   description?: string
   avatar?: Avatar
   medias?: Media[]
+  ratingLevel: number
+  priceLevel: number
 }[]
 
 type Resource = {
@@ -150,7 +154,7 @@ type ResourcesResponse = {
 export default defineEventHandler(async () => {
   const runtimeConfig = useRuntimeConfig()
 
-  const fullUrl = (string: string) =>
+  const fullUrl = (string = '') =>
     new URL(string, runtimeConfig?.public?.strapi?.url).toString()
 
   const { data: strapiResources, meta } = await ofetch<StrapiApiResources>(
@@ -178,23 +182,27 @@ export default defineEventHandler(async () => {
     label: resource.attributes.label,
     description: resource.attributes.description,
     places: resource.attributes.places.data.map((place) => ({
-      id: place.id,
+      id: place?.id,
       title: place.attributes.title,
       slug: place.attributes.slug,
       available: place.attributes.available,
       description: place.attributes.description,
-      avatar: {
-        id: place.attributes.avatar.data.id,
-        name: place.attributes.avatar.data.attributes.name,
-        alternativeText:
-          place.attributes.avatar.data.attributes.alternativeText,
-        url: fullUrl(place.attributes.avatar.data.attributes.url), // Updated to use fullUrl
-      },
-      medias: place.attributes.medias.data.map((media) => ({
+      avatar:
+        (place.attributes.avatar?.data?.id && {
+          id: place.attributes.avatar?.data?.id,
+          name: place.attributes.avatar?.data?.attributes.name,
+          alternativeText:
+            place.attributes.avatar?.data.attributes?.alternativeText,
+          url: fullUrl(place.attributes.avatar?.data.attributes?.url),
+        }) ||
+        undefined,
+      medias: place.attributes?.medias.data?.map((media) => ({
         id: media.id,
-        alternativeText: media.attributes.alternativeText,
-        url: fullUrl(media.attributes.url), // Updated to use fullUrl
+        alternativeText: media.attributes?.alternativeText,
+        url: fullUrl(media.attributes?.url),
       })),
+      ratingLevel: place.attributes.ratingLevel,
+      priceLevel: place.attributes.priceLevel,
     })),
   }))
 

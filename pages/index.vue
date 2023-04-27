@@ -49,6 +49,8 @@ type Place = {
   description?: string
   avatar?: Avatar
   medias?: Media[]
+  ratingLevel: number
+  priceLevel: number
 }
 
 type Places = Place[]
@@ -83,8 +85,4 @@ const resources = computed(() => {
 
   return resourcesResponse?.value?.data
 })
-
-// const { data } = await useFetch<ResourcesResponse>(`/api/resources`)
-
-// const data = response.data?.data
 </script>
