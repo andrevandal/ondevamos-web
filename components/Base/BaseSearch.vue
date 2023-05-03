@@ -22,36 +22,5 @@
 </template>
 
 <script lang="ts" setup>
-const resources = [
-  {
-    slug: 'hamburgueria',
-    label: 'Hamburgueria',
-    icon: 'resources/hamburgueria',
-  },
-  {
-    slug: 'sorveteria',
-    label: 'Sorveteria',
-    icon: 'resources/sorveteria',
-  },
-  {
-    slug: 'churrascaria',
-    label: 'Churrascaria',
-    icon: 'resources/churrascaria',
-  },
-  {
-    slug: 'japanese-food',
-    label: 'Japanese Food',
-    icon: 'resources/japanese-food',
-  },
-  {
-    slug: 'pizzaria',
-    label: 'Pizzaria',
-    icon: 'resources/pizzaria',
-  },
-  {
-    slug: 'more',
-    label: 'Mais',
-    icon: 'more-horizontal',
-  },
-]
+const { data: resources } = await useFetch(() => `/api/categories`)
 </script>
