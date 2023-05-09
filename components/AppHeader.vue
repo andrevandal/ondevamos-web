@@ -12,14 +12,14 @@
       <template #before>
         <BaseAd />
       </template>
-      <div class="flex flex-col gap-2 py-6 text-center">
+      <div class="flex flex-col gap-2 py-6 text-center lg:py-10">
         <h1
-          class="text-2xl font-extrabold leading-7 tracking-tighter text-white"
+          class="text-2xl font-extrabold leading-7 tracking-tighter text-white lg:text-5xl lg:leading-[3.5rem]"
         >
           Explore os melhores lugares e encontre a experiência perfeita para
           você!
         </h1>
-        <h2 class="text-gray-300">
+        <h2 class="text-gray-200 lg:text-2xl lg:leading-8">
           Planeje o seu próximo rolê na companhia que você gosta!
         </h2>
       </div>

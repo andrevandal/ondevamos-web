@@ -215,6 +215,12 @@ export default defineComponent({
       if (list) {
         list.style.scrollBehavior = 'unset'
       }
+
+      useEventListener(window, 'scroll', () => {
+        if (isDropdownVisible.value) {
+          dropdownStyles.value = calculateDropdownStyles()
+        }
+      })
     })
 
     onBeforeUnmount(() => {
@@ -239,7 +245,7 @@ export default defineComponent({
     })
 
     const listClasses = computed(() => [
-      'flex flex-row flex-nowrap gap-2 scrollbar-hide overflow-x-scroll cursor-grab',
+      'flex flex-row flex-nowrap gap-2 scrollbar-hide overflow-x-scroll cursor-grab lg:max-w-fit lg:mx-auto',
       {
         'snap-none': isMouseDown.value,
         'cursor-grabbing': isMouseDown.value,
