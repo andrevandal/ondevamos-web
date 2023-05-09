@@ -1,11 +1,18 @@
 <template>
   <footer class="px-4 pt-8 pb-6 text-center text-white bg-gray-900">
-    <div class="container flex flex-col items-center max-w-sm gap-4 mx-auto">
-      <a href="/" class="flex-1">
-        <span class="sr-only">ondevamos.app</span>
-        <img src="/images/logo-light.svg" class="w-auto h-10" height="40" />
-      </a>
-      <p>2023 © OndeVamos.<br />Todos os direitos reservados.</p>
+    <div
+      class="container flex flex-col items-center gap-4 mx-auto lg:flex-row lg:justify-between"
+    >
+      <div
+        class="flex flex-col items-center lg:text-left gap-y-2 lg:items-start"
+      >
+        <a href="/" class="block">
+          <span class="sr-only">ondevamos.app</span>
+          <img src="/images/logo-light.svg" class="w-auto h-10" height="40" />
+        </a>
+        <p>2023 © OndeVamos. Todos os direitos reservados.</p>
+        <p>CNPJ: 23.018.045/0001-99</p>
+      </div>
       <nav class="flex flex-row gap-2 py-2">
         <a
           v-for="(socialNetwork, socialNetworkIndex) in socialNetworks"
