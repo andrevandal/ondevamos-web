@@ -1,5 +1,5 @@
 <template>
-  <article class="relative mb-4 article last-of-type:mb-0">
+  <article class="relative block w-[266px] h-[335px]">
     <div v-if="!hasMedias" class="relative rounded-lg thumbnail-box">
       <img
         v-if="!hasMedias"

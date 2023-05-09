@@ -1,11 +1,10 @@
 <template>
-  <main class="container max-w-sm px-4 py-12 mx-auto">
+  <main class="container flex flex-col px-4 py-12 mx-auto gap-y-12">
     <section
       v-for="(resource, resourceKey) in resources"
       :key="`resource-${resourceKey}`"
-      class="mb-12"
     >
-      <header class="mb-6 text-center text-gray-900">
+      <header class="mb-6 text-center text-gray-900 lg:text-left">
         <span class="px-4 py-2 leading-5 bg-yellow-50">{{
           resource.title
         }}</span>
@@ -16,11 +15,15 @@
           {{ resource.description }}
         </p>
       </header>
-      <BasePlaceCard
-        v-for="(item, itemKey) in resource.places"
-        :key="`item-${itemKey}`"
-        :item="item"
-      />
+      <div
+        class="flex flex-col items-center justify-between lg:flex-row gap-y-4 gap-x-6 lg:overflow-x-scroll lg:w-fit"
+      >
+        <BasePlaceCard
+          v-for="(item, itemKey) in resource.places"
+          :key="`item-${itemKey}`"
+          :item="item"
+        />
+      </div>
     </section>
   </main>
 </template>
@@ -28,52 +31,7 @@
 <script lang="ts" setup>
 import { BasePlaceCard } from '#components'
 
-type Avatar = {
-  id: number
-  name: string
-  alternativeText: string
-  url: string
-}
-
-type Media = {
-  id: number
-  alternativeText?: string
-  url: string
-}
-
-type Place = {
-  id: number
-  title: string
-  slug: string
-  available: boolean
-  description?: string
-  avatar?: Avatar
-  medias?: Media[]
-  ratingLevel: number
-  priceLevel: number
-}
-
-type Places = Place[]
-
-type Resource = {
-  id: number
-  title: string
-  label: string
-  description?: string
-  places?: Places
-}
-
-type ResourcesResponse = {
-  data: Resource[]
-  meta: {
-    pagination: {
-      page: number
-      pageSize: number
-      pageCount: number
-      total: number
-    }
-  }
-}
+import type { ResourcesResponse } from '@/types/nitro'
 
 const { data: resourcesResponse } = await useAsyncData<ResourcesResponse>(
   'resources',
