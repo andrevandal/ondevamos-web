@@ -4,8 +4,8 @@
       v-for="(resource, resourceKey) in resources"
       :key="`resource-${resourceKey}`"
     >
-      <header class="mb-6 text-center text-gray-900 lg:text-left">
-        <span class="px-4 py-2 leading-5 bg-yellow-50">{{
+      <header class="mb-6 text-center text-gray-900">
+        <span class="px-4 py-2 leading-5 rounded-full bg-yellow-50">{{
           resource.title
         }}</span>
         <h2 class="block my-2 text-2xl font-extrabold leading-7 tracking-tight">
@@ -16,7 +16,7 @@
         </p>
       </header>
       <div
-        class="flex flex-col items-center justify-between lg:flex-row gap-y-4 gap-x-6 lg:overflow-x-scroll lg:w-fit"
+        class="grid items-center justify-center grid-cols-1 gap-6 mx-auto sm:grid-cols-2 xl:grid-cols-4 place-items-center max-w-fit"
       >
         <BasePlaceCard
           v-for="(item, itemKey) in resource.places"
