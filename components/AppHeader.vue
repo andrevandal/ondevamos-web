@@ -12,7 +12,9 @@
       <template #before>
         <BaseAd />
       </template>
-      <div class="flex flex-col gap-2 py-6 text-center lg:py-10">
+      <div
+        class="flex flex-col max-w-4xl gap-2 py-6 mx-auto text-center lg:py-10"
+      >
         <h1
           class="text-2xl font-extrabold leading-7 tracking-tighter text-white lg:text-5xl lg:leading-[3.5rem]"
         >
