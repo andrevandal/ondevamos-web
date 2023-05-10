@@ -32,7 +32,6 @@
           <BaseRating v-if="item.ratingLevel" :level="item.ratingLevel" />
           <BasePriceLevel v-if="item.priceLevel > 0" :level="item.priceLevel" />
         </div>
-        <span class="text-gray-600">{{ itemDescription }}</span>
       </div>
     </div>
     <div v-else :class="['image-gallery relative rounded-2xl bg-white/80']">
@@ -116,7 +115,6 @@ const itemAvatarAltText = computed(
   () => props.item.avatar?.alternativeText || '',
 )
 const itemTitle = computed(() => props.item.title || '')
-const itemDescription = computed(() => props.item.description || '')
 const itemMedias = computed(() => props.item.medias || [])
 const itemLink = computed(() => `/${props.item.slug}/`)
 
