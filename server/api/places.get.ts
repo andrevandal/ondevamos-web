@@ -127,8 +127,8 @@ type Places = {
   description?: string
   avatar?: Avatar
   medias?: Media[]
-  ratingLevel: number
-  priceLevel: number
+  ratingLevel?: number | null
+  priceLevel?: number | null
 }[]
 
 type Resource = {
@@ -206,224 +206,404 @@ export default defineEventHandler(() => {
   //   })),
   // }))
 
+  // console.log(JSON.stringify(resources, null, 2))
+
   // Return ResourcesResponse
 
   const resources: Resource[] = [
-    // {
-    //   id: 3,
-    //   title: 'Churrascaria',
-    //   label: 'Aproveite o incrível sabor da tradicional carne assada! ',
-    //   description: 'Selecionamos as melhores churrascarias da cidade para você',
-    //   places: [],
-    // },
-
+    {
+      id: 3,
+      title: 'Carnes',
+      label: 'Suculentos e deliciosos cortes de carne esperando por você 🥩',
+      description: 'A churrascaria dos seus sonhos está aqui!',
+      places: [
+        {
+          id: 3,
+          title: 'The Steak Factory',
+          slug: 'the-steak-factory',
+          available: true,
+          description:
+            'Steakhouse Premium com os melhores Burgers, Cortes e Chopp Heineken!',
+          avatar: {
+            id: 5,
+            name: '299705042_2010635869124601_5584247212347922067_n.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/299705042_2010635869124601_5584247212347922067_n_2d3e6d2c44.jpg',
+          },
+          medias: [
+            {
+              id: 7,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/342737214_583218627120804_2772007424267394825_n_2c0d8e8a05.jpg',
+            },
+            {
+              id: 6,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/329957366_518688333771985_5399712986759657693_n_d19d036c2a.jpg',
+            },
+          ],
+          ratingLevel: null,
+          priceLevel: null,
+        },
+        {
+          id: 3,
+          title: 'The Steak Factory',
+          slug: 'the-steak-factory',
+          available: true,
+          description:
+            'Steakhouse Premium com os melhores Burgers, Cortes e Chopp Heineken!',
+          avatar: {
+            id: 5,
+            name: '299705042_2010635869124601_5584247212347922067_n.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/299705042_2010635869124601_5584247212347922067_n_2d3e6d2c44.jpg',
+          },
+          medias: [
+            {
+              id: 7,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/342737214_583218627120804_2772007424267394825_n_2c0d8e8a05.jpg',
+            },
+            {
+              id: 6,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/329957366_518688333771985_5399712986759657693_n_d19d036c2a.jpg',
+            },
+          ],
+          ratingLevel: null,
+          priceLevel: null,
+        },
+        {
+          id: 3,
+          title: 'The Steak Factory',
+          slug: 'the-steak-factory',
+          available: true,
+          description:
+            'Steakhouse Premium com os melhores Burgers, Cortes e Chopp Heineken!',
+          avatar: {
+            id: 5,
+            name: '299705042_2010635869124601_5584247212347922067_n.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/299705042_2010635869124601_5584247212347922067_n_2d3e6d2c44.jpg',
+          },
+          medias: [
+            {
+              id: 7,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/342737214_583218627120804_2772007424267394825_n_2c0d8e8a05.jpg',
+            },
+            {
+              id: 6,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/329957366_518688333771985_5399712986759657693_n_d19d036c2a.jpg',
+            },
+          ],
+          ratingLevel: null,
+          priceLevel: null,
+        },
+        {
+          id: 3,
+          title: 'The Steak Factory',
+          slug: 'the-steak-factory',
+          available: true,
+          description:
+            'Steakhouse Premium com os melhores Burgers, Cortes e Chopp Heineken!',
+          avatar: {
+            id: 5,
+            name: '299705042_2010635869124601_5584247212347922067_n.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/299705042_2010635869124601_5584247212347922067_n_2d3e6d2c44.jpg',
+          },
+          medias: [
+            {
+              id: 7,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/342737214_583218627120804_2772007424267394825_n_2c0d8e8a05.jpg',
+            },
+            {
+              id: 6,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/329957366_518688333771985_5399712986759657693_n_d19d036c2a.jpg',
+            },
+          ],
+          ratingLevel: null,
+          priceLevel: null,
+        },
+      ],
+    },
+    {
+      id: 2,
+      title: 'Doces & Sobremesas',
+      label: 'Descubra o sabor da felicidade em cada mordida 🍰',
+      description:
+        'Confira nossa seleção de doces e sobremesas para adoçar o seu dia!',
+      places: [
+        {
+          id: 2,
+          title: 'American Cookies',
+          slug: 'american-cookies',
+          available: true,
+          description: '',
+          avatar: {
+            id: 3,
+            name: '313930098_1127866654511395_3232089528329223134_n.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/313930098_1127866654511395_3232089528329223134_n_232ddc1e7f.jpg',
+          },
+          medias: [
+            {
+              id: 4,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/319674489_1103638540300327_6411484005350141602_n_3fcd383e26.jpg',
+            },
+          ],
+          ratingLevel: null,
+          priceLevel: null,
+        },
+        {
+          id: 2,
+          title: 'American Cookies',
+          slug: 'american-cookies',
+          available: true,
+          description: '',
+          avatar: {
+            id: 3,
+            name: '313930098_1127866654511395_3232089528329223134_n.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/313930098_1127866654511395_3232089528329223134_n_232ddc1e7f.jpg',
+          },
+          medias: [
+            {
+              id: 4,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/319674489_1103638540300327_6411484005350141602_n_3fcd383e26.jpg',
+            },
+          ],
+          ratingLevel: null,
+          priceLevel: null,
+        },
+        {
+          id: 2,
+          title: 'American Cookies',
+          slug: 'american-cookies',
+          available: true,
+          description: '',
+          avatar: {
+            id: 3,
+            name: '313930098_1127866654511395_3232089528329223134_n.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/313930098_1127866654511395_3232089528329223134_n_232ddc1e7f.jpg',
+          },
+          medias: [
+            {
+              id: 4,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/319674489_1103638540300327_6411484005350141602_n_3fcd383e26.jpg',
+            },
+          ],
+          ratingLevel: null,
+          priceLevel: null,
+        },
+        {
+          id: 2,
+          title: 'American Cookies',
+          slug: 'american-cookies',
+          available: true,
+          description: '',
+          avatar: {
+            id: 3,
+            name: '313930098_1127866654511395_3232089528329223134_n.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/313930098_1127866654511395_3232089528329223134_n_232ddc1e7f.jpg',
+          },
+          medias: [
+            {
+              id: 4,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/319674489_1103638540300327_6411484005350141602_n_3fcd383e26.jpg',
+            },
+          ],
+          ratingLevel: null,
+          priceLevel: null,
+        },
+      ],
+    },
     {
       id: 1,
       title: 'Hamburgueria',
-      label: 'Delícias de carne e sabores incríveis! 🤤',
-      description: 'Aqui algumas recomendações de hamburguerias na cidade',
+      label: 'A busca pelo hambúrguer perfeito acabou 🍔',
+      description:
+        'Descubra as melhores hamburguerias e sinta a suculência a cada mordida',
       places: [
         {
           id: 1,
           title: 'Dom Catulo Burguer',
           slug: 'dom-catulo-burguer',
-          available: false,
+          available: true,
           description:
             'Lorem ipsum dolor sit amet consectetur. Venenatis egestas',
           avatar: {
             id: 1,
-            name: 'perfil (1).jpg',
+            name: 'perfil.jpg',
             alternativeText: '',
-            url: 'http://localhost:1337/uploads/perfil_1_d094a3a7b0.jpg',
+            url: 'https://api.ondevamos.app/uploads/perfil_314cbddfae.jpg',
           },
           medias: [
             {
               id: 2,
               alternativeText: '',
-              url: 'http://localhost:1337/uploads/capa_1_926e746052.jpg',
+              url: 'https://api.ondevamos.app/uploads/capa_6c5535bd85.jpg',
             },
           ],
-          ratingLevel: 4.5,
+          ratingLevel: 1.5,
           priceLevel: 2,
         },
         {
           id: 1,
           title: 'Dom Catulo Burguer',
           slug: 'dom-catulo-burguer',
-          available: false,
+          available: true,
           description:
             'Lorem ipsum dolor sit amet consectetur. Venenatis egestas',
           avatar: {
             id: 1,
-            name: 'perfil (1).jpg',
+            name: 'perfil.jpg',
             alternativeText: '',
-            url: 'http://localhost:1337/uploads/perfil_1_d094a3a7b0.jpg',
+            url: 'https://api.ondevamos.app/uploads/perfil_314cbddfae.jpg',
           },
           medias: [
             {
               id: 2,
               alternativeText: '',
-              url: 'http://localhost:1337/uploads/capa_1_926e746052.jpg',
+              url: 'https://api.ondevamos.app/uploads/capa_6c5535bd85.jpg',
             },
           ],
-          ratingLevel: 4.5,
-          priceLevel: 1,
+          ratingLevel: 1.5,
+          priceLevel: 2,
         },
         {
           id: 1,
           title: 'Dom Catulo Burguer',
           slug: 'dom-catulo-burguer',
-          available: false,
+          available: true,
           description:
             'Lorem ipsum dolor sit amet consectetur. Venenatis egestas',
           avatar: {
             id: 1,
-            name: 'perfil (1).jpg',
+            name: 'perfil.jpg',
             alternativeText: '',
-            url: 'http://localhost:1337/uploads/perfil_1_d094a3a7b0.jpg',
-          },
-          ratingLevel: 4.5,
-          priceLevel: 4,
-        },
-        {
-          id: 1,
-          title: 'Dom Catulo Burguer',
-          slug: 'dom-catulo-burguer',
-          available: false,
-          description:
-            'Lorem ipsum dolor sit amet consectetur. Venenatis egestas',
-          avatar: {
-            id: 1,
-            name: 'perfil (1).jpg',
-            alternativeText: '',
-            url: 'http://localhost:1337/uploads/perfil_1_d094a3a7b0.jpg',
+            url: 'https://api.ondevamos.app/uploads/perfil_314cbddfae.jpg',
           },
           medias: [
             {
               id: 2,
               alternativeText: '',
-              url: 'http://localhost:1337/uploads/capa_1_926e746052.jpg',
+              url: 'https://api.ondevamos.app/uploads/capa_6c5535bd85.jpg',
             },
           ],
-          ratingLevel: 4.5,
+          ratingLevel: 1.5,
+          priceLevel: 2,
+        },
+        {
+          id: 1,
+          title: 'Dom Catulo Burguer',
+          slug: 'dom-catulo-burguer',
+          available: true,
+          description:
+            'Lorem ipsum dolor sit amet consectetur. Venenatis egestas',
+          avatar: {
+            id: 1,
+            name: 'perfil.jpg',
+            alternativeText: '',
+            url: 'https://api.ondevamos.app/uploads/perfil_314cbddfae.jpg',
+          },
+          medias: [
+            {
+              id: 2,
+              alternativeText: '',
+              url: 'https://api.ondevamos.app/uploads/capa_6c5535bd85.jpg',
+            },
+          ],
+          ratingLevel: 1,
           priceLevel: 4,
         },
       ],
     },
     {
-      id: 2,
-      title: 'Doces & Guloseimas',
-      label: 'Delícias de doces e guloseimas com sabores incríveis! 🤤',
-      description: 'Aqui algumas recomendações de docerias na cidade',
+      id: 4,
+      title: 'Viagem Gastronômica',
+      label: 'Explore sabores autênticos de diferentes regiões do mundo 🌎',
+      description:
+        'Esses lugares oferecem uma experiência gastronômica global sem sair da cidade!',
       places: [
         {
-          id: 2,
-          title: 'American Cookies',
-          slug: 'american-cookies',
+          id: 4,
+          title: 'Restaurante e Pizzaria Nonnetto',
+          slug: 'restaurante-e-pizzaria-nonnetto',
           available: false,
-          description: '',
+          description:
+            'Saboreie o melhor da GASTRONOMIA ITALIANA com as melhores pizzas.',
           avatar: {
-            id: 3,
-            name: '313930098_1127866654511395_3232089528329223134_n (1).jpg',
+            id: 8,
+            name: '202004051612_ddti_i.jpg',
             alternativeText: '',
-            url: 'http://localhost:1337/uploads/313930098_1127866654511395_3232089528329223134_n_1_7abcca5f34.jpg',
+            url: 'https://api.ondevamos.app/uploads/202004051612_ddti_i_95f0754e3b.jpg',
           },
-          medias: [
-            {
-              id: 4,
-              alternativeText: '',
-              url: 'http://localhost:1337/uploads/319674489_1103638540300327_6411484005350141602_n_1_1d87cc4508.jpg',
-            },
-          ],
-          ratingLevel: 4.5,
+          ratingLevel: 3.5,
           priceLevel: 4,
         },
         {
-          id: 2,
-          title: 'American Cookies',
-          slug: 'american-cookies',
+          id: 4,
+          title: 'Restaurante e Pizzaria Nonnetto',
+          slug: 'restaurante-e-pizzaria-nonnetto',
           available: false,
-          description: '',
+          description:
+            'Saboreie o melhor da GASTRONOMIA ITALIANA com as melhores pizzas.',
           avatar: {
-            id: 3,
-            name: '313930098_1127866654511395_3232089528329223134_n (1).jpg',
+            id: 8,
+            name: '202004051612_ddti_i.jpg',
             alternativeText: '',
-            url: 'http://localhost:1337/uploads/313930098_1127866654511395_3232089528329223134_n_1_7abcca5f34.jpg',
+            url: 'https://api.ondevamos.app/uploads/202004051612_ddti_i_95f0754e3b.jpg',
           },
-          ratingLevel: 4.5,
+          ratingLevel: 3.5,
           priceLevel: 4,
         },
         {
-          id: 2,
-          title: 'American Cookies',
-          slug: 'american-cookies',
+          id: 4,
+          title: 'Restaurante e Pizzaria Nonnetto',
+          slug: 'restaurante-e-pizzaria-nonnetto',
           available: false,
-          description: '',
+          description:
+            'Saboreie o melhor da GASTRONOMIA ITALIANA com as melhores pizzas.',
           avatar: {
-            id: 3,
-            name: '313930098_1127866654511395_3232089528329223134_n (1).jpg',
+            id: 8,
+            name: '202004051612_ddti_i.jpg',
             alternativeText: '',
-            url: 'http://localhost:1337/uploads/313930098_1127866654511395_3232089528329223134_n_1_7abcca5f34.jpg',
+            url: 'https://api.ondevamos.app/uploads/202004051612_ddti_i_95f0754e3b.jpg',
           },
-          medias: [
-            {
-              id: 4,
-              alternativeText: '',
-              url: 'http://localhost:1337/uploads/319674489_1103638540300327_6411484005350141602_n_1_1d87cc4508.jpg',
-            },
-          ],
-          ratingLevel: 4.5,
+          ratingLevel: 3.5,
           priceLevel: 4,
         },
         {
-          id: 2,
-          title: 'American Cookies',
-          slug: 'american-cookies',
+          id: 4,
+          title: 'Restaurante e Pizzaria Nonnetto',
+          slug: 'restaurante-e-pizzaria-nonnetto',
           available: false,
-          description: '',
+          description:
+            'Saboreie o melhor da GASTRONOMIA ITALIANA com as melhores pizzas.',
           avatar: {
-            id: 3,
-            name: '313930098_1127866654511395_3232089528329223134_n (1).jpg',
+            id: 8,
+            name: '202004051612_ddti_i.jpg',
             alternativeText: '',
-            url: 'http://localhost:1337/uploads/313930098_1127866654511395_3232089528329223134_n_1_7abcca5f34.jpg',
+            url: 'https://api.ondevamos.app/uploads/202004051612_ddti_i_95f0754e3b.jpg',
           },
-          medias: [
-            {
-              id: 4,
-              alternativeText: '',
-              url: 'http://localhost:1337/uploads/319674489_1103638540300327_6411484005350141602_n_1_1d87cc4508.jpg',
-            },
-          ],
-          ratingLevel: 4.5,
+          ratingLevel: 3.5,
           priceLevel: 4,
         },
       ],
     },
-    // {
-    //   id: 4,
-    //   title: 'Japanese Food',
-    //   label: 'Delicie-se com a autêntica culinária japonesa!',
-    //   description:
-    //     'Confira as nossas sugestões das melhores opções de comida japonesa na cidade',
-    //   places: [],
-    // },
-    // {
-    //   id: 5,
-    //   title: 'Pizzaria',
-    //   label: 'Desfrute de deliciosas pizzas preparadas artesanalmente!',
-    //   description:
-    //     'Aqui estão as nossas recomendações das melhores pizzarias na cidade',
-    //   places: [],
-    // },
-    // {
-    //   id: 6,
-    //   title: 'Sorveteria',
-    //   label: 'Refresque-se com uma grande variedade de sorvetes e gelatos!',
-    //   description:
-    //     'Encontre as sorveterias mais deliciosas e famosas da cidade',
-    //   places: [],
-    // },
   ]
+
   return {
     data: resources,
     // meta,
