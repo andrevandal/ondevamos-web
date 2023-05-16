@@ -16,7 +16,7 @@
         </p>
       </header>
       <div
-        class="grid items-center justify-center grid-cols-1 gap-6 mx-auto sm:grid-cols-2 xl:grid-cols-4 place-items-center max-w-fit"
+        class="grid items-center justify-center grid-cols-1 gap-6 mx-auto md:grid-cols-2 xl:grid-cols-4 place-items-center max-w-fit"
       >
         <BasePlaceCard
           v-for="(item, itemKey) in resource.places"
