@@ -11,7 +11,7 @@ type Media = {
   url: string
 }
 
-export type Places = {
+export type Place = {
   id: number
   title: string
   slug: string
@@ -21,7 +21,7 @@ export type Places = {
   medias?: Media[]
   ratingLevel: number
   priceLevel: number
-}[]
+}
 
 export type Resource = {
   id: number
@@ -29,11 +29,11 @@ export type Resource = {
   label: string
   description?: string
   emoji?: string
-  places?: Places
+  places?: Place[]
 }
 
 export type ResourcesResponse = {
-  data: Resource[]
+  data: Resource[] | Place[]
   meta: {
     pagination: {
       page: number

@@ -29,7 +29,7 @@ export default defineEventHandler(() => {
     { slug: 'japanese-food', label: 'Japanese Food', icon: '🍣' },
     { slug: 'pizzaria', label: 'Pizzaria', icon: '🍕' },
     { slug: 'sorveteria', label: 'Sorveteria', icon: '🍨' },
-    { slug: 'doces-guloseimas', label: 'Doces & Guloseimas', icon: '🍫' },
+    { slug: 'doces-sobremesas', label: 'Doces & Sobremesas', icon: '🍫' },
     { slug: 'cafe-bistro', label: 'Café & Bistrô', icon: '☕️' },
   ]
 

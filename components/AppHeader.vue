@@ -13,6 +13,7 @@
         <BaseAd />
       </template>
       <div
+        v-if="!searchTerm"
         class="flex flex-col max-w-4xl gap-2 py-6 mx-auto text-center lg:py-10"
       >
         <h1
@@ -48,6 +49,9 @@ const props = defineProps({
     default: () => ({}),
   },
 })
+
+const route = useRoute()
+const searchTerm = computed(() => String(route.query?.q ?? ''))
 </script>
 
 <style></style>

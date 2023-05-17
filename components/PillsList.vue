@@ -10,7 +10,7 @@
         class="snap-center first-of-type:ml-4 last-of-type:mr-4"
       >
         <NuxtLink
-          :to="`/categoria/${resource.slug}/`"
+          :to="{ query: { q: resource.label } }"
           :class="[
             'inline-flex items-center gap-3 px-4 py-3 text-white border-t border-white rounded-lg border-opacity-5 bg-opacity-5 whitespace-nowrap bg-gradient-to-r from-white/5 to-white/5 hover:from-[#FBAD3F]/10 hover:to-[#FF8157]/10 transition-all duration-500 ease-in-out leading-5',
             {
@@ -57,7 +57,7 @@
               :key="`dropdown-resource-${resource.slug}`"
             >
               <NuxtLink
-                :to="`/categoria/${resource.slug}/`"
+                :to="{ query: { q: resource.label } }"
                 class="inline-flex items-center w-full py-2 pl-4 pr-5 leading-5 text-gray-900 transition-all duration-500 ease-in-out rounded gap-x-2 whitespace-nowrap hover:bg-yellow-50"
               >
                 <span class="text-base leading-5">
