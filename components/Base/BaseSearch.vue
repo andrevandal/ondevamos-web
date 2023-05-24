@@ -4,7 +4,7 @@
       <form
         class="flex items-stretch max-w-full mx-4 border-2 justify-stretch lg:max-w-lg lg:mx-auto border-white/25 rounded-[.5rem]"
         :class="{ 'border-yellow-500': searchTerm }"
-        @submit="search"
+        @submit="doSearch"
       >
         <input
           v-model="searchTerm"
@@ -20,33 +20,36 @@
         </button>
       </form>
     </div>
-    <PillsList :resources="resources" />
+    <PillsList v-if="resources?.length" :resources="resources" />
   </div>
 </template>
 
 <script lang="ts" setup>
-const { data: resources } = await useFetch(() => `/api/categories`)
-const router = useRouter()
-const route = useRoute()
+import useSearch from '~/composables/useSearch'
 
-const searchTerm = ref(String(route.query?.q ?? ''))
+type Resource = {
+  slug: string
+  label: string
+  icon: string
+}
 
-watch(
-  () => route.query,
-  () => (searchTerm.value = String(route.query?.q ?? '')),
-)
+const { data: resources } = await useFetch<Resource[]>(() => `/api/categories`)
 
-const search = (event: Event) => {
+const search = useSearch()
+const searchTerm = ref(search.term.value)
+
+watch(search.term, () => {
+  searchTerm.value = search.term.value
+})
+
+const doSearch = (event: Event) => {
   event.preventDefault()
-  const searchTerm = (
+  const term = (
     (event.target as HTMLFormElement).querySelector(
       'input[type="search"]',
     ) as HTMLInputElement
   )?.value
-  if (searchTerm) {
-    router.push({ query: { q: searchTerm } })
-  } else {
-    router.push({ query: {} })
-  }
+
+  search.update(term)
 }
 </script>

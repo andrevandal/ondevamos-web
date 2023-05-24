@@ -33,6 +33,7 @@
       </section>
     </div>
     <div v-else class="container flex flex-col px-4 py-12 mx-auto gap-y-12">
+      <TheFilteringSearch />
       <section
         class="grid items-center justify-center grid-cols-1 gap-6 mx-auto md:grid-cols-2 xl:grid-cols-4 place-items-center max-w-fit"
       >
@@ -50,13 +51,13 @@
 import { BasePlaceCard } from '#components'
 import type { ResourcesResponse, Place, Resource } from '@/types/nitro'
 
-const route = useRoute()
+const search = reactive(useSearch())
 
-const searchTerm = computed(() => String(route.query?.q ?? ''))
+const searchTerm = computed(() => search.term)
 
 const { data: resourcesResponse, refresh } =
   await useAsyncData<ResourcesResponse>('resources', () =>
-    $fetch(`/api/places`, { query: { q: searchTerm.value } }),
+    $fetch(`/api/places`, { query: { q: search.term } }),
   )
 
 const resources = computed(() => {
@@ -66,7 +67,9 @@ const resources = computed(() => {
 })
 
 watch(
-  () => route.query,
-  () => refresh(),
+  () => search.term,
+  () => {
+    refresh()
+  },
 )
 </script>
