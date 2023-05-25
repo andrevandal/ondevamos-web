@@ -2,7 +2,7 @@
   <main>
     <div
       v-if="!searchTerm"
-      class="container flex flex-col px-4 py-12 mx-auto gap-y-12"
+      class="container flex flex-col px-4 py-12 mx-auto gap-y-16"
     >
       <section
         v-for="(resource, resourceKey) in (resources as Resource[])"

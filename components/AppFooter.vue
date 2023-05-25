@@ -18,7 +18,7 @@
           v-for="(socialNetwork, socialNetworkIndex) in socialNetworks"
           :key="`social-network-${socialNetworkIndex}`"
           :href="socialNetwork.url"
-          class="text-white p-[.8rem] bg-white bg-opacity-5 rounded-full border-t-white border-opacity-5 text-xl leading-5 transition-all ease-in-out hover:bg-opacity-10"
+          class="text-white p-[.8rem] bg-white bg-opacity-10 rounded-full border-t-white border-opacity-5 text-xl leading-5 transition-all ease-in-out hover:bg-opacity-20"
         >
           <span class="sr-only">{{ socialNetwork.label }}</span>
           <NuxtIcon :name="socialNetwork.type" />

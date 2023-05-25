@@ -1,6 +1,6 @@
 <template>
   <article
-    class="relative block w-[343px] h-[432px] aspect-[343/432] lg:w-[266px] lg:h-auto"
+    class="relative block w-[343px] h-[432px] aspect-[343/432] xl:w-[266px] lg:h-auto"
   >
     <div v-if="!hasMedias" class="relative rounded-lg thumbnail-box">
       <img
@@ -136,7 +136,7 @@ const availabilityClass = computed(() => {
 
 const nuxtLinkClass = computed(() => {
   return [
-    'nuxt-link absolute inline-flex items-center gap-2 p-2 m-1 transition-all ease-in-out bottom-1 left-1 right-1 backdrop-blur rounded-xl bg-gray-900/80 border-t-white/20 ring-3 ring-transparent hover:ring-white/25 hover:bg-gray-900/90',
+    'nuxt-link absolute inline-flex items-center gap-2 p-2 m-1 transition-all ease-in-out bottom-1 left-1 right-1 backdrop-blur rounded-xl bg-gray-900/70 border-t-white/20 hover:bg-gray-900/90',
     {
       'text-center justify-center py-5': !hasMedias.value,
     },

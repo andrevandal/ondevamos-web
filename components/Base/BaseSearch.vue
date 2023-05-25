@@ -14,9 +14,9 @@
         />
         <button
           type="submit"
-          class="z-10 col-start-2 col-end-3 px-6 py-3 bg-white rounded-r-[.4rem]"
+          class="z-10 col-start-2 col-end-3 px-6 py-3 bg-white rounded-r-[.4rem] text-xl leading-5"
         >
-          🔍
+          <NuxtIcon name="search" filled />
         </button>
       </form>
     </div>
