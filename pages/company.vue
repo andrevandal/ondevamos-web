@@ -26,11 +26,11 @@
             </div>
             <span class="h-9">
               Avaliação
-              <BaseRating :level="slug.rating" />
+              <BaseRating :level="rating" />
             </span>
             <span class="h-9">
               Preço
-              <BasePriceLevel :level="slug.price" />
+              <BasePriceLevel :level="price" />
             </span>
           </div>
         </header>
@@ -43,6 +43,24 @@
             class="text-blue text-sm block leading-4 max-w-[calc(100%-.5rem)] text-ellipsis overflow-hidden whitespace-nowrap pb-2"
             >{{ address }}</a
           >
+          <div class="text-gray-500 text-xs space-x-2 pt-3">
+            <span
+              v-if="veganOptions"
+              class="inline-flex items-center gap-1 px-3 py-1 border border-gray-100 rounded-full"
+            >
+              <NuxtIcon name="veggan" />
+              <span>Opções Veganas</span>
+              <NuxtIcon name="check" class="text-[#009959]" />
+            </span>
+            <span
+              v-if="petFriendly"
+              class="inline-flex items-center gap-1 px-3 py-1 border border-gray-100 rounded-full"
+            >
+              <NuxtIcon name="pet" />
+              <span>Pet Friendly</span>
+              <NuxtIcon name="check" class="text-[#009959]" />
+            </span>
+          </div>
           <div class="flex-col gap-1 py-4">
             <h2 class="font-bold leading-5 text-gray-900">Sobre</h2>
             <p class="leading-5 text-gray-500">{{ description }}</p>
@@ -148,19 +166,21 @@ export default defineComponent({
     // Mo-Su 9:00-13:00 16:00-20:00
     return {
       cover: {
-        url: '/images//375x165.png',
+        url: '/images/375x165.png',
         alt: '',
       },
       title: 'Dom Catulo Burguer',
-      avatar: '/images//100x100.png',
+      avatar: '/images/100x100.png',
       available: true,
       address: 'Rod. Hélio Smidt, Check-in B - Aeroporto, Guarulhos - SP',
       description: 'Lorem ipsum dolor sit amet consectetur. Venenatis egestas.',
       rating: 3,
-      price: 2,
+      price: 3,
+      veganOptions: true,
+      petFriendly: true,
       featuredMedias: Array(3).fill({
         type: 'image',
-        src: '/images//270x338.png',
+        src: '/images/270x338.png',
         alt: '',
       }),
       actions: [
@@ -182,7 +202,7 @@ export default defineComponent({
       ],
       mainAttractions: Array(2).fill({
         image: {
-          src: '/images//270x338.png',
+          src: '/images/270x338.png',
           alt: '',
         },
         title: 'Deliciosos Cookies',
