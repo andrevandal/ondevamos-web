@@ -100,7 +100,7 @@
           <!-- Aberto agora-->
           <div class="relative">
             <section
-              class="flex items-center justify-between gap-2 w-[342px]"
+              class="flex items-center justify-between gap-2 w-[342px] cursor-pointer"
               @click="toggleModal"
             >
               <span
@@ -113,14 +113,10 @@
               <span>
                 {{ openNow ? 'Fecha às' : 'Abre às' }} : uma hora ai
               </span>
-              <button>
-                <NuxtIcon
-                  name="chevron-down"
-                  :class="[
-                    openAtModalVisible ? '-rotate-180' : 'rotate-0',
-                    'w-4 h-4',
-                  ]"
-                />
+              <button
+                :class="[openAtModalVisible ? '-rotate-180' : 'rotate-0']"
+              >
+                <NuxtIcon name="chevron-down" class="w-4 h-4" />
               </button>
             </section>
             <ul
