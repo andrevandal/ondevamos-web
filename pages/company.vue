@@ -99,7 +99,10 @@
           </ul>
           <!-- Aberto agora-->
           <div class="relative">
-            <section class="flex items-center justify-between gap-2 w-[342px]">
+            <section
+              class="flex items-center justify-between gap-2 w-[342px]"
+              @click="toggleModal"
+            >
               <span
                 :class="[
                   'font-bold text-[#009959]',
@@ -110,10 +113,13 @@
               <span>
                 {{ openNow ? 'Fecha às' : 'Abre às' }} : uma hora ai
               </span>
-              <button @click="toggleModal">
+              <button>
                 <NuxtIcon
                   name="chevron-down"
-                  :class="['w-4 h-4', { ['-rotate-180']: openAtModalVisible }]"
+                  :class="[
+                    openAtModalVisible ? '-rotate-180' : 'rotate-0',
+                    'w-4 h-4',
+                  ]"
                 />
               </button>
             </section>
