@@ -114,7 +114,10 @@
                 {{ openNow ? 'Fecha às' : 'Abre às' }} : uma hora ai
               </span>
               <button
-                :class="[openAtModalVisible ? '-rotate-180' : 'rotate-0']"
+                :class="[
+                  'duration-300',
+                  [openAtModalVisible ? '-rotate-180' : 'rotate-0'],
+                ]"
               >
                 <NuxtIcon name="chevron-down" class="w-4 h-4" />
               </button>
