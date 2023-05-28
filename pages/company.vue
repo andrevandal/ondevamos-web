@@ -111,7 +111,10 @@
                 {{ openNow ? 'Fecha às' : 'Abre às' }} : uma hora ai
               </span>
               <button @click="toggleModal">
-                <NuxtIcon name="chevron-down" class="w-4 h-4" />
+                <NuxtIcon
+                  name="chevron-down"
+                  :class="['w-4 h-4', { ['-rotate-180']: openAtModalVisible }]"
+                />
               </button>
             </section>
             <ul
@@ -194,7 +197,7 @@ export default defineComponent({
   },
   setup(_props) {
     const openAtModalRef = ref<HTMLElement | null>(null)
-    const openAtModalVisible = ref(true)
+    const openAtModalVisible = ref(false)
 
     const toggleModal = () => {
       openAtModalVisible.value = !openAtModalVisible.value
