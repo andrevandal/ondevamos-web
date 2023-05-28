@@ -98,6 +98,41 @@
             </li>
           </ul>
           <!-- Aberto agora-->
+          <div class="relative">
+            <section class="flex items-center justify-between gap-2 w-[342px]">
+              <span
+                :class="[
+                  'font-bold text-[#009959]',
+                  { ['text-[#D44431]']: !openNow },
+                ]"
+                >{{ openNow ? 'Aberto Agora' : 'Fechado Agora' }}</span
+              >
+              <span>
+                {{ openNow ? 'Fecha às' : 'Abre às' }} : uma hora ai
+              </span>
+              <button @click="toggleModal">
+                <NuxtIcon name="chevron-down" class="w-4 h-4" />
+              </button>
+            </section>
+            <ul
+              v-if="openAtModalVisible"
+              ref="openAtModalRef"
+              class="absolute inset-x-0 p-4 flex flex-col gap-2 bg-white w-[342px] shadow-lg rounded-lg"
+            >
+              <li
+                v-for="(hour, index) in openingHours"
+                :key="index"
+                class="flex py-2 px-4 bg-gray-50 rounded-lg"
+              >
+                <span class="flex-1 font-bold">
+                  {{ hour.day }}
+                </span>
+                <span class="flex-1">
+                  {{ hour.hour }}
+                </span>
+              </li>
+            </ul>
+          </div>
 
           <div
             class="flex flex-row py-8 overflow-hidden gap-x-3 flex-nowrap snap-x snap-proximity"
@@ -158,10 +193,16 @@ export default defineComponent({
     },
   },
   setup(_props) {
+    const openAtModalRef = ref<HTMLElement | null>(null)
+    const openAtModalVisible = ref(true)
+
+    const toggleModal = () => {
+      openAtModalVisible.value = !openAtModalVisible.value
+    }
+
     definePageMeta({
       layout: 'profile',
     })
-
     // https://schema.org/openingHours
     // Mo-Su 9:00-13:00 16:00-20:00
     return {
@@ -208,7 +249,16 @@ export default defineComponent({
         title: 'Deliciosos Cookies',
         description: 'A partir de R$00,00',
       }),
-      openingHours: ['Mo-Su 07:00-23:00'],
+      openNow: false,
+      openingHours: [
+        { day: 'Segunda-feira', hour: '07:00-23:00' },
+        { day: 'Terça-feira', hour: '07:00-23:00' },
+        { day: 'Quarta-feira', hour: '07:00-23:00' },
+        { day: 'Quinta-feira', hour: '07:00-23:00' },
+      ],
+      toggleModal,
+      openAtModalRef,
+      openAtModalVisible,
     }
   },
 })
