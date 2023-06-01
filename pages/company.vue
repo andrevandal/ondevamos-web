@@ -141,17 +141,25 @@
               </li>
             </ul>
           </div>
-
-          <div
-            class="flex flex-row py-8 overflow-hidden gap-x-3 flex-nowrap snap-x snap-proximity"
+          <BaseHorizontalScroll
+            ref="scrollInstance"
+            class="flex flex-row gap-2 overflow-x-scroll flex-nowrap scrollbar-hide cursor-grab lg:max-w-fit lg:mx-auto"
           >
-            <img
-              v-for="(featuredMedia, featuredMediaIndex) in featuredMedias"
-              :key="`featured-media-index-${featuredMediaIndex}`"
-              :src="featuredMedia.src"
-              :alt="featuredMedia.alt"
-            />
-          </div>
+            <template #default="{ isMouseDown }">
+              <img
+                v-for="(featuredMedia, featuredMediaIndex) in featuredMedias"
+                :key="`featured-media-index-${featuredMediaIndex}`"
+                :src="featuredMedia.src"
+                :alt="featuredMedia.alt"
+                :class="[
+                  ['snap-center first-of-type:ml-4 last-of-type:mr-4'],
+                  {
+                    'cursor-grabbing': isMouseDown.value,
+                  },
+                ]"
+              />
+            </template>
+          </BaseHorizontalScroll>
           <div class="flex flex-col gap-y-4">
             <h2 class="font-bold leading-5 text-gray-900">
               Principais atrações
@@ -188,6 +196,7 @@
 
 <script lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { BaseHorizontalScroll } from '#components'
 import 'vue3-perfect-scrollbar/dist/vue3-perfect-scrollbar.css'
 
 export default defineComponent({
@@ -201,6 +210,7 @@ export default defineComponent({
     },
   },
   setup(_props) {
+    const scrollInstance = ref<typeof BaseHorizontalScroll | null>(null)
     const openAtModalRef = ref<HTMLElement | null>(null)
     const openAtModalVisible = ref(false)
 
@@ -267,6 +277,8 @@ export default defineComponent({
       toggleModal,
       openAtModalRef,
       openAtModalVisible,
+      BaseHorizontalScroll,
+      scrollInstance,
     }
   },
 })
