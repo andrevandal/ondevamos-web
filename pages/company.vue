@@ -141,25 +141,27 @@
               </li>
             </ul>
           </div>
-          <BaseHorizontalScroll
-            ref="scrollInstance"
-            class="flex flex-row gap-2 overflow-x-scroll flex-nowrap scrollbar-hide cursor-grab lg:max-w-fit lg:mx-auto"
-          >
-            <template #default="{ isMouseDown }">
-              <img
-                v-for="(featuredMedia, featuredMediaIndex) in featuredMedias"
-                :key="`featured-media-index-${featuredMediaIndex}`"
-                :src="featuredMedia.src"
-                :alt="featuredMedia.alt"
-                :class="[
-                  ['snap-center first-of-type:ml-4 last-of-type:mr-4'],
-                  {
-                    'cursor-grabbing': isMouseDown.value,
-                  },
-                ]"
-              />
-            </template>
-          </BaseHorizontalScroll>
+        </div>
+        <BaseHorizontalScroll
+          ref="scrollInstance"
+          class="flex flex-row my-6 gap-2 overflow-x-scroll flex-nowrap scrollbar-hide cursor-grab lg:max-w-fit"
+        >
+          <template #default="{ isMouseDown }">
+            <img
+              v-for="(featuredMedia, featuredMediaIndex) in featuredMedias"
+              :key="`featured-media-index-${featuredMediaIndex}`"
+              :src="featuredMedia.src"
+              :alt="featuredMedia.alt"
+              :class="[
+                ['rounded snap-center first-of-type:ml-4 last-of-type:mr-4'],
+                {
+                  'cursor-grabbing': isMouseDown.value,
+                },
+              ]"
+            />
+          </template>
+        </BaseHorizontalScroll>
+        <div class="px-4 pb-14">
           <div class="flex flex-col gap-y-4">
             <h2 class="font-bold leading-5 text-gray-900">
               Principais atrações
