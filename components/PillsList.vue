@@ -12,7 +12,7 @@
         <NuxtLink
           :to="{ query: { q: resource.label } }"
           :class="[
-            'inline-flex items-center gap-3 px-4 py-3 text-white border-t border-white rounded-lg border-opacity-5  whitespace-nowrap bg-white/10 hover:bg-amber-500/10  transition-all duration-500 ease-in-out leading-5',
+            'inline-flex items-center gap-3 px-4 py-3 text-white border-t border-white rounded-lg border-opacity-5  whitespace-nowrap bg-white/10 hover:bg-yellow-500/20  transition-all duration-500 ease-in-out leading-5',
             {
               'cursor-grabbing': isMouseDown.value,
             },
@@ -36,7 +36,7 @@
         class="relative snap-center first-of-type:ml-4 last-of-type:mr-4"
       >
         <button
-          class="inline-flex items-center gap-3 px-4 py-3 leading-5 text-white transition-all duration-500 ease-in-out border-t border-white rounded-lg border-opacity-5 bg-opacity-5 whitespace-nowrap bg-white/10 hover:bg-amber-500/10"
+          class="inline-flex items-center gap-3 px-4 py-3 leading-5 text-white transition-all duration-500 ease-in-out border-t border-white rounded-lg border-opacity-5 bg-opacity-5 whitespace-nowrap bg-white/10 hover:bg-yellow-500/10"
           @click="toggleDropdown"
         >
           <NuxtIcon

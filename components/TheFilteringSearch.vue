@@ -54,7 +54,7 @@
               <label class="flex-1 cursor-pointer">
                 <input class="hidden peer" type="radio" name="ratingLevel" />
                 <div
-                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-l-md ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 peer-checked:bg-amber-50 w-full justify-center"
+                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-l-md ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 peer-checked:bg-yellow-50 w-full justify-center"
                 >
                   Todas
                 </div>
@@ -62,36 +62,36 @@
               <label class="flex-1 cursor-pointer">
                 <input class="hidden peer" type="radio" name="ratingLevel" />
                 <div
-                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 peer-checked:bg-amber-50 w-full justify-center"
+                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 peer-checked:bg-yellow-50 w-full justify-center"
                 >
                   3,5<NuxtIcon
                     name="rating-star-full"
                     filled
-                    class="text-amber-500"
+                    class="text-yellow-500"
                   />
                 </div>
               </label>
               <label class="flex-1 cursor-pointer">
                 <input class="hidden peer" type="radio" name="ratingLevel" />
                 <div
-                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 peer-checked:bg-amber-50 w-full justify-center"
+                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 peer-checked:bg-yellow-50 w-full justify-center"
                 >
                   4,0<NuxtIcon
                     name="rating-star-full"
                     filled
-                    class="text-amber-500"
+                    class="text-yellow-500"
                   />
                 </div>
               </label>
               <label class="flex-1 cursor-pointer">
                 <input class="hidden peer" type="radio" name="ratingLevel" />
                 <div
-                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 peer-checked:bg-amber-50 rounded-r-md w-full justify-center"
+                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 peer-checked:bg-yellow-50 rounded-r-md w-full justify-center"
                 >
                   4,5<NuxtIcon
                     name="rating-star-full"
                     filled
-                    class="text-amber-500"
+                    class="text-yellow-500"
                   />
                 </div>
               </label>
@@ -104,7 +104,7 @@
             <span class="inline-flex rounded-md isolate">
               <button
                 type="button"
-                class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-md ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 gap-x-2 w-full justify-center transition-all ease-in"
+                class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-md ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 gap-x-2 w-full justify-center transition-all ease-in"
               >
                 Todos
                 <NuxtIcon
@@ -138,7 +138,7 @@
               <label class="cursor-pointer">
                 <input class="hidden peer" type="checkbox" name="tags" />
                 <div
-                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-md ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 gap-x-2 justify-center transition-all ease-in peer-checked:bg-amber-50 w-full whitespace-nowrap"
+                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-md ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 gap-x-2 justify-center transition-all ease-in peer-checked:bg-yellow-50 w-full whitespace-nowrap"
                 >
                   Pet Friendly
                 </div>
@@ -146,7 +146,7 @@
               <label class="cursor-pointer">
                 <input class="hidden peer" type="checkbox" name="tags" />
                 <div
-                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-md ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 gap-x-2 justify-center transition-all ease-in peer-checked:bg-amber-50 w-full whitespace-nowrap"
+                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-md ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 gap-x-2 justify-center transition-all ease-in peer-checked:bg-yellow-50 w-full whitespace-nowrap"
                 >
                   Opções Veganas
                 </div>
@@ -161,7 +161,7 @@
               <label class="flex-1 cursor-pointer">
                 <input class="hidden peer" type="radio" name="openingHours" />
                 <div
-                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-l-md ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 peer-checked:bg-amber-50 w-full justify-center whitespace-nowrap"
+                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white rounded-l-md ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 peer-checked:bg-yellow-50 w-full justify-center whitespace-nowrap"
                 >
                   Qualquer horário
                 </div>
@@ -169,7 +169,7 @@
               <label class="flex-1 cursor-pointer">
                 <input class="hidden peer" type="radio" name="openingHours" />
                 <div
-                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white ring-1 ring-gray-100 hover:bg-amber-50 hover:ring-amber-200 peer-checked:bg-amber-50 rounded-r-md w-full justify-center whitespace-nowrap"
+                  class="relative inline-flex items-center px-4 py-[0.625rem] text-base leading-5 text-gray-900 bg-white ring-1 ring-gray-100 hover:bg-yellow-50 hover:ring-yellow-200 peer-checked:bg-yellow-50 rounded-r-md w-full justify-center whitespace-nowrap"
                 >
                   Aberto agora
                 </div>
@@ -186,7 +186,7 @@
               </button>
               <button
                 type="button"
-                class="flex-1 py-2 text-base text-center text-gray-900 transition-all ease-in rounded-full bg-amber-500 hover:bg-amber-400"
+                class="flex-1 py-2 text-base text-center text-gray-900 transition-all ease-in rounded-full bg-yellow-500 hover:bg-yellow-400"
               >
                 Aplicar
               </button>
