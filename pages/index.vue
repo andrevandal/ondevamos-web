@@ -51,14 +51,29 @@
 import { BasePlaceCard } from '#components'
 import type { ResourcesResponse, Place, Resource } from '@/types/nitro'
 
+const route = useRoute()
+
 const search = reactive(useSearch())
 
 const searchTerm = computed(() => search.term)
 
 const { data: resourcesResponse, refresh } =
-  await useAsyncData<ResourcesResponse>('resources', () =>
-    $fetch(`/api/places`, { query: { q: search.term } }),
-  )
+  await useAsyncData<ResourcesResponse>('resources', () => {
+    const query = route.query
+
+    const queryParams = {
+      q: query.q,
+      tags: query.tags ? query.tags : '',
+      openingHours: (query.openingHours as string) || '',
+      pricingLevel: Number(query.pricingLevel) || 0,
+      ratingLevel: Number(query.ratingLevel) || 0,
+    }
+
+    const cleanQueryParams = Object.fromEntries(
+      Object.entries(queryParams).filter(([_, value]) => value),
+    )
+    return $fetch(`/api/places`, { query: cleanQueryParams })
+  })
 
 const resources = computed(() => {
   if (!resourcesResponse?.value) return []
@@ -67,7 +82,7 @@ const resources = computed(() => {
 })
 
 watch(
-  () => search.term,
+  () => route.query,
   () => {
     refresh()
   },

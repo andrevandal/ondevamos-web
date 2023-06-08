@@ -154,15 +154,43 @@ type ResourcesResponse = {
     }
   }
 }
+const tagsAllowed = ['pet-friendly', 'opcoes-veganas']
+const pricingLevelAllowed = [0, 3.5, 4, 4.5]
+
+const tagSchema = z.string().transform((val, ctx) => {
+  const parsed = [...val.split(',')].filter((el) => tagsAllowed.includes(el))
+  if (!parsed) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Tag not allowed',
+    })
+    return z.NEVER
+  }
+  return parsed
+})
+
+const ratingLevelSchema = z.coerce.number().transform((val, ctx) => {
+  const parsed = pricingLevelAllowed.includes(val)
+  if (!parsed) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Pricing level not allowed',
+    })
+    return z.NEVER
+  }
+  return val
+})
+
+const QuerySchema = z.object({
+  q: z.string().optional(),
+  tags: z.optional(tagSchema),
+  openingHours: z.nullable(z.enum(['opened-now']).optional()),
+  pricingLevel: z.optional(z.coerce.number().int().min(0).max(4)),
+  ratingLevel: z.optional(ratingLevelSchema),
+})
 
 async function parseQuery(event: H3Event) {
-  const query = await zh.useSafeValidatedQuery(
-    event,
-    z.object({
-      q: z.string().optional(),
-    }),
-  )
-
+  const query = await zh.useSafeValidatedQuery(event as any, QuerySchema)
   if (query.success) {
     return Promise.resolve(query.data)
   }
@@ -564,20 +592,25 @@ const resources: Resource[] = [
   },
 ]
 
-const searchPlaces = (resources: Resource[], searchTerm: string): Place[] => {
-  const normalizedSearchTerm = searchTerm.toLowerCase()
+const searchPlaces = (
+  resources: Resource[],
+  options: z.infer<typeof QuerySchema>,
+): Place[] => {
+  const normalizedSearchTerm = options?.q?.toLowerCase()
 
-  const matchingResources = resources.filter((resource) => {
-    const resourceTitleMatch = resource.title
-      .toLowerCase()
-      .includes(normalizedSearchTerm)
-    const placeMatch = (resource.places ?? []).some((place) =>
-      (place.title.toLowerCase() + ' ' + (place.description ?? ''))
-        .toLowerCase()
-        .includes(normalizedSearchTerm),
-    )
-    return resourceTitleMatch || placeMatch
-  })
+  const matchingResources = normalizedSearchTerm
+    ? resources.filter((resource) => {
+        const resourceTitleMatch = resource.title
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
+        const placeMatch = (resource.places ?? []).some((place) =>
+          (place.title.toLowerCase() + ' ' + (place.description ?? ''))
+            .toLowerCase()
+            .includes(normalizedSearchTerm),
+        )
+        return resourceTitleMatch || placeMatch
+      })
+    : resources
 
   return matchingResources.reduce<Place[]>((result, resource) => {
     return [...result, ...(resource.places ?? [])]
@@ -586,10 +619,16 @@ const searchPlaces = (resources: Resource[], searchTerm: string): Place[] => {
 
 export default defineEventHandler(async (event) => {
   try {
-    const { q } = await parseQuery(event)
-
+    const { q, tags, openingHours, pricingLevel, ratingLevel } =
+      await parseQuery(event)
     if (q) {
-      const data = searchPlaces(resources, q)
+      const data = searchPlaces(resources, {
+        q,
+        tags,
+        openingHours,
+        pricingLevel,
+        ratingLevel,
+      })
 
       return {
         data,
