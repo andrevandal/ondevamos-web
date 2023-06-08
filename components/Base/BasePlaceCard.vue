@@ -118,7 +118,7 @@ const itemAvatarAltText = computed(
 )
 const itemTitle = computed(() => props.item.title || '')
 const itemMedias = computed(() => props.item.medias || [])
-const itemLink = computed(() => `/${props.item.slug}/`)
+const itemLink = computed(() => `/p/${props.item.slug}/`)
 
 const hasMedias = computed(() => !!itemMedias.value.length)
 const nuxtLinkLabel = computed(() =>

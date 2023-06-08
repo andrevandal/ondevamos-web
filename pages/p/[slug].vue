@@ -4,16 +4,16 @@
       <div class="flex flex-col">
         <header class="w-full mb-6">
           <img
-            :src="place.cover.url"
-            :alt="place.cover.alt"
+            :src="place?.cover.url"
+            :alt="place?.cover.alt"
             class="w-full h-auto"
           />
           <div
             class="relative rounded-full flex items-end gap-4 w-[100px] h-[100px] -translate-y-1/2 -mb-[50px] z-10 border-4 border-white ml-4"
           >
             <img
-              :src="place.avatar"
-              :alt="place.title"
+              :src="place?.avatar"
+              :alt="place?.title"
               class="rounded-full"
               width="100"
               height="100"
@@ -22,7 +22,7 @@
               :class="[
                 'absolute bg-[#0D8047] w-5 h-5 border-2 border-white rounded-full bottom-0 right-0',
                 {
-                  hidden: !place.available,
+                  hidden: !place?.available,
                 },
               ]"
             >
@@ -30,26 +30,26 @@
             </div>
             <span class="h-9">
               Avaliação
-              <BaseRating :level="place.rating" />
+              <BaseRating :level="place?.rating" />
             </span>
             <span class="h-9">
               Preço
-              <BasePriceLevel :level="place.price" />
+              <BasePriceLevel :level="place?.price" />
             </span>
           </div>
         </header>
         <div class="px-4 pb-14">
           <h1 class="pb-2 text-2xl font-semibold leading-7 text-gray-900">
-            {{ place.title }}
+            {{ place?.title }}
           </h1>
           <a
             href="#"
             class="text-blue text-sm block leading-4 max-w-[calc(100%-.5rem)] text-ellipsis overflow-hidden whitespace-nowrap pb-2"
-            >{{ place.address }}</a
+            >{{ place?.address }}</a
           >
-          <div class="text-gray-500 text-xs space-x-2 pt-3">
+          <div class="pt-3 space-x-2 text-xs text-gray-500">
             <span
-              v-if="place.veganOptions"
+              v-if="place?.veganOptions"
               class="inline-flex items-center gap-1 px-3 py-1 border border-gray-100 rounded-full"
             >
               <NuxtIcon name="veggan" />
@@ -57,7 +57,7 @@
               <NuxtIcon name="check" class="text-[#009959]" />
             </span>
             <span
-              v-if="place.petFriendly"
+              v-if="place?.petFriendly"
               class="inline-flex items-center gap-1 px-3 py-1 border border-gray-100 rounded-full"
             >
               <NuxtIcon name="pet" />
@@ -67,11 +67,11 @@
           </div>
           <div class="flex-col gap-1 py-4">
             <h2 class="font-bold leading-5 text-gray-900">Sobre</h2>
-            <p class="leading-5 text-gray-500">{{ place.description }}</p>
+            <p class="leading-5 text-gray-500">{{ place?.description }}</p>
           </div>
           <ul class="flex flex-row gap-1 mb-8">
             <li
-              v-for="(action, index) in place.actions"
+              v-for="(action, index) in place?.actions"
               :key="`action-${index}`"
             >
               <a
@@ -113,12 +113,12 @@
               <span
                 :class="[
                   'font-bold text-[#009959]',
-                  { ['text-[#D44431]']: !place.openNow },
+                  { ['text-[#D44431]']: !place?.openNow },
                 ]"
-                >{{ place.openNow ? 'Aberto Agora' : 'Fechado Agora' }}</span
+                >{{ place?.openNow ? 'Aberto Agora' : 'Fechado Agora' }}</span
               >
               <span>
-                {{ place.openNow ? 'Fecha às' : 'Abre às' }} : uma hora ai
+                {{ place?.openNow ? 'Fecha às' : 'Abre às' }} : uma hora ai
               </span>
               <button
                 :class="[
@@ -135,9 +135,9 @@
               class="absolute inset-x-0 p-4 flex flex-col gap-2 bg-white w-[342px] shadow-lg rounded-lg"
             >
               <li
-                v-for="(hour, index) in place.openingHours"
+                v-for="(hour, index) in place?.openingHours"
                 :key="index"
-                class="flex py-2 px-4 bg-gray-50 rounded-lg"
+                class="flex px-4 py-2 rounded-lg bg-gray-50"
               >
                 <span class="flex-1 font-bold">
                   {{ hour.day }}
@@ -151,13 +151,13 @@
         </div>
         <BaseHorizontalScroll
           ref="scrollInstance"
-          class="flex flex-row my-6 gap-2 overflow-x-scroll flex-nowrap scrollbar-hide cursor-grab lg:max-w-fit"
+          class="flex flex-row gap-2 my-6 overflow-x-scroll flex-nowrap scrollbar-hide cursor-grab lg:max-w-fit"
         >
           <template #default="{ isMouseDown }">
             <img
               v-for="(
                 featuredMedia, featuredMediaIndex
-              ) in place.featuredMedias"
+              ) in place?.featuredMedias"
               :key="`featured-media-index-${featuredMediaIndex}`"
               :src="featuredMedia.src"
               :alt="featuredMedia.alt"
@@ -177,7 +177,7 @@
             </h2>
             <ul class="flex flex-col">
               <li
-                v-for="(attraction, attractionIndex) in place.mainAttractions"
+                v-for="(attraction, attractionIndex) in place?.mainAttractions"
                 :key="`attraction-index-${attractionIndex}`"
                 class="flex flex-row py-2 gap-x-4"
               >
@@ -205,50 +205,30 @@
   </perfect-scrollbar>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { BaseHorizontalScroll } from '#components'
-import { place } from '@/ex'
 import 'vue3-perfect-scrollbar/dist/vue3-perfect-scrollbar.css'
 
-export default defineComponent({
-  components: {
-    PerfectScrollbar,
-  },
-  props: {
-    slug: {
-      type: [String, Array, null] as PropType<String | String[] | null>,
-      default: '',
-    },
-    // place: {
-    //   type: [String, Array, null] as PropType<String | String[] | null>, TODO: precisa ser discutido
-    //   default: '',
-    //   requierd: true,
-    // },
-  },
-  setup(_props) {
-    const scrollInstance = ref<typeof BaseHorizontalScroll | null>(null)
-    const openAtModalRef = ref<HTMLElement | null>(null)
-    const openAtModalVisible = ref(false)
+import type { PlaceResponse } from '@/types/nitro'
 
-    const toggleModal = () => {
-      openAtModalVisible.value = !openAtModalVisible.value
-    }
+const route = useRoute()
 
-    definePageMeta({
-      layout: 'profile',
-    })
-    // https://schema.org/openingHours
-    // Mo-Su 9:00-13:00 16:00-20:00
-    return {
-      place,
-      toggleModal,
-      openAtModalRef,
-      openAtModalVisible,
-      BaseHorizontalScroll,
-      scrollInstance,
-    }
-  },
+const { data: place } = await useAsyncData<PlaceResponse>('resources', () => {
+  const { slug } = route.params
+  return $fetch(`/api/place/${slug}`)
+})
+
+const scrollInstance = ref<typeof BaseHorizontalScroll | null>(null)
+const openAtModalRef = ref<HTMLElement | null>(null)
+const openAtModalVisible = ref(false)
+
+const toggleModal = () => {
+  openAtModalVisible.value = !openAtModalVisible.value
+}
+
+definePageMeta({
+  layout: 'profile',
 })
 </script>
 

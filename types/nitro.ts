@@ -44,6 +44,45 @@ export type ResourcesResponse = {
   }
 }
 
+export type PlaceResponse = {
+  cover: {
+    url: string
+    alt: string
+  }
+  title: string
+  avatar: string
+  available: boolean
+  address: string
+  description: string
+  rating: number
+  price: number
+  veganOptions: boolean
+  petFriendly: boolean
+  featuredMedias: {
+    type: string
+    src: string
+    alt: string
+  }[]
+  actions: {
+    icon: string
+    label: string
+    href: string
+  }[]
+  mainAttractions: {
+    image: {
+      src: string
+      alt: string
+    }
+    title: string
+    description: string
+  }[]
+  openNow: boolean
+  openingHours: {
+    day: string
+    hour: string
+  }[]
+}
+
 export type Category = {
   slug: string
   label: string

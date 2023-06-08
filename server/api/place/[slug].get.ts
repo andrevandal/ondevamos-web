@@ -1,4 +1,4 @@
-export const place = {
+const MockedPlace = {
   cover: {
     url: '/images/375x165.png',
     alt: '',
@@ -50,3 +50,10 @@ export const place = {
     { day: 'Quinta-feira', hour: '07:00-23:00' },
   ],
 }
+
+export default eventHandler((event) => {
+  const { slug } = event.context.params as { slug: string }
+  console.log(slug)
+
+  return MockedPlace
+})
