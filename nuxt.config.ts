@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { resolve } from 'pathe'
 
-const { API_BASE_URL, GA_MEASUREMENT_ID, GA_HOST, STRAPI_URL } = process.env
+const { API_BASE_URL, GA_MEASUREMENT_ID, GA_HOST, DATABASE_URL } = process.env
 
 export default defineNuxtConfig({
   experimental: { payloadExtraction: false },
@@ -24,13 +24,11 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
+    databaseUrl: DATABASE_URL,
     public: {
       apiBaseUrl: API_BASE_URL,
       gaMeasurementID: GA_MEASUREMENT_ID,
       gaHost: GA_HOST,
-      strapi: {
-        url: STRAPI_URL,
-      },
     },
   },
   modules: ['nuxt-icons', '@vueuse/nuxt'],
