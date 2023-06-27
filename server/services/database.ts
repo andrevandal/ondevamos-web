@@ -1,8 +1,7 @@
-import { Kysely } from 'kysely'
-import { PlanetScaleDialect } from 'kysely-planetscale'
-import { fetch } from 'undici'
 import type { RuntimeConfig } from 'nuxt/schema'
-import { Database } from '../models/database'
+
+import { drizzle } from 'drizzle-orm/planetscale-serverless'
+import { connect } from '@planetscale/database'
 
 const isMigrationEnv = process.env.NODE_ENV === 'migration'
 
@@ -12,9 +11,10 @@ const { databaseUrl } = (
     : useRuntimeConfig()
 ) as RuntimeConfig
 
-export const db = new Kysely<Database>({
-  dialect: new PlanetScaleDialect({
-    url: databaseUrl,
-    fetch,
-  }),
+const connection = connect({
+  url: databaseUrl,
 })
+
+export const db = drizzle(connection)
+
+export default db
