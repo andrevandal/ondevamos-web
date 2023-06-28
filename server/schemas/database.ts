@@ -8,6 +8,7 @@ import {
   int,
   uniqueIndex,
   primaryKey,
+  boolean,
 } from 'drizzle-orm/mysql-core'
 
 import { relations } from 'drizzle-orm'
@@ -72,6 +73,7 @@ export const tag = mysqlTable(
     slug: text('slug').notNull(),
     description: text('description'),
     iconName: text('icon_name'),
+    status: boolean('status'),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()
       .notNull(),
