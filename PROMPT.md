@@ -97,6 +97,8 @@ we're creating an app that will help people find places to go to in their city. 
    - Pricing Level Count: Number of pricing level categories within the application
    - Cover Media ID: Foreign key referring to the cover media in the Media table
    - Avatar Media ID: Foreign key referring to the avatar media in the Media table
+   - Active: Boolean indicating if the place is active or not
+   - External ID: A unique identifier imported from an external system
    - Created At: Timestamp when the place was created
    - Updated At: Timestamp when the place was last updated
    - Address ID: Foreign key referring to the address in the Address table
@@ -108,6 +110,7 @@ we're creating an app that will help people find places to go to in their city. 
    - Slug: Unique URL-friendly identifier (used for SEO purposes)
    - Description: Short description of the category
    - Icon: JSON including icon name and icon label
+   - Active: Boolean indicating if the place is active or not
    - Created At: Timestamp when the category was created
    - Updated At: Timestamp when the category was last updated
 
@@ -117,6 +120,7 @@ we're creating an app that will help people find places to go to in their city. 
    - Slug: Unique URL-friendly identifier (used for SEO purposes)
    - Description: Short description of the tag
    - Icon: JSON including icon name and icon label
+   - Active: Boolean indicating if the place is active or not
    - Created At: Timestamp when the flag was created
    - Updated At: Timestamp when the flag was last updated
 
@@ -128,6 +132,7 @@ we're creating an app that will help people find places to go to in their city. 
    - Description: Short description of the media item
    - Alternative Text: Textual description used for accessibility purposes
    - URL: URL where the media is stored
+   - Active: Boolean indicating if the place is active or not
    - Created At: Timestamp when the media was created
    - Updated At: Timestamp when the media was last updated
 
@@ -187,7 +192,6 @@ we're creating an app that will help people find places to go to in their city. 
 10. City
    - ID: Auto-incrementing primary key (integer)
    - UUID: Unique Nano ID (12 characters long) for public purposes
-   - Public ID: Unique Nano ID (12 characters long) for API
    - Name: Name of the city
    - State: State or province of the city
    - Country: Country of the city

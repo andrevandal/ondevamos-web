@@ -1,30 +1,42 @@
-import { customAlphabet } from 'nanoid'
-
+import { consola } from 'consola'
 import { eq, InferModel } from 'drizzle-orm'
+import { nanoid } from '@/server/services/uuid'
 import { db } from '@/server/services/database'
 import { tag } from '@/server/schemas/database'
 
+type Identifier = Partial<Pick<InferModel<typeof tag>, 'id' | 'uuid' | 'slug'>>
 type NewTag = Omit<
   InferModel<typeof tag, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updateAt'
 >
-type Tag = InferModel<typeof tag>
+type UpdateTag = Partial<
+  Pick<InferModel<typeof tag>, 'slug' | 'description' | 'iconName' | 'active'>
+>
 
-const nanoid = customAlphabet(
-  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz',
-  12,
-)
-
-function logError(error: unknown, context: string) {
-  // eslint-disable-next-line no-console
-  console.error(
+const logError = (error: unknown, context: string) => {
+  consola.error(
     `[${context}] ${error instanceof Error ? error.message : error}`,
   )
 }
 
-export const getTagById = async (id: number) => {
+const prepareCondition = (options: Identifier) => {
+  const { id, uuid, slug } = options
+
+  if (id) return eq(tag.id, id)
+  if (uuid) return eq(tag.uuid, uuid)
+  if (slug) return eq(tag.slug, slug)
+
+  throw new Error('No tag identifier provided')
+}
+
+export const getTag = async (options: Identifier) => {
   try {
-    const [tagData] = await db.select().from(tag).where(eq(tag.id, id)).limit(1)
+    const whereConditions = prepareCondition(options)
+    const [tagData] = await db
+      .select()
+      .from(tag)
+      .where(whereConditions)
+      .limit(1)
     return tagData
   } catch (error) {
     logError(error, 'Tag Repository - getTagById')
@@ -32,42 +44,12 @@ export const getTagById = async (id: number) => {
   }
 }
 
-export const getTagBySlug = async (slug: string) => {
-  try {
-    const [tagData] = await db
-      .select()
-      .from(tag)
-      .where(eq(tag.slug, slug))
-      .limit(1)
-    return tagData
-  } catch (error) {
-    logError(error, 'Tag Repository - getTagBySlug')
-    throw error
-  }
-}
-
-export const getTagByUUID = async (uuid: string) => {
-  try {
-    const [tagData] = await db
-      .select()
-      .from(tag)
-      .where(eq(tag.uuid, uuid))
-      .limit(1)
-    return tagData
-  } catch (error) {
-    logError(error, 'Tag Repository - getTagByUUID')
-    throw error
-  }
-}
-
 export const createTag = async (data: NewTag) => {
   try {
-    if (await getTagBySlug(data.slug)) {
-      throw new Error('Tag already exists')
-    }
+    if (await getTag({ slug: data.slug })) throw new Error('Tag already exists')
     const uuid = nanoid()
+    const newTag = await db.insert(tag).values({ ...data, uuid, active: false })
 
-    const newTag = await db.insert(tag).values({ ...data, uuid, status: false })
     if (!newTag.insertId) throw new Error('Tag not created')
     return newTag
   } catch (error) {
@@ -76,27 +58,11 @@ export const createTag = async (data: NewTag) => {
   }
 }
 
-type UpdateTagOptions = Partial<Pick<Tag, 'id' | 'uuid' | 'slug'>>
-type UpdateTag = Partial<
-  Pick<Tag, 'slug' | 'description' | 'iconName' | 'status'>
->
-
-export const updateTag = async (options: UpdateTagOptions, data: UpdateTag) => {
+export const updateTag = async (options: Identifier, data: UpdateTag) => {
   try {
-    const { id, uuid, slug } = options
-    let whereConditions = null
-
-    if (!id && !uuid && !slug) {
-      throw new Error('No tag identifier provided')
-    }
-
-    if (id) whereConditions = eq(tag.id, id)
-    if (uuid) whereConditions = eq(tag.uuid, uuid)
-    if (slug) whereConditions = eq(tag.slug, slug)
-
-    if (!whereConditions) throw new Error('No tag identifier provided')
-
+    const whereConditions = prepareCondition(options)
     const updatedTag = await db.update(tag).set(data).where(whereConditions)
+
     if (!updatedTag.rowsAffected) throw new Error('Tag not created')
     return updatedTag
   } catch (error) {
@@ -105,29 +71,18 @@ export const updateTag = async (options: UpdateTagOptions, data: UpdateTag) => {
   }
 }
 
-export const activateTag = async (options: UpdateTagOptions) => {
-  try {
-    return await updateTag(options, { status: false })
-  } catch (error) {
-    logError(error, 'Tag Repository - activateTag')
-    throw error
-  }
-}
+export const activateTag = (options: Identifier) =>
+  updateTag(options, { active: true })
 
-export const deactivateTag = async (options: UpdateTagOptions) => {
-  try {
-    return await updateTag(options, { status: false })
-  } catch (error) {
-    logError(error, 'Tag Repository - deactivateTag')
-    throw error
-  }
-}
+export const deactivateTag = (options: Identifier) =>
+  updateTag(options, { active: false })
 
-export const deleteTag = async (id: number) => {
+export const deleteTag = async (options: Identifier) => {
   try {
-    const deteledTag = await db.delete(tag).where(eq(tag.id, id))
-    if (!deteledTag.rowsAffected) throw new Error('Tag not deleted')
-    return deteledTag
+    const whereConditions = prepareCondition(options)
+    const deletedTag = await db.delete(tag).where(whereConditions)
+    if (!deletedTag.rowsAffected) throw new Error('Tag not deleted')
+    return deletedTag
   } catch (error) {
     logError(error, 'Tag Repository - deleteTag')
     throw error
@@ -135,9 +90,10 @@ export const deleteTag = async (id: number) => {
 }
 
 export default {
-  getTagById,
-  getTagByUUID,
+  getTag,
   createTag,
   updateTag,
+  activateTag,
+  deactivateTag,
   deleteTag,
 }

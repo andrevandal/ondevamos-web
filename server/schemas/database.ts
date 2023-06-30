@@ -20,7 +20,7 @@ export const place = mysqlTable(
     id: bigint('id', { mode: 'number' }).autoincrement().primaryKey().notNull(),
     uuid: varchar('uuid', { length: 12 }).notNull(),
     name: text('name').notNull(),
-    slug: text('slug').notNull(),
+    slug: varchar('slug', { length: 100 }).notNull(),
     description: text('description'),
     ratingLevel: double('rating_level'),
     ratingCount: int('rating_count'),
@@ -30,6 +30,8 @@ export const place = mysqlTable(
     avatarMediaId: bigint('avatar_media_id', { mode: 'number' }),
     addressId: bigint('address_id', { mode: 'number' }).notNull(),
     openingHourId: bigint('opening_hour_id', { mode: 'number' }),
+    externalId: bigint('external_id', { mode: 'number' }),
+    active: boolean('active').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()
       .notNull(),
@@ -38,6 +40,8 @@ export const place = mysqlTable(
   (table) => {
     return {
       uuid: uniqueIndex('uuid').on(table.uuid),
+      slug: uniqueIndex('slug').on(table.slug),
+      externalId: uniqueIndex('external_id').on(table.externalId),
     }
   },
 )
@@ -49,9 +53,10 @@ export const category = mysqlTable(
     id: bigint('id', { mode: 'number' }).autoincrement().primaryKey().notNull(),
     uuid: varchar('uuid', { length: 12 }).notNull(),
     name: text('name').notNull(),
-    slug: text('slug').notNull(),
+    slug: varchar('slug', { length: 100 }).notNull(),
     description: text('description'),
     iconName: text('icon_name'),
+    active: boolean('active').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()
       .notNull(),
@@ -60,6 +65,7 @@ export const category = mysqlTable(
   (table) => {
     return {
       uuid: uniqueIndex('uuid').on(table.uuid),
+      slug: uniqueIndex('slug').on(table.slug),
     }
   },
 )
@@ -70,10 +76,10 @@ export const tag = mysqlTable(
   {
     id: bigint('id', { mode: 'number' }).autoincrement().primaryKey().notNull(),
     uuid: varchar('uuid', { length: 12 }).notNull(),
-    slug: text('slug').notNull(),
+    slug: varchar('slug', { length: 100 }).notNull(),
     description: text('description'),
     iconName: text('icon_name'),
-    status: boolean('status'),
+    active: boolean('active').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()
       .notNull(),
@@ -82,6 +88,7 @@ export const tag = mysqlTable(
   (table) => {
     return {
       uuid: uniqueIndex('uuid').on(table.uuid),
+      slug: uniqueIndex('slug').on(table.slug),
     }
   },
 )
@@ -97,6 +104,7 @@ export const media = mysqlTable(
     description: text('description'),
     alternativeText: text('alternative_text'),
     url: text('url').notNull(),
+    active: boolean('active').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()
       .notNull(),
@@ -119,6 +127,7 @@ export const action = mysqlTable(
     title: text('title'),
     link: text('link'),
     iconName: text('icon_name'),
+    active: boolean('active').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()
       .notNull(),
@@ -230,7 +239,6 @@ export const city = mysqlTable(
   {
     id: bigint('id', { mode: 'number' }).autoincrement().primaryKey().notNull(),
     uuid: varchar('uuid', { length: 12 }).notNull(),
-    publicId: varchar('public_id', { length: 12 }).notNull(),
     name: text('name').notNull(),
     state: text('state').notNull(),
     country: text('country').notNull(),

@@ -5,6 +5,7 @@ CREATE TABLE `action` (
 	`title` text,
 	`link` text,
 	`icon_name` text,
+	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp);
 --> statement-breakpoint
@@ -36,16 +37,16 @@ CREATE TABLE `category` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`name` text NOT NULL,
-	`slug` text NOT NULL,
+	`slug` varchar(100) NOT NULL,
 	`description` text,
 	`icon_name` text,
+	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp);
 --> statement-breakpoint
 CREATE TABLE `city` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
-	`public_id` varchar(12) NOT NULL,
 	`name` text NOT NULL,
 	`state` text NOT NULL,
 	`country` text NOT NULL,
@@ -62,6 +63,7 @@ CREATE TABLE `media` (
 	`description` text,
 	`alternative_text` text,
 	`url` text NOT NULL,
+	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp);
 --> statement-breakpoint
@@ -79,7 +81,7 @@ CREATE TABLE `place` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`name` text NOT NULL,
-	`slug` text NOT NULL,
+	`slug` varchar(100) NOT NULL,
 	`description` text,
 	`rating_level` double,
 	`rating_count` int,
@@ -89,6 +91,8 @@ CREATE TABLE `place` (
 	`avatar_media_id` bigint,
 	`address_id` bigint NOT NULL,
 	`opening_hour_id` bigint,
+	`external_id` bigint,
+	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp);
 --> statement-breakpoint
@@ -118,9 +122,10 @@ CREATE TABLE `special_opening_hour` (
 CREATE TABLE `tag` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
-	`slug` text NOT NULL,
+	`slug` varchar(100) NOT NULL,
 	`description` text,
 	`icon_name` text,
+	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp);
 --> statement-breakpoint
@@ -128,9 +133,13 @@ CREATE UNIQUE INDEX `uuid` ON `action` (`uuid`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uuid` ON `address` (`uuid`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uuid` ON `attraction` (`uuid`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uuid` ON `category` (`uuid`);--> statement-breakpoint
+CREATE UNIQUE INDEX `slug` ON `category` (`slug`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uuid` ON `city` (`uuid`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uuid` ON `media` (`uuid`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uuid` ON `opening_hour` (`uuid`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uuid` ON `place` (`uuid`);--> statement-breakpoint
+CREATE UNIQUE INDEX `slug` ON `place` (`slug`);--> statement-breakpoint
+CREATE UNIQUE INDEX `external_id` ON `place` (`external_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uuid` ON `special_opening_hour` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `tag` (`uuid`);
+CREATE UNIQUE INDEX `uuid` ON `tag` (`uuid`);--> statement-breakpoint
+CREATE UNIQUE INDEX `slug` ON `tag` (`slug`);

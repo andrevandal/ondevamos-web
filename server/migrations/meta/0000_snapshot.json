@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "50aa9b48-741e-45c6-9485-90b8f54cfd6b",
+  "id": "95e6ee31-0307-4294-bb2e-a7bae4213edb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "action": {
@@ -48,6 +48,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -277,7 +285,7 @@
         },
         "slug": {
           "name": "slug",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -295,6 +303,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -319,6 +335,13 @@
             "uuid"
           ],
           "isUnique": true
+        },
+        "slug": {
+          "name": "slug",
+          "columns": [
+            "slug"
+          ],
+          "isUnique": true
         }
       },
       "foreignKeys": {},
@@ -336,13 +359,6 @@
         },
         "uuid": {
           "name": "uuid",
-          "type": "varchar(12)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "public_id": {
-          "name": "public_id",
           "type": "varchar(12)",
           "primaryKey": false,
           "notNull": true,
@@ -462,6 +478,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -590,7 +614,7 @@
         },
         "slug": {
           "name": "slug",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -658,6 +682,21 @@
           "notNull": false,
           "autoincrement": false
         },
+        "external_id": {
+          "name": "external_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -679,6 +718,20 @@
           "name": "uuid",
           "columns": [
             "uuid"
+          ],
+          "isUnique": true
+        },
+        "slug": {
+          "name": "slug",
+          "columns": [
+            "slug"
+          ],
+          "isUnique": true
+        },
+        "external_id": {
+          "name": "external_id",
+          "columns": [
+            "external_id"
           ],
           "isUnique": true
         }
@@ -845,7 +898,7 @@
         },
         "slug": {
           "name": "slug",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -863,6 +916,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -885,6 +946,13 @@
           "name": "uuid",
           "columns": [
             "uuid"
+          ],
+          "isUnique": true
+        },
+        "slug": {
+          "name": "slug",
+          "columns": [
+            "slug"
           ],
           "isUnique": true
         }
