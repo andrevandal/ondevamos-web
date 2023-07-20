@@ -1,6 +1,6 @@
 <template>
   <perfect-scrollbar>
-    <article>
+    <article class="container m-auto">
       <div class="flex flex-col">
         <header class="w-full mb-6">
           <img
@@ -9,6 +9,7 @@
             class="w-full h-auto"
           />
           <div
+            v-if="windowWidth <= 1024"
             class="relative rounded-full flex items-end gap-4 w-[100px] h-[100px] -translate-y-1/2 -mb-[50px] z-10 border-4 border-white ml-4"
           >
             <img
@@ -37,8 +38,64 @@
               <BasePriceLevel :level="place?.price" />
             </span>
           </div>
+          <div v-else class="relative w-full flex justify-between">
+            <div
+              class="relative rounded-full w-[168px] h-[168px] -translate-y-1/2 -mb-[50px] z-10 border-4 border-red-500 ml-4"
+            >
+              <img
+                :src="place?.avatar"
+                :alt="place?.title"
+                class="rounded-full"
+                width="168"
+                height="168"
+              />
+              <!-- <div
+                :class="[
+                  'absolute bg-[#0D8047] w-5 h-5 border-2 border-white rounded-full bottom-0 right-0',
+                  {
+                    hidden: !place?.available,
+                  },
+                ]"
+              >
+                <span class="sr-only">Opened</span>
+              </div> -->
+            </div>
+            <div class="absolute left-[192px] top-2 space-y-2 px-4">
+              <h1 class="text-[32px] font-semibold leading-7 text-gray-900">
+                {{ place?.title }}
+              </h1>
+              <div class="space-x-2 text-xs text-gray-500">
+                <span
+                  v-if="place?.veganOptions"
+                  class="inline-flex items-center gap-1 px-3 py-1 border border-gray-100 rounded-full"
+                >
+                  <NuxtIcon name="veggan" />
+                  <span>Opções Veganas</span>
+                  <NuxtIcon name="check" class="text-[#009959]" />
+                </span>
+                <span
+                  v-if="place?.petFriendly"
+                  class="inline-flex items-center gap-1 px-3 py-1 border border-gray-100 rounded-full"
+                >
+                  <NuxtIcon name="pet" />
+                  <span>Pet Friendly</span>
+                  <NuxtIcon name="check" class="text-[#009959]" />
+                </span>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <span class="h-9">
+                Avaliação
+                <BaseRating :level="place?.rating" />
+              </span>
+              <span class="h-9">
+                Preço
+                <BasePriceLevel :level="place?.price" />
+              </span>
+            </div>
+          </div>
         </header>
-        <div class="px-4 pb-14">
+        <div v-if="windowWidth <= 1024" class="px-4 pb-14">
           <h1 class="pb-2 text-2xl font-semibold leading-7 text-gray-900">
             {{ place?.title }}
           </h1>
@@ -229,6 +286,24 @@ const toggleModal = () => {
 
 definePageMeta({
   layout: 'profile',
+})
+
+const windowWidth = ref(0)
+
+const handleResize = () => {
+  windowWidth.value = window.innerWidth || 0
+}
+
+onMounted(async () => {
+  await nextTick()
+
+  windowWidth.value = window.innerWidth
+
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
