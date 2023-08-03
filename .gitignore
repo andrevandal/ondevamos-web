@@ -114,3 +114,5 @@ dist
 .vite
 
 .DS_Store
+
+backup/

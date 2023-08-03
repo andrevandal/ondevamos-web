@@ -1,11 +1,11 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "95e6ee31-0307-4294-bb2e-a7bae4213edb",
+  "id": "faf9ed97-c105-4c7d-a43f-6fa13c578dc1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "action": {
-      "name": "action",
+    "actions": {
+      "name": "actions",
       "columns": {
         "id": {
           "name": "id",
@@ -83,10 +83,11 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
-    "address": {
-      "name": "address",
+    "addresses": {
+      "name": "addresses",
       "columns": {
         "id": {
           "name": "id",
@@ -177,10 +178,106 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
-    "attraction": {
-      "name": "attraction",
+    "cities": {
+      "name": "cities",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "varchar(12)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ibge_code": {
+          "name": "ibge_code",
+          "type": "varchar(7)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "double",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "double",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uuid": {
+          "name": "uuid",
+          "columns": [
+            "uuid"
+          ],
+          "isUnique": true
+        },
+        "ibge_code": {
+          "name": "ibge_code",
+          "columns": [
+            "uuid"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "attractions": {
+      "name": "attractions",
       "columns": {
         "id": {
           "name": "id",
@@ -257,10 +354,11 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
-    "category": {
-      "name": "category",
+    "categories": {
+      "name": "categories",
       "columns": {
         "id": {
           "name": "id",
@@ -297,9 +395,9 @@
           "notNull": false,
           "autoincrement": false
         },
-        "icon_name": {
-          "name": "icon_name",
-          "type": "text",
+        "icon": {
+          "name": "icon",
+          "type": "json",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -345,90 +443,11 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
-    "city": {
-      "name": "city",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "uuid": {
-          "name": "uuid",
-          "type": "varchar(12)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "country": {
-          "name": "country",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "latitude": {
-          "name": "latitude",
-          "type": "double",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "longitude": {
-          "name": "longitude",
-          "type": "double",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "uuid": {
-          "name": "uuid",
-          "columns": [
-            "uuid"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {}
-    },
-    "media": {
-      "name": "media",
+    "medias": {
+      "name": "medias",
       "columns": {
         "id": {
           "name": "id",
@@ -487,6 +506,14 @@
           "autoincrement": false,
           "default": false
         },
+        "status": {
+          "name": "status",
+          "type": "enum('pending','completed','error')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -498,6 +525,13 @@
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "external_metadata": {
+          "name": "external_metadata",
+          "type": "json",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -513,10 +547,11 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
-    "opening_hour": {
-      "name": "opening_hour",
+    "opening_hours": {
+      "name": "opening_hours",
       "columns": {
         "id": {
           "name": "id",
@@ -586,10 +621,92 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
-    "place": {
-      "name": "place",
+    "special_opening_hours": {
+      "name": "special_opening_hours",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "varchar(12)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "open_time": {
+          "name": "open_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "close_time": {
+          "name": "close_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uuid": {
+          "name": "uuid",
+          "columns": [
+            "uuid"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "places": {
+      "name": "places",
       "columns": {
         "id": {
           "name": "id",
@@ -711,6 +828,13 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "external_metadata": {
+          "name": "external_metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -737,10 +861,42 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
-    "place_category": {
-      "name": "place_category",
+    "places_to_addresses": {
+      "name": "places_to_addresses",
+      "columns": {
+        "address_id": {
+          "name": "address_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "places_to_addresses_address_id_place_id": {
+          "name": "places_to_addresses_address_id_place_id",
+          "columns": [
+            "address_id",
+            "place_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "places_to_categories": {
+      "name": "places_to_categories",
       "columns": {
         "place_id": {
           "name": "place_id",
@@ -760,17 +916,49 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "place_category_category_id_place_id": {
-          "name": "place_category_category_id_place_id",
+        "places_to_categories_category_id_place_id": {
+          "name": "places_to_categories_category_id_place_id",
           "columns": [
             "category_id",
             "place_id"
           ]
         }
-      }
+      },
+      "uniqueConstraints": {}
     },
-    "place_tag": {
-      "name": "place_tag",
+    "places_to_medias": {
+      "name": "places_to_medias",
+      "columns": {
+        "media_id": {
+          "name": "media_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "places_to_medias_media_id_place_id": {
+          "name": "places_to_medias_media_id_place_id",
+          "columns": [
+            "media_id",
+            "place_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "places_to_tags": {
+      "name": "places_to_tags",
       "columns": {
         "place_id": {
           "name": "place_id",
@@ -790,97 +978,18 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "place_tag_place_id_tag_id": {
-          "name": "place_tag_place_id_tag_id",
+        "places_to_tags_place_id_tag_id": {
+          "name": "places_to_tags_place_id_tag_id",
           "columns": [
             "place_id",
             "tag_id"
           ]
         }
-      }
-    },
-    "special_opening_hour": {
-      "name": "special_opening_hour",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "uuid": {
-          "name": "uuid",
-          "type": "varchar(12)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "place_id": {
-          "name": "place_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "date": {
-          "name": "date",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "open_time": {
-          "name": "open_time",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "close_time": {
-          "name": "close_time",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
       },
-      "indexes": {
-        "uuid": {
-          "name": "uuid",
-          "columns": [
-            "uuid"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "uniqueConstraints": {}
     },
-    "tag": {
-      "name": "tag",
+    "tags": {
+      "name": "tags",
       "columns": {
         "id": {
           "name": "id",
@@ -912,7 +1021,7 @@
         },
         "icon_name": {
           "name": "icon_name",
-          "type": "text",
+          "type": "json",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -958,7 +1067,8 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {}
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
   "schemas": {},

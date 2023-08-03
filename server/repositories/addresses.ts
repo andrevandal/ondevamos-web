@@ -1,17 +1,17 @@
 import { consola } from 'consola'
 import { eq, InferModel } from 'drizzle-orm'
-import { nanoid } from '@/server/services/uuid'
+import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { address } from '@/server/schemas/database'
+import { addresses } from '@/server/schemas/db/addresses'
 
-type Identifier = Partial<Pick<InferModel<typeof address>, 'id' | 'uuid'>>
+type Identifier = Partial<Pick<InferModel<typeof addresses>, 'id' | 'uuid'>>
 type NewAddress = Omit<
-  InferModel<typeof address, 'insert'>,
+  InferModel<typeof addresses, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updatedAt'
 >
 type UpdateAddress = Partial<
   Pick<
-    InferModel<typeof address>,
+    InferModel<typeof addresses>,
     | 'street'
     | 'number'
     | 'complement'
@@ -31,8 +31,8 @@ const logError = (error: unknown, context: string) => {
 const prepareCondition = (options: Identifier) => {
   const { id, uuid } = options
 
-  if (id) return eq(address.id, id)
-  if (uuid) return eq(address.uuid, uuid)
+  if (id) return eq(addresses.id, id)
+  if (uuid) return eq(addresses.uuid, uuid)
 
   throw new Error('No address identifier provided')
 }
@@ -42,7 +42,7 @@ export const getAddress = async (options: Identifier) => {
     const whereConditions = prepareCondition(options)
     const [addressData] = await db
       .select()
-      .from(address)
+      .from(addresses)
       .where(whereConditions)
       .limit(1)
     return addressData
@@ -54,8 +54,8 @@ export const getAddress = async (options: Identifier) => {
 
 export const createAddress = async (data: NewAddress) => {
   try {
-    const uuid = nanoid()
-    const newAddress = await db.insert(address).values({ uuid, ...data })
+    const uuid = generateUuid()
+    const newAddress = await db.insert(addresses).values({ uuid, ...data })
 
     if (!newAddress.insertId) throw new Error('Address not created')
     return newAddress
@@ -72,7 +72,7 @@ export const updateAddress = async (
   try {
     const whereConditions = prepareCondition(options)
     const updatedAddress = await db
-      .update(address)
+      .update(addresses)
       .set(data)
       .where(whereConditions)
 
@@ -87,7 +87,7 @@ export const updateAddress = async (
 export const deleteAddress = async (options: Identifier) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedAddress = await db.delete(address).where(whereConditions)
+    const deletedAddress = await db.delete(addresses).where(whereConditions)
     if (!deletedAddress.rowsAffected) throw new Error('Address not deleted')
     return deletedAddress
   } catch (error) {

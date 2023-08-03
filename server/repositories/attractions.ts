@@ -1,19 +1,19 @@
 import { consola } from 'consola'
 import { eq, InferModel } from 'drizzle-orm'
-import { nanoid } from '@/server/services/uuid'
+import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { attraction } from '@/server/schemas/database'
+import { attractions } from '@/server/schemas/db/attractions'
 
 type Identifier = Partial<
-  Pick<InferModel<typeof attraction>, 'id' | 'uuid' | 'placeId'>
+  Pick<InferModel<typeof attractions>, 'id' | 'uuid' | 'placeId'>
 >
 type NewAttraction = Omit<
-  InferModel<typeof attraction, 'insert'>,
+  InferModel<typeof attractions, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updatedAt'
 >
 type UpdateAttraction = Partial<
   Pick<
-    InferModel<typeof attraction>,
+    InferModel<typeof attractions>,
     'title' | 'description' | 'mediaId' | 'isFeatured'
   >
 >
@@ -27,9 +27,9 @@ const logError = (error: unknown, context: string) => {
 const prepareCondition = (options: Identifier) => {
   const { id, uuid, placeId } = options
 
-  if (id) return eq(attraction.id, id)
-  if (uuid) return eq(attraction.uuid, uuid)
-  if (placeId) return eq(attraction.placeId, placeId)
+  if (id) return eq(attractions.id, id)
+  if (uuid) return eq(attractions.uuid, uuid)
+  if (placeId) return eq(attractions.placeId, placeId)
 
   throw new Error('No attraction identifier provided')
 }
@@ -39,7 +39,7 @@ export const getAttraction = async (options: Identifier) => {
     const whereConditions = prepareCondition(options)
     const [attractionData] = await db
       .select()
-      .from(attraction)
+      .from(attractions)
       .where(whereConditions)
       .limit(1)
     return attractionData
@@ -51,8 +51,8 @@ export const getAttraction = async (options: Identifier) => {
 
 export const createAttraction = async (data: NewAttraction) => {
   try {
-    const uuid = nanoid()
-    const newAttraction = await db.insert(attraction).values({ uuid, ...data })
+    const uuid = generateUuid()
+    const newAttraction = await db.insert(attractions).values({ uuid, ...data })
 
     if (!newAttraction.insertId) throw new Error('Attraction not created')
     return newAttraction
@@ -69,7 +69,7 @@ export const updateAttraction = async (
   try {
     const whereConditions = prepareCondition(options)
     const updatedAttraction = await db
-      .update(attraction)
+      .update(attractions)
       .set(data)
       .where(whereConditions)
 
@@ -85,7 +85,9 @@ export const updateAttraction = async (
 export const deleteAttraction = async (options: Identifier) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedAttraction = await db.delete(attraction).where(whereConditions)
+    const deletedAttraction = await db
+      .delete(attractions)
+      .where(whereConditions)
     if (!deletedAttraction.rowsAffected)
       throw new Error('Attraction not deleted')
     return deletedAttraction

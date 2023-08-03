@@ -1,20 +1,20 @@
 import { consola } from 'consola'
 import { eq, InferModel } from 'drizzle-orm'
-import { nanoid } from '@/server/services/uuid'
+import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { category } from '@/server/schemas/database'
+import { categories } from '@/server/schemas/db/categories'
 
 type Identifier = Partial<
-  Pick<InferModel<typeof category>, 'id' | 'uuid' | 'slug'>
+  Pick<InferModel<typeof categories>, 'id' | 'uuid' | 'slug'>
 >
 type NewCategory = Omit<
-  InferModel<typeof category, 'insert'>,
+  InferModel<typeof categories, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updateAt'
 >
 type UpdateCategory = Partial<
   Pick<
-    InferModel<typeof category>,
-    'slug' | 'description' | 'iconName' | 'active'
+    InferModel<typeof categories>,
+    'slug' | 'description' | 'icon' | 'active'
   >
 >
 
@@ -27,9 +27,9 @@ const logError = (error: unknown, context: string) => {
 const prepareCondition = (options: Identifier) => {
   const { id, uuid, slug } = options
 
-  if (id) return eq(category.id, id)
-  if (uuid) return eq(category.uuid, uuid)
-  if (slug) return eq(category.slug, slug)
+  if (id) return eq(categories.id, id)
+  if (uuid) return eq(categories.uuid, uuid)
+  if (slug) return eq(categories.slug, slug)
 
   throw new Error('No category identifier provided')
 }
@@ -39,7 +39,7 @@ export const getCategory = async (options: Identifier) => {
     const whereConditions = prepareCondition(options)
     const [categoryData] = await db
       .select()
-      .from(category)
+      .from(categories)
       .where(whereConditions)
       .limit(1)
     return categoryData
@@ -53,9 +53,9 @@ export const createCategory = async (data: NewCategory) => {
   try {
     if (await getCategory({ slug: data.slug }))
       throw new Error('Category already exists')
-    const uuid = nanoid()
+    const uuid = generateUuid()
     const newCategory = await db
-      .insert(category)
+      .insert(categories)
       .values({ ...data, uuid, active: false })
 
     if (!newCategory.insertId) throw new Error('Category not created')
@@ -73,7 +73,7 @@ export const updateCategory = async (
   try {
     const whereConditions = prepareCondition(options)
     const updatedCategory = await db
-      .update(category)
+      .update(categories)
       .set(data)
       .where(whereConditions)
 
@@ -94,7 +94,7 @@ export const deactivateCategory = (options: Identifier) =>
 export const deleteCategory = async (options: Identifier) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedCategory = await db.delete(category).where(whereConditions)
+    const deletedCategory = await db.delete(categories).where(whereConditions)
     if (!deletedCategory.rowsAffected) throw new Error('Category not deleted')
     return deletedCategory
   } catch (error) {

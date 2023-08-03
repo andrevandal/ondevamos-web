@@ -1,19 +1,19 @@
 import { consola } from 'consola'
 import { eq, InferModel } from 'drizzle-orm'
-import { nanoid } from '@/server/services/uuid'
+import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { place } from '@/server/schemas/database'
+import { places } from '@/server/schemas/db/places'
 
 type Identifier = Partial<
-  Pick<InferModel<typeof place>, 'id' | 'uuid' | 'slug'>
+  Pick<InferModel<typeof places>, 'id' | 'uuid' | 'slug'>
 >
 type NewPlace = Omit<
-  InferModel<typeof place, 'insert'>,
+  InferModel<typeof places, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updatedAt'
 >
 type UpdatePlace = Partial<
   Pick<
-    InferModel<typeof place>,
+    InferModel<typeof places>,
     | 'name'
     | 'description'
     | 'slug'
@@ -38,9 +38,9 @@ const logError = (error: unknown, context: string) => {
 const prepareCondition = (options: Identifier) => {
   const { id, uuid, slug } = options
 
-  if (id) return eq(place.id, id)
-  if (uuid) return eq(place.uuid, uuid)
-  if (slug) return eq(place.slug, slug)
+  if (id) return eq(places.id, id)
+  if (uuid) return eq(places.uuid, uuid)
+  if (slug) return eq(places.slug, slug)
 
   throw new Error('No place identifier provided')
 }
@@ -50,7 +50,7 @@ export const getPlace = async (options: Identifier) => {
     const whereConditions = prepareCondition(options)
     const [placeData] = await db
       .select()
-      .from(place)
+      .from(places)
       .where(whereConditions)
       .limit(1)
     return placeData
@@ -62,8 +62,8 @@ export const getPlace = async (options: Identifier) => {
 
 export const createPlace = async (data: NewPlace) => {
   try {
-    const uuid = nanoid()
-    const newPlace = await db.insert(place).values({ uuid, ...data })
+    const uuid = generateUuid()
+    const newPlace = await db.insert(places).values({ uuid, ...data })
 
     if (!newPlace.insertId) throw new Error('Place not created')
     return newPlace
@@ -76,7 +76,10 @@ export const createPlace = async (data: NewPlace) => {
 export const updatePlace = async (options: Identifier, data: UpdatePlace) => {
   try {
     const whereConditions = prepareCondition(options)
-    const updatedPlace = await db.update(place).set(data).where(whereConditions)
+    const updatedPlace = await db
+      .update(places)
+      .set(data)
+      .where(whereConditions)
 
     if (!updatedPlace.rowsAffected) throw new Error('Place not updated')
     return updatedPlace
@@ -89,7 +92,7 @@ export const updatePlace = async (options: Identifier, data: UpdatePlace) => {
 export const deletePlace = async (options: Identifier) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedPlace = await db.delete(place).where(whereConditions)
+    const deletedPlace = await db.delete(places).where(whereConditions)
     if (!deletedPlace.rowsAffected) throw new Error('Place not deleted')
     return deletedPlace
   } catch (error) {

@@ -1,16 +1,16 @@
 import { consola } from 'consola'
 import { eq, InferModel } from 'drizzle-orm'
-import { nanoid } from '@/server/services/uuid'
+import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { tag } from '@/server/schemas/database'
+import { tags } from '@/server/schemas/db/tags'
 
-type Identifier = Partial<Pick<InferModel<typeof tag>, 'id' | 'uuid' | 'slug'>>
+type Identifier = Partial<Pick<InferModel<typeof tags>, 'id' | 'uuid' | 'slug'>>
 type NewTag = Omit<
-  InferModel<typeof tag, 'insert'>,
+  InferModel<typeof tags, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updateAt'
 >
 type UpdateTag = Partial<
-  Pick<InferModel<typeof tag>, 'slug' | 'description' | 'iconName' | 'active'>
+  Pick<InferModel<typeof tags>, 'slug' | 'description' | 'icon' | 'active'>
 >
 
 const logError = (error: unknown, context: string) => {
@@ -22,9 +22,9 @@ const logError = (error: unknown, context: string) => {
 const prepareCondition = (options: Identifier) => {
   const { id, uuid, slug } = options
 
-  if (id) return eq(tag.id, id)
-  if (uuid) return eq(tag.uuid, uuid)
-  if (slug) return eq(tag.slug, slug)
+  if (id) return eq(tags.id, id)
+  if (uuid) return eq(tags.uuid, uuid)
+  if (slug) return eq(tags.slug, slug)
 
   throw new Error('No tag identifier provided')
 }
@@ -34,7 +34,7 @@ export const getTag = async (options: Identifier) => {
     const whereConditions = prepareCondition(options)
     const [tagData] = await db
       .select()
-      .from(tag)
+      .from(tags)
       .where(whereConditions)
       .limit(1)
     return tagData
@@ -47,8 +47,10 @@ export const getTag = async (options: Identifier) => {
 export const createTag = async (data: NewTag) => {
   try {
     if (await getTag({ slug: data.slug })) throw new Error('Tag already exists')
-    const uuid = nanoid()
-    const newTag = await db.insert(tag).values({ ...data, uuid, active: false })
+    const uuid = generateUuid()
+    const newTag = await db
+      .insert(tags)
+      .values({ ...data, uuid, active: false })
 
     if (!newTag.insertId) throw new Error('Tag not created')
     return newTag
@@ -61,7 +63,7 @@ export const createTag = async (data: NewTag) => {
 export const updateTag = async (options: Identifier, data: UpdateTag) => {
   try {
     const whereConditions = prepareCondition(options)
-    const updatedTag = await db.update(tag).set(data).where(whereConditions)
+    const updatedTag = await db.update(tags).set(data).where(whereConditions)
 
     if (!updatedTag.rowsAffected) throw new Error('Tag not created')
     return updatedTag
@@ -80,7 +82,7 @@ export const deactivateTag = (options: Identifier) =>
 export const deleteTag = async (options: Identifier) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedTag = await db.delete(tag).where(whereConditions)
+    const deletedTag = await db.delete(tags).where(whereConditions)
     if (!deletedTag.rowsAffected) throw new Error('Tag not deleted')
     return deletedTag
   } catch (error) {

@@ -21,6 +21,9 @@
 @tailwind components;
 @tailwind utilities;
 
+#__nuxt {
+  @apply h-full;
+}
 
 input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button,

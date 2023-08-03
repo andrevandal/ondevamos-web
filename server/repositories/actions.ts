@@ -1,18 +1,18 @@
 import { consola } from 'consola'
 import { eq, InferModel } from 'drizzle-orm'
-import { nanoid } from '@/server/services/uuid'
+import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { action } from '@/server/schemas/database'
+import { actions } from '@/server/schemas/db/actions'
 
 type Identifier = Partial<
-  Pick<InferModel<typeof action>, 'id' | 'uuid' | 'placeId'>
+  Pick<InferModel<typeof actions>, 'id' | 'uuid' | 'placeId'>
 >
 type NewAction = Omit<
-  InferModel<typeof action, 'insert'>,
+  InferModel<typeof actions, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updatedAt'
 >
 type UpdateAction = Partial<
-  Pick<InferModel<typeof action>, 'title' | 'link' | 'iconName'>
+  Pick<InferModel<typeof actions>, 'title' | 'link' | 'iconName'>
 >
 
 const logError = (error: unknown, context: string) => {
@@ -24,9 +24,9 @@ const logError = (error: unknown, context: string) => {
 const prepareCondition = (options: Identifier) => {
   const { id, uuid, placeId } = options
 
-  if (id) return eq(action.id, id)
-  if (uuid) return eq(action.uuid, uuid)
-  if (placeId) return eq(action.placeId, placeId)
+  if (id) return eq(actions.id, id)
+  if (uuid) return eq(actions.uuid, uuid)
+  if (placeId) return eq(actions.placeId, placeId)
 
   throw new Error('No action identifier provided')
 }
@@ -36,7 +36,7 @@ export const getAction = async (options: Identifier) => {
     const whereConditions = prepareCondition(options)
     const [actionData] = await db
       .select()
-      .from(action)
+      .from(actions)
       .where(whereConditions)
       .limit(1)
     return actionData
@@ -48,8 +48,8 @@ export const getAction = async (options: Identifier) => {
 
 export const createAction = async (data: NewAction) => {
   try {
-    const uuid = nanoid()
-    const newAction = await db.insert(action).values({ uuid, ...data })
+    const uuid = generateUuid()
+    const newAction = await db.insert(actions).values({ uuid, ...data })
 
     if (!newAction.insertId) throw new Error('Action not created')
     return newAction
@@ -63,7 +63,7 @@ export const updateAction = async (options: Identifier, data: UpdateAction) => {
   try {
     const whereConditions = prepareCondition(options)
     const updatedAction = await db
-      .update(action)
+      .update(actions)
       .set(data)
       .where(whereConditions)
 
@@ -78,7 +78,7 @@ export const updateAction = async (options: Identifier, data: UpdateAction) => {
 export const deleteAction = async (options: Identifier) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedAction = await db.delete(action).where(whereConditions)
+    const deletedAction = await db.delete(actions).where(whereConditions)
     if (!deletedAction.rowsAffected) throw new Error('Action not deleted')
     return deletedAction
   } catch (error) {

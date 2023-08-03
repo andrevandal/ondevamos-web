@@ -1,17 +1,17 @@
 import { consola } from 'consola'
 import { eq, InferModel } from 'drizzle-orm'
-import { nanoid } from '@/server/services/uuid'
+import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { media } from '@/server/schemas/database'
+import { medias } from '@/server/schemas/db/medias'
 
-type Identifier = Partial<Pick<InferModel<typeof media>, 'id' | 'uuid'>>
+type Identifier = Partial<Pick<InferModel<typeof medias>, 'id' | 'uuid'>>
 type NewMedia = Omit<
-  InferModel<typeof media, 'insert'>,
+  InferModel<typeof medias, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updateAt'
 >
 type UpdateMedia = Partial<
   Pick<
-    InferModel<typeof media>,
+    InferModel<typeof medias>,
     'type' | 'title' | 'description' | 'alternativeText' | 'url' | 'active'
   >
 >
@@ -25,8 +25,8 @@ const logError = (error: unknown, context: string) => {
 const prepareCondition = (options: Identifier) => {
   const { id, uuid } = options
 
-  if (id) return eq(media.id, id)
-  if (uuid) return eq(media.uuid, uuid)
+  if (id) return eq(medias.id, id)
+  if (uuid) return eq(medias.uuid, uuid)
 
   throw new Error('No media identifier provided')
 }
@@ -36,7 +36,7 @@ export const getMedia = async (options: Identifier) => {
     const whereConditions = prepareCondition(options)
     const [mediaData] = await db
       .select()
-      .from(media)
+      .from(medias)
       .where(whereConditions)
       .limit(1)
     return mediaData
@@ -48,9 +48,9 @@ export const getMedia = async (options: Identifier) => {
 
 export const createMedia = async (data: NewMedia) => {
   try {
-    const uuid = nanoid()
+    const uuid = generateUuid()
     const newMedia = await db
-      .insert(media)
+      .insert(medias)
       .values({ ...data, uuid, active: false })
 
     if (!newMedia.insertId) throw new Error('Media not created')
@@ -64,7 +64,10 @@ export const createMedia = async (data: NewMedia) => {
 export const updateMedia = async (options: Identifier, data: UpdateMedia) => {
   try {
     const whereConditions = prepareCondition(options)
-    const updatedMedia = await db.update(media).set(data).where(whereConditions)
+    const updatedMedia = await db
+      .update(medias)
+      .set(data)
+      .where(whereConditions)
 
     if (!updatedMedia.rowsAffected) throw new Error('Media not updated')
     return updatedMedia
@@ -83,7 +86,7 @@ export const deactivateMedia = (options: Identifier) =>
 export const deleteMedia = async (options: Identifier) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedMedia = await db.delete(media).where(whereConditions)
+    const deletedMedia = await db.delete(medias).where(whereConditions)
     if (!deletedMedia.rowsAffected) throw new Error('Media not deleted')
     return deletedMedia
   } catch (error) {

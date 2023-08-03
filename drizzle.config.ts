@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 export default {
-  schema: './server/schemas/database.ts',
+  schema: './server/schemas/db/**/*.ts',
   out: './server/migrations/',
   driver: 'mysql2',
   dbCredentials: {

@@ -1,4 +1,4 @@
-CREATE TABLE `action` (
+CREATE TABLE `actions` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`place_id` bigint NOT NULL,
@@ -7,9 +7,11 @@ CREATE TABLE `action` (
 	`icon_name` text,
 	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
+	`updated_at` timestamp,
+	CONSTRAINT `uuid` UNIQUE(`uuid`)
+);
 --> statement-breakpoint
-CREATE TABLE `address` (
+CREATE TABLE `addresses` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`street` text,
@@ -20,9 +22,26 @@ CREATE TABLE `address` (
 	`latitude` double,
 	`longitude` double,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
+	`updated_at` timestamp,
+	CONSTRAINT `uuid` UNIQUE(`uuid`)
+);
 --> statement-breakpoint
-CREATE TABLE `attraction` (
+CREATE TABLE `cities` (
+	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	`uuid` varchar(12) NOT NULL,
+	`ibge_code` varchar(7) NOT NULL,
+	`name` text NOT NULL,
+	`state` text NOT NULL,
+	`country` text NOT NULL,
+	`latitude` double,
+	`longitude` double,
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp,
+	CONSTRAINT `uuid` UNIQUE(`uuid`),
+	CONSTRAINT `ibge_code` UNIQUE(`uuid`)
+);
+--> statement-breakpoint
+CREATE TABLE `attractions` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`place_id` bigint NOT NULL,
@@ -31,31 +50,25 @@ CREATE TABLE `attraction` (
 	`media_id` bigint,
 	`is_featured` int NOT NULL,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
+	`updated_at` timestamp,
+	CONSTRAINT `uuid` UNIQUE(`uuid`)
+);
 --> statement-breakpoint
-CREATE TABLE `category` (
+CREATE TABLE `categories` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`name` text NOT NULL,
 	`slug` varchar(100) NOT NULL,
 	`description` text,
-	`icon_name` text,
+	`icon` json,
 	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
+	`updated_at` timestamp,
+	CONSTRAINT `uuid` UNIQUE(`uuid`),
+	CONSTRAINT `slug` UNIQUE(`slug`)
+);
 --> statement-breakpoint
-CREATE TABLE `city` (
-	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
-	`uuid` varchar(12) NOT NULL,
-	`name` text NOT NULL,
-	`state` text NOT NULL,
-	`country` text NOT NULL,
-	`latitude` double,
-	`longitude` double,
-	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
---> statement-breakpoint
-CREATE TABLE `media` (
+CREATE TABLE `medias` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`type` text NOT NULL,
@@ -64,10 +77,14 @@ CREATE TABLE `media` (
 	`alternative_text` text,
 	`url` text NOT NULL,
 	`active` boolean DEFAULT false,
+	`status` enum('pending','completed','error') DEFAULT 'pending',
 	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
+	`updated_at` timestamp,
+	`external_metadata` json,
+	CONSTRAINT `uuid` UNIQUE(`uuid`)
+);
 --> statement-breakpoint
-CREATE TABLE `opening_hour` (
+CREATE TABLE `opening_hours` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`place_id` bigint NOT NULL,
@@ -75,9 +92,24 @@ CREATE TABLE `opening_hour` (
 	`open_time` text NOT NULL,
 	`close_time` text NOT NULL,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
+	`updated_at` timestamp,
+	CONSTRAINT `uuid` UNIQUE(`uuid`)
+);
 --> statement-breakpoint
-CREATE TABLE `place` (
+CREATE TABLE `special_opening_hours` (
+	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	`uuid` varchar(12) NOT NULL,
+	`place_id` bigint NOT NULL,
+	`description` text,
+	`date` text NOT NULL,
+	`open_time` text NOT NULL,
+	`close_time` text NOT NULL,
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp,
+	CONSTRAINT `uuid` UNIQUE(`uuid`)
+);
+--> statement-breakpoint
+CREATE TABLE `places` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`name` text NOT NULL,
@@ -94,52 +126,46 @@ CREATE TABLE `place` (
 	`external_id` bigint,
 	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
+	`updated_at` timestamp,
+	`external_metadata` json,
+	CONSTRAINT `uuid` UNIQUE(`uuid`),
+	CONSTRAINT `slug` UNIQUE(`slug`),
+	CONSTRAINT `external_id` UNIQUE(`external_id`)
+);
 --> statement-breakpoint
-CREATE TABLE `place_category` (
+CREATE TABLE `places_to_addresses` (
+	`address_id` bigint NOT NULL,
+	`place_id` bigint NOT NULL,
+	CONSTRAINT `places_to_addresses_address_id_place_id` PRIMARY KEY(`address_id`,`place_id`)
+);
+--> statement-breakpoint
+CREATE TABLE `places_to_categories` (
 	`place_id` bigint NOT NULL,
 	`category_id` bigint NOT NULL,
-	PRIMARY KEY(`category_id`,`place_id`)
+	CONSTRAINT `places_to_categories_category_id_place_id` PRIMARY KEY(`category_id`,`place_id`)
 );
 --> statement-breakpoint
-CREATE TABLE `place_tag` (
+CREATE TABLE `places_to_medias` (
+	`media_id` bigint NOT NULL,
+	`place_id` bigint NOT NULL,
+	CONSTRAINT `places_to_medias_media_id_place_id` PRIMARY KEY(`media_id`,`place_id`)
+);
+--> statement-breakpoint
+CREATE TABLE `places_to_tags` (
 	`place_id` bigint NOT NULL,
 	`tag_id` bigint NOT NULL,
-	PRIMARY KEY(`place_id`,`tag_id`)
+	CONSTRAINT `places_to_tags_place_id_tag_id` PRIMARY KEY(`place_id`,`tag_id`)
 );
 --> statement-breakpoint
-CREATE TABLE `special_opening_hour` (
-	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
-	`uuid` varchar(12) NOT NULL,
-	`place_id` bigint NOT NULL,
-	`description` text,
-	`date` text NOT NULL,
-	`open_time` text NOT NULL,
-	`close_time` text NOT NULL,
-	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
---> statement-breakpoint
-CREATE TABLE `tag` (
+CREATE TABLE `tags` (
 	`id` bigint AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`slug` varchar(100) NOT NULL,
 	`description` text,
-	`icon_name` text,
+	`icon_name` json,
 	`active` boolean DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp);
---> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `action` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `address` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `attraction` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `category` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `slug` ON `category` (`slug`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `city` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `media` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `opening_hour` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `place` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `slug` ON `place` (`slug`);--> statement-breakpoint
-CREATE UNIQUE INDEX `external_id` ON `place` (`external_id`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `special_opening_hour` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uuid` ON `tag` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `slug` ON `tag` (`slug`);
+	`updated_at` timestamp,
+	CONSTRAINT `uuid` UNIQUE(`uuid`),
+	CONSTRAINT `slug` UNIQUE(`slug`)
+);

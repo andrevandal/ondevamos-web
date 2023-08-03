@@ -245,7 +245,7 @@ export default defineComponent({
       ],
       mainAttractions: Array(2).fill({
         image: {
-          src: '/images//270x338.png',
+          src: '/images/270x338.png',
           alt: '',
         },
         title: 'Deliciosos Cookies',
