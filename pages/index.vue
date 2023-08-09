@@ -22,6 +22,7 @@
         width="235"
         height="40"
         class="w-[235px] h-[40px] sm:w-[282px] sm:h-[48px] mx-auto mb-10 sm:mb-8"
+        alt=""
       />
       <h1
         class="text-2xl sm:text-[3.5rem] uppercase sm:leading-[4rem] font-bold text-white text-center mb-2"
