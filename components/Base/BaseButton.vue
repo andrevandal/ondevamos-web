@@ -48,18 +48,17 @@ export default defineComponent({
       return classList[variant] ?? classList.primary
     }
 
-    const classList = [
-      [$style.button],
-      ...classListFromVariant(props?.variant),
-      {
-        [$style.outlined]: props?.outlined,
-        [$style.hasLeftIcon]: !!props.iconLeft && !props.iconRight,
-        [$style.hasRightIcon]: !!props.iconRight && !props.iconLeft,
-      },
-    ]
-
-    return () =>
-      h(
+    return () => {
+      const classList = [
+        [$style.button],
+        ...classListFromVariant(props?.variant),
+        {
+          [$style.outlined]: props?.outlined,
+          [$style.hasLeftIcon]: !!props.iconLeft && !props.iconRight,
+          [$style.hasRightIcon]: !!props.iconRight && !props.iconLeft,
+        },
+      ]
+      return h(
         NuxtLink,
         {
           href: props?.href,
@@ -83,6 +82,7 @@ export default defineComponent({
           ],
         ],
       )
+    }
   },
 })
 </script>

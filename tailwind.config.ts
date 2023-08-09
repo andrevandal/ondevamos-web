@@ -1,10 +1,13 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 /** @type {import('tailwindcss').Config} */
-const tailwindTypography = require('@tailwindcss/typography')
-const plugin = require('tailwindcss/plugin')
-const defaultTheme = require('tailwindcss/defaultTheme')
+import type { Config } from 'tailwindcss'
 
-module.exports = {
+import tailwindTypography from '@tailwindcss/typography'
+import plugin from 'tailwindcss/plugin'
+import defaultTheme from 'tailwindcss/defaultTheme'
+
+// Default are on https://tailwindcss.nuxtjs.org/tailwind/config#default-configuration
+export default <Partial<Config>>{
+  darkMode: 'class',
   content: [
     './components/**/*.{js,vue,ts}',
     './layouts/**/*.vue',
@@ -26,7 +29,7 @@ module.exports = {
           600: '#404652',
           700: '#303640',
           800: '#1D2026',
-          900: '#090A0D',
+          900: '#12141A',
           DEFAULT: '#5E6573',
         },
         yellow: {
@@ -92,7 +95,7 @@ module.exports = {
   },
   plugins: [
     tailwindTypography,
-    plugin(function ({ addBase, _theme }) {
+    plugin(function ({ addBase }) {
       addBase({
         'body.no-scroll': {
           overflow: 'hidden',
@@ -100,40 +103,37 @@ module.exports = {
         html: {
           scrollBehavior: 'smooth',
           overflowX: 'hidden',
+          height: '100%',
+        },
+        body: {
+          height: '100%',
         },
       })
     }),
     plugin(function ({ addUtilities }) {
-      addUtilities(
-        {
-          '.scrollbar-hide': {
-            /* IE and Edge */
-            '-ms-overflow-style': 'none',
-
-            /* Firefox */
-            'scrollbar-width': 'none',
-
-            /* Safari and Chrome */
-            '&::-webkit-scrollbar': {
-              display: 'none',
-            },
-          },
-
-          '.scrollbar-default': {
-            /* IE and Edge */
-            '-ms-overflow-style': 'auto',
-
-            /* Firefox */
-            'scrollbar-width': 'auto',
-
-            /* Safari and Chrome */
-            '&::-webkit-scrollbar': {
-              display: 'block',
-            },
+      addUtilities({
+        '.scrollbar-hide': {
+          /* IE and Edge */
+          '-ms-overflow-style': 'none',
+          /* Firefox */
+          'scrollbar-width': 'none',
+          /* Safari and Chrome */
+          '&::-webkit-scrollbar': {
+            display: 'none',
           },
         },
-        ['responsive'],
-      )
+
+        '.scrollbar-default': {
+          /* IE and Edge */
+          '-ms-overflow-style': 'auto',
+          /* Firefox */
+          'scrollbar-width': 'auto',
+          /* Safari and Chrome */
+          '&::-webkit-scrollbar': {
+            display: 'block',
+          },
+        },
+      })
     }),
     plugin(function ({ addUtilities }) {
       addUtilities({

@@ -1,21 +1,16 @@
 <template>
-  <main>
-    <AppHeader />
+  <div class="h-full w-full">
     <slot />
-    <AppFooter />
-  </main>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { AppHeader } from '#components'
-
 useHead({
-  title: 'OndeVamos.app',
   link: [
     {
       rel: 'icon',
-      type: 'image/x-icon',
-      href: '/favicon.ico',
+      type: 'image/svg+xml',
+      href: '/favicon.svg',
     },
     {
       rel: 'preconnect',

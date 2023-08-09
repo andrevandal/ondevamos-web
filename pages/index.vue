@@ -1,90 +1,87 @@
 <template>
-  <main>
-    <div
-      v-if="!searchTerm"
-      class="container flex flex-col px-4 py-12 mx-auto gap-y-16"
-    >
-      <section
-        v-for="(resource, resourceKey) in (resources as Resource[])"
-        :key="`resource-${resourceKey}`"
-      >
-        <header class="mb-6 text-center text-gray-900">
-          <span class="px-4 py-2 leading-5 rounded-full bg-yellow-50">{{
-            resource.title
-          }}</span>
-          <h2
-            class="block my-2 text-2xl font-extrabold leading-7 tracking-tight"
-          >
-            {{ resource.label }}
-          </h2>
-          <p class="tracking-tight text-gray-500">
-            {{ resource.description }}
-          </p>
-        </header>
-        <div
-          class="grid items-center justify-center grid-cols-1 gap-6 mx-auto md:grid-cols-2 xl:grid-cols-4 place-items-center max-w-fit"
-        >
-          <BasePlaceCard
-            v-for="(item, itemKey) in resource.places"
-            :key="`item-${itemKey}`"
-            :item="item"
-          />
-        </div>
-      </section>
-    </div>
-    <div v-else class="container flex flex-col px-4 py-12 mx-auto gap-y-12">
-      <TheFilteringSearch />
-      <section
-        class="grid items-center justify-center grid-cols-1 gap-6 mx-auto md:grid-cols-2 xl:grid-cols-4 place-items-center max-w-fit"
-      >
-        <BasePlaceCard
-          v-for="(item, itemKey) in resources"
-          :key="`item-${itemKey}`"
-          :item="(item as Place)"
+  <main class="h-full w-full max-h-full max-w-full relative">
+    <div class="background">
+      <picture>
+        <source
+          media="(min-width: 641px)"
+          srcset="/images/foto-pre-lancamento-min.png"
         />
-      </section>
+        <img
+          src="/images/foto-pre-lancamento_mobile-min.png"
+          alt=""
+          class="w-full h-full object-contain object-bottom"
+          loading="lazy"
+        />
+      </picture>
+    </div>
+    <div
+      class="w-full mx-auto max-w-[346px] sm:max-w-[45rem] h-full box-border px-4 pt-10 pb-10 sm:pb-16 flex flex-col z-10 relative"
+    >
+      <img
+        src="/images/logo-light.png"
+        width="235"
+        height="40"
+        class="w-[235px] h-[40px] sm:w-[282px] sm:h-[48px] mx-auto mb-10 sm:mb-8"
+      />
+      <h1
+        class="text-2xl sm:text-[3.5rem] uppercase sm:leading-[4rem] font-bold text-white text-center mb-2"
+      >
+        Seu passaporte para
+        <span class="text-yellow-500">Novas experiências</span>!
+      </h1>
+      <p class="text-base sm:text-2xl text-gray-100 text-center mb-10">
+        Diga adeus à rotina de visitar sempre os mesmos lugares. Vamos te
+        surpreender com <strong>locais incríveis</strong> que você nem sabia que
+        estavam <strong>ao seu alcance</strong>.
+      </p>
+      <div
+        class="flex flex-col gap-y-2 sm:gap-y-4 justify-center items-center sm:mt-auto"
+      >
+        <h2
+          class="text-white text-center drop-shadow-[1px_2px_3px_#000] text-base font-bold sm:text-2xl"
+        >
+          Mantenha-se informado,<br />
+          siga-nos no Instagram!
+        </h2>
+        <NuxtLink
+          to="https://instagram.com"
+          target="_blank"
+          class="button primary uppercase"
+        >
+          <span>@OndeVamos.app</span>
+          <NuxtIcon name="instagram" filled />
+        </NuxtLink>
+      </div>
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { BasePlaceCard } from '#components'
-import type { ResourcesResponse, Place, Resource } from '@/types/nitro'
-
-const route = useRoute()
-
-const search = reactive(useSearch())
-
-const searchTerm = computed(() => search.term)
-
-const { data: resourcesResponse, refresh } =
-  await useAsyncData<ResourcesResponse>('resources', () => {
-    const query = route.query
-
-    const queryParams = {
-      q: query.q,
-      tags: query.tags ? query.tags : '',
-      openingHours: (query.openingHours as string) || '',
-      pricingLevel: Number(query.pricingLevel) || 0,
-      ratingLevel: Number(query.ratingLevel) || 0,
-    }
-
-    const cleanQueryParams = Object.fromEntries(
-      Object.entries(queryParams).filter(([_, value]) => value),
-    )
-    return $fetch(`/api/places`, { query: cleanQueryParams })
-  })
-
-const resources = computed(() => {
-  if (!resourcesResponse?.value) return []
-
-  return resourcesResponse?.value?.data
+useHead({
+  title: 'Seu passaporte para Novas experiências! | OndeVamos',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Diga adeus à rotina de visitar sempre os mesmos lugares. Vamos te surpreender com locais incríveis que você nem sabia que estavam ao seu alcance.',
+    },
+  ],
 })
-
-watch(
-  () => route.query,
-  () => {
-    refresh()
-  },
-)
 </script>
+
+<style lang="postcss" scoped>
+.background {
+  @apply absolute inset-0 w-full h-full;
+  @apply bg-gray-900;
+}
+
+.button {
+  @apply inline-flex w-fit text-base items-center px-4 sm:px-6 transition-all ease-in ring-4 border-transparent ring-transparent font-bold rounded-lg min-h-[48px];
+  &.primary {
+    @apply text-gray-900 bg-yellow-500 hover:bg-yellow-400 hover:ring-yellow-500/20 focus:ring-2 focus:ring-yellow-700;
+  }
+}
+.nuxt-icon {
+  @apply text-2xl ml-3;
+}
+</style>

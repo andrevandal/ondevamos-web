@@ -1,11 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { resolve } from 'pathe'
-
-const { API_BASE_URL, GA_MEASUREMENT_ID, GA_HOST, STRAPI_URL } = process.env
+const { API_BASE_URL, GA_MEASUREMENT_ID, GA_HOST } = process.env
 
 export default defineNuxtConfig({
-  experimental: { payloadExtraction: false },
-  css: ['~/assets/css/main.css'],
   postcss: {
     plugins: {
       'postcss-import': {},
@@ -28,22 +24,16 @@ export default defineNuxtConfig({
       apiBaseUrl: API_BASE_URL,
       gaMeasurementID: GA_MEASUREMENT_ID,
       gaHost: GA_HOST,
-      strapi: {
-        url: STRAPI_URL,
-      },
     },
   },
-  modules: ['nuxt-icons', '@vueuse/nuxt'],
-  hooks: {
-    'pages:extend'(routes) {
-      routes.push({
-        name: 'custom',
-        path: '/:slug/',
-        file: resolve(__dirname, 'pages/index.vue'),
-      })
-    },
-  },
+  modules: ['nuxt-icons', '@vueuse/nuxt', '@nuxtjs/tailwindcss'],
   nitro: {
     preset: 'cloudflare_pages',
+  },
+  devtools: {
+    enabled: true,
+  },
+  tailwindcss: {
+    cssPath: '~/assets/css/main.css',
   },
 })
