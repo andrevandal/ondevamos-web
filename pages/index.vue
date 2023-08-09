@@ -45,7 +45,7 @@
           siga-nos no Instagram!
         </h2>
         <NuxtLink
-          to="https://instagram.com"
+          to="https://www.instagram.com/ondevamos.app"
           target="_blank"
           class="button primary uppercase"
         >
