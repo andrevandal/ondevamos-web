@@ -59,7 +59,7 @@
 
 <script lang="ts" setup>
 useHead({
-  title: 'Seu passaporte para Novas experiências! | OndeVamos',
+  title: 'OndeVamos - Seu passaporte para Novas experiências!',
   meta: [
     {
       name: 'description',
