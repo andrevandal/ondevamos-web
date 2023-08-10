@@ -12,7 +12,7 @@ import { relations } from 'drizzle-orm'
 
 import { placesToTags } from '@/server/schemas/db/places'
 
-type Icon = {}
+export type TagIcon = {}
 
 // Tag table
 export const tags = mysqlTable(
@@ -21,8 +21,9 @@ export const tags = mysqlTable(
     id: bigint('id', { mode: 'number' }).autoincrement().primaryKey().notNull(),
     uuid: varchar('uuid', { length: 12 }).notNull(),
     slug: varchar('slug', { length: 100 }).notNull(),
+    label: varchar('label', { length: 100 }).notNull(),
     description: text('description'),
-    icon: json('icon_name').$type<Icon>(),
+    icon: json('icon').$type<TagIcon>(),
     active: boolean('active').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()

@@ -5,12 +5,12 @@ import { db } from '@/server/services/database'
 import { tags } from '@/server/schemas/db/tags'
 
 type Identifier = Partial<Pick<InferModel<typeof tags>, 'id' | 'uuid' | 'slug'>>
-type NewTag = Omit<
+export type NewTag = Omit<
   InferModel<typeof tags, 'insert'>,
-  'id' | 'uuid' | 'createdAt' | 'updateAt'
+  'id' | 'uuid' | 'createdAt' | 'updatedAt'
 >
-type UpdateTag = Partial<
-  Pick<InferModel<typeof tags>, 'slug' | 'description' | 'icon' | 'active'>
+export type UpdateTag = Partial<
+  Pick<InferModel<typeof tags>, 'slug' | 'description' | 'label' | 'active'>
 >
 
 const logError = (error: unknown, context: string) => {
@@ -48,9 +48,11 @@ export const createTag = async (data: NewTag) => {
   try {
     if (await getTag({ slug: data.slug })) throw new Error('Tag already exists')
     const uuid = generateUuid()
+
+    console.log({ active: false, ...data, uuid })
     const newTag = await db
       .insert(tags)
-      .values({ ...data, uuid, active: false })
+      .values({ active: false, ...data, uuid })
 
     if (!newTag.insertId) throw new Error('Tag not created')
     return newTag

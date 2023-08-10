@@ -7,11 +7,11 @@ import { categories } from '@/server/schemas/db/categories'
 type Identifier = Partial<
   Pick<InferModel<typeof categories>, 'id' | 'uuid' | 'slug'>
 >
-type NewCategory = Omit<
+export type NewCategory = Omit<
   InferModel<typeof categories, 'insert'>,
   'id' | 'uuid' | 'createdAt' | 'updateAt'
 >
-type UpdateCategory = Partial<
+export type UpdateCategory = Partial<
   Pick<
     InferModel<typeof categories>,
     'slug' | 'description' | 'icon' | 'active'

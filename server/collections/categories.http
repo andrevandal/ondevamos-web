@@ -1,0 +1,30 @@
+@host=http://localhost:3000
+@token=aLJZqrCq3yY$jD3XKUkU8b#GvUYpBjA6bFZBw2au!BS33
+
+@id=1
+
+POST {{host}}/api/categories HTTP/1.1
+Authorization: Bearer {{token}}
+
+{
+  "slug": "hamburgueria",
+  "label": "Hamburgueria",
+  "description": "This place sells hamburguers",
+}
+
+###
+
+POST {{host}}/api/categories/{{id}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+{
+  "slug": "pet-friendly",
+  "label": "Pet Friendly",
+  "description": "This is a pet friendly place",
+  "active": true
+}
+
+
+###
+
+GET {{host}}/api/categories HTTP/1.1

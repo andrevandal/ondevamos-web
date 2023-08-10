@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { resolve } from 'pathe'
+import { defineNuxtConfig } from 'nuxt/config'
 
 const {
   API_BASE_URL,
@@ -7,6 +8,7 @@ const {
   GA_HOST,
   DATABASE_URL,
   SESSION_SECRET,
+  ADMIN_TOKEN,
 } = process.env
 
 export default defineNuxtConfig({
@@ -32,6 +34,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     databaseUrl: DATABASE_URL,
     sessionSecret: SESSION_SECRET,
+    adminToken: ADMIN_TOKEN,
     public: {
       apiBaseUrl: API_BASE_URL,
       gaMeasurementID: GA_MEASUREMENT_ID,
