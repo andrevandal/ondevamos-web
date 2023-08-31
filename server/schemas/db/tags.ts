@@ -8,10 +8,6 @@ import {
   boolean,
   json,
 } from 'drizzle-orm/mysql-core'
-import { relations } from 'drizzle-orm'
-
-import { placesToTags } from '@/server/schemas/db/places'
-
 export type TagIcon = {}
 
 // Tag table
@@ -37,7 +33,3 @@ export const tags = mysqlTable(
     }
   },
 )
-
-export const tagsRelations = relations(tags, ({ many }) => ({
-  placesToTags: many(placesToTags),
-}))

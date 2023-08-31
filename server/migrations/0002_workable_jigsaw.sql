@@ -1,1 +1,0 @@
-ALTER TABLE `tags` ADD `label` varchar(100) NOT NULL;

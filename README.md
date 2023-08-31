@@ -34,3 +34,16 @@ pnpm run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## API Endpoints
+
+### GET /api/v1/places
+
+### GET /api/v1/places/:id
+### POST /api/v1/places
+
+### PUT /api/v1/places/:id
+
+### DELETE /api/v1/places/:id
+
+

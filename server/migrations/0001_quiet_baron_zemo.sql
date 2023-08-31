@@ -1,1 +1,0 @@
-ALTER TABLE `tags` RENAME COLUMN `icon_name` TO `icon`;

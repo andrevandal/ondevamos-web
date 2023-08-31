@@ -1,0 +1,63 @@
+@host=http://localhost:3000
+@token=aLJZqrCq3yY$jD3XKUkU8b#GvUYpBjA6bFZBw2au!BS33
+@id=JkrZ4N7nVnIE
+
+###
+GET http://localhost:3000/api/v1/places
+
+###
+POST {{host}}/api/v1/places 
+Authorization: Bearer {{token}}
+
+{
+  "name": "Hamburgeria do Seu Zé",
+  "slug": "hamburgeria-do-seu-ze8",
+  "description": "O melhor hamburguer da cidade",
+  "ratingLevel": 5,
+  "ratingCount": 100,
+  "pricingLevel": 3,
+  "pricingCount": 100,
+  "active": true,
+  "externalId": "W67inS8LqrDkw",
+  "avatar": "ZKvlJ0Kvit2N",
+  "cover": "TkFEAWG1BtYS",
+  "city": "vU2TFimVUMa5",
+  "addressStreet": "Rua dos Bobos",
+  "addressNumber": "0",
+  "addressComplement": "Apto 1",
+  "addressNeighborhood": "Centro",
+  "addressZipCode": "00000-000",
+  "addressLongitude": -46.633309,
+  "addressLatitude": -23.550519,
+  "actions": [
+    {
+      "type": "social",
+      "name": "Facebook",
+      "link": "https://www.facebook.com/hamburgueriadoseuze",
+      "iconName": "facebook",
+      "iconClasses": "text-blue-500"
+    }
+  ]
+}
+###
+
+PUT {{host}}/api/v1/places/{{id}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+{
+  "actions": [
+    {
+      "type": "social",
+      "name": "Facebook",
+      "link": "https://www.facebook.com/hamburgueriadoseuze",
+      "iconName": "facebook",
+      "iconClasses": "text-blue-500"
+    }
+  ]
+}
+###
+GET {{host}}/api/v1/places/{{id}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/api/v1/cities HTTP/1.1

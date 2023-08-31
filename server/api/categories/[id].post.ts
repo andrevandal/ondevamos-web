@@ -1,6 +1,9 @@
 import { z } from 'zod'
 import { zh } from 'h3-zod'
 
+import { H3Event } from 'h3'
+import { defineEventHandler } from '#imports'
+
 import {
   updateCategory,
   UpdateCategory,
@@ -13,7 +16,7 @@ const CategorySchema = z.object({
   active: z.boolean().optional(),
 }) satisfies z.ZodType<UpdateCategory>
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const params = await zh.useSafeValidatedParams(
     event,
     z.object({

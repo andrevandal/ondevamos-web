@@ -49,7 +49,6 @@ export const createTag = async (data: NewTag) => {
     if (await getTag({ slug: data.slug })) throw new Error('Tag already exists')
     const uuid = generateUuid()
 
-    console.log({ active: false, ...data, uuid })
     const newTag = await db
       .insert(tags)
       .values({ active: false, ...data, uuid })

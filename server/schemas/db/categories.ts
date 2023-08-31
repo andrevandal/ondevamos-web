@@ -8,10 +8,11 @@ import {
   boolean,
   json,
 } from 'drizzle-orm/mysql-core'
-import { relations } from 'drizzle-orm'
-import { placesToCategories } from '@/server/schemas/db/places'
 
-type Icon = {}
+type Icon = {
+  name: string
+  classes?: string[]
+}
 
 // Categories table
 export const categories = mysqlTable(
@@ -36,7 +37,3 @@ export const categories = mysqlTable(
     }
   },
 )
-
-export const categoriesRelations = relations(categories, ({ many }) => ({
-  placesToCategories: many(placesToCategories),
-}))
