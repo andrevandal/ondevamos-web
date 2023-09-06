@@ -1,0 +1,16 @@
+host=http://localhost:3000
+@token=aLJZqrCq3yY$jD3XKUkU8b#GvUYpBjA6bFZBw2au!BS33
+@uuid=2fBVnj5psaGG
+
+###
+GET http://localhost:3000/api/v1/medias/new-image
+Authorization: Bearer {{token}}
+
+
+###
+POST http://localhost:3000/api/v1/medias/{{ uuid }}
+Authorization: Bearer {{token}}
+
+{
+  "status": "completed"
+}
