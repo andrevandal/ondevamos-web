@@ -145,14 +145,19 @@ export const updateAttraction = async (
   try {
     const whereConditions = prepareCondition(options)
 
+    const updatedData = {
+      ...data,
+      updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    }
+
     const updatedAttraction = await db
       .update(AttractionsDb)
-      .set(data)
+      .set(updatedData)
       .where(whereConditions)
 
     if (!updatedAttraction.rowsAffected)
       throw new Error('Attraction not updated')
-    return updatedAttraction
+    return _.omit(updatedData, ['placeId'])
   } catch (error) {
     logError(error, 'Attraction Repository - updateAttraction')
     throw error
