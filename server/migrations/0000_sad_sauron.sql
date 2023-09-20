@@ -1,8 +1,9 @@
 CREATE TABLE `categories` (
 	`id` bigint AUTO_INCREMENT NOT NULL,
 	`uuid` varchar(12) NOT NULL,
-	`name` text NOT NULL,
 	`slug` varchar(100) NOT NULL,
+	`name` varchar(100) NOT NULL,
+	`label` varchar(100) NOT NULL,
 	`description` text,
 	`icon` json,
 	`active` boolean DEFAULT false,
@@ -16,7 +17,7 @@ CREATE TABLE `categories` (
 CREATE TABLE `medias` (
 	`id` bigint AUTO_INCREMENT NOT NULL,
 	`uuid` varchar(12) NOT NULL,
-	`type` text NOT NULL,
+	`type` enum('image','video') NOT NULL,
 	`title` text,
 	`description` text,
 	`alternative_text` text,
@@ -65,7 +66,9 @@ CREATE TABLE `attractions` (
 	`title` text NOT NULL,
 	`description` text,
 	`media_id` bigint,
-	`featured` int NOT NULL,
+	`featured` boolean NOT NULL,
+	`active` boolean DEFAULT false,
+	`order` int NOT NULL DEFAULT 0,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp,
 	CONSTRAINT `attractions_id` PRIMARY KEY(`id`),
@@ -109,14 +112,28 @@ CREATE TABLE `places` (
 	`updated_at` timestamp,
 	`external_metadata` json,
 	CONSTRAINT `places_id` PRIMARY KEY(`id`),
+	CONSTRAINT `place_slug` UNIQUE(`slug`),
 	CONSTRAINT `uuid` UNIQUE(`uuid`),
 	CONSTRAINT `slug` UNIQUE(`slug`)
+);
+--> statement-breakpoint
+CREATE TABLE `places_to_categories` (
+	`category_id` bigint NOT NULL,
+	`place_id` bigint NOT NULL,
+	CONSTRAINT `places_to_categories_category_id_place_id` PRIMARY KEY(`category_id`,`place_id`)
+);
+--> statement-breakpoint
+CREATE TABLE `places_to_tags` (
+	`tag_id` bigint NOT NULL,
+	`place_id` bigint NOT NULL,
+	CONSTRAINT `places_to_tags_place_id_tag_id` PRIMARY KEY(`place_id`,`tag_id`)
 );
 --> statement-breakpoint
 CREATE TABLE `tags` (
 	`id` bigint AUTO_INCREMENT NOT NULL,
 	`uuid` varchar(12) NOT NULL,
 	`slug` varchar(100) NOT NULL,
+	`name` varchar(100) NOT NULL,
 	`label` varchar(100) NOT NULL,
 	`description` text,
 	`icon` json,

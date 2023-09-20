@@ -106,7 +106,8 @@ export const attractions = mysqlTable(
     title: text('title').notNull(),
     description: text('description'),
     mediaId: bigint('media_id', { mode: 'number' }),
-    featured: int('featured').notNull(),
+    featured: boolean('featured').notNull(),
+    active: boolean('active').default(false),
     order: int('order').notNull().default(0),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()

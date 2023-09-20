@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "352d6d97-cc9f-4b79-b05a-54db49bceb43",
+  "id": "342806db-72de-4369-a755-da3f4f5c5959",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -21,15 +21,22 @@
           "notNull": true,
           "autoincrement": false
         },
-        "name": {
-          "name": "name",
-          "type": "text",
+        "slug": {
+          "name": "slug",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "slug": {
-          "name": "slug",
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "label": {
+          "name": "label",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,
@@ -119,7 +126,7 @@
         },
         "type": {
           "name": "type",
-          "type": "text",
+          "type": "enum('image','video')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -435,10 +442,26 @@
         },
         "featured": {
           "name": "featured",
-          "type": "int",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
+        "order": {
+          "name": "order",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         },
         "created_at": {
           "name": "created_at",
@@ -742,6 +765,75 @@
           ]
         }
       },
+      "uniqueConstraints": {
+        "place_slug": {
+          "name": "place_slug",
+          "columns": [
+            "slug"
+          ]
+        }
+      }
+    },
+    "places_to_categories": {
+      "name": "places_to_categories",
+      "columns": {
+        "category_id": {
+          "name": "category_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "places_to_categories_category_id_place_id": {
+          "name": "places_to_categories_category_id_place_id",
+          "columns": [
+            "category_id",
+            "place_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "places_to_tags": {
+      "name": "places_to_tags",
+      "columns": {
+        "tag_id": {
+          "name": "tag_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "places_to_tags_place_id_tag_id": {
+          "name": "places_to_tags_place_id_tag_id",
+          "columns": [
+            "place_id",
+            "tag_id"
+          ]
+        }
+      },
       "uniqueConstraints": {}
     },
     "tags": {
@@ -763,6 +855,13 @@
         },
         "slug": {
           "name": "slug",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true,

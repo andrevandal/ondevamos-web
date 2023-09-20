@@ -11,7 +11,7 @@ Authorization: Bearer {{token}}
 
 {
   "name": "Hamburgeria do Seu Zé",
-  "slug": "hamburgeria-do-seu-ze10",
+  "slug": "hamburgeria-do-seu-ze",
   "description": "O melhor hamburguer da cidade",
   "ratingLevel": 5,
   "ratingCount": 100,

@@ -63,6 +63,24 @@ export const getRawPlace = async (identifiers: Identifier) => {
   return place
 }
 
+export const getPlaceId = async (identifiers: Identifier) => {
+  try {
+    const whereConditions = prepareCondition(identifiers)
+
+    const [place] = await db
+      .select({
+        id: places.id,
+      })
+      .from(places)
+      .where(whereConditions)
+
+    return place?.id ?? null
+  } catch (error) {
+    logError(error, 'Place Repository - getPlaceId')
+    throw error
+  }
+}
+
 export const getPlace = async (identifiers: Identifier) => {
   try {
     const whereConditions = prepareCondition(identifiers)

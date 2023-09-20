@@ -12,6 +12,7 @@ const bodySchema = z.object({
   size: z.coerce.number(),
   type: z.enum(['image/jpeg', 'image/png']),
 })
+
 type BodySchema = z.infer<typeof bodySchema>
 
 const TypeTable = {
@@ -23,9 +24,9 @@ const grabExtension = (name: string) => name.split('.').pop()
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
-  const data = await validateBody<BodySchema>(event, bodySchema)
 
-  const type = TypeTable[data.type]
+  const data = await validateBody<BodySchema>(event, bodySchema)
+  const type = TypeTable[data.type] as 'image'
   const uuid = generateUuid()
   const extension = grabExtension(data.name)
   const filename = `${uuid}.${extension}`
@@ -45,6 +46,7 @@ export default defineEventHandler(async (event) => {
     alternativeText: '',
     url,
     externalMetadata: { ...data },
+    status: 'pending',
   })
 
   if (!newMedia) {
