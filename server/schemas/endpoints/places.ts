@@ -1,50 +1,5 @@
 import { z } from 'zod'
 
-// import { zh } from 'h3-zod'
-
-export const SpecialOpeningHoursSchema = z
-  .object({
-    uuid: z
-      .string()
-      .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-      .optional(),
-    description: z.string().optional(),
-    date: z.string().optional(),
-    openTime: z.string().optional(),
-    closeTime: z.string().optional(),
-  })
-  .optional()
-
-export const OpeningHoursSchema = z
-  .object({
-    uuid: z
-      .string()
-      .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-      .optional(),
-    dayOfWeek: z.string().optional(),
-    openTime: z.string().optional(),
-    closeTime: z.string().optional(),
-    active: z.coerce.boolean().optional(),
-  })
-  .optional()
-
-export const AttractionsSchema = z
-  .object({
-    uuid: z
-      .string()
-      .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-      .optional(),
-    title: z.string().optional(),
-    description: z.string().optional(),
-    media: z
-      .string()
-      .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-      .optional(),
-    featured: z.coerce.boolean().optional(),
-    active: z.coerce.boolean().optional(),
-  })
-  .optional()
-
 export const ActionsSchema = z.object({
   type: z.string(),
   name: z.string(),
@@ -52,22 +7,6 @@ export const ActionsSchema = z.object({
   iconName: z.string().optional(),
   iconClasses: z.string().optional(),
 })
-
-export const MediasSchema = z
-  .object({
-    uuid: z
-      .string()
-      .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-      .optional(),
-    type: z.string().optional(),
-    title: z.string().optional(),
-    description: z.string().optional(),
-    alternativeText: z.string().optional(),
-    url: z.string().optional(),
-    featured: z.coerce.boolean().optional(),
-    active: z.coerce.boolean().optional(),
-  })
-  .optional()
 
 export const CreatePlaceSchema = z.object({
   name: z.string(),
@@ -90,21 +29,14 @@ export const CreatePlaceSchema = z.object({
   city: z
     .string()
     .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid City UUID' }),
-  // active: z.boolean().optional(),
-  // avatar: z
-  //   .string()
-  //   .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-  //   .optional(), // avatarMediaId
-  // cover: z
-  //   .string()
-  //   .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-  //   .optional(), // coverMediaId
-
-  // openingHours: z.array(OpeningHoursSchema).optional(),
-  // specialOpeningHours: z.array(SpecialOpeningHoursSchema).optional(),
-  // attractions: z.array(AttractionsSchema).optional(),
-  // actions: z.array(ActionsSchema).optional(),
-  // medias: z.array(MediasSchema).optional(),
+  avatar: z
+    .string()
+    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
+    .optional(), // avatarMediaId
+  cover: z
+    .string()
+    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
+    .optional(), // coverMediaId
 })
 
 export type CreatePlace = z.infer<typeof CreatePlaceSchema>
@@ -131,6 +63,14 @@ export const UpdatePlaceSchema = z.object({
     .string()
     .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid City UUID' })
     .optional(),
+  avatar: z
+    .string()
+    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
+    .optional(), // avatarMediaId
+  cover: z
+    .string()
+    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
+    .optional(), // coverMediaId
 })
 
 export type UpdatePlace = z.infer<typeof UpdatePlaceSchema>

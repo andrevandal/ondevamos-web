@@ -13,7 +13,7 @@ pnpm install
 
 ## Development Server
 
-Start the development server on http://localhost:3000
+Start the development server on <http://localhost:3000>
 
 ```bash
 pnpm run dev
@@ -35,15 +35,10 @@ pnpm run preview
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
-## API Endpoints
+## Extras
 
-### GET /api/v1/places
+To generate a tree of the project:
 
-### GET /api/v1/places/:id
-### POST /api/v1/places
-
-### PUT /api/v1/places/:id
-
-### DELETE /api/v1/places/:id
-
-
+```bash
+tree -I 'node_modules|stories|dist|assets'
+```

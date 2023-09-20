@@ -1,12 +1,16 @@
 import { consola } from 'consola'
-import { eq, type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
+import {
+  or,
+  eq,
+  type InferSelectModel,
+  type InferInsertModel,
+} from 'drizzle-orm'
 
-// import { z } from 'zod'
-// import { omit } from 'radash'
 import { UpdatePlace, CreatePlace } from '@/server/schemas/endpoints'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
 import { places, cities } from '@/server/schemas/db/places'
+import { medias } from '@/server/schemas/db/medias'
 
 export type SelectPlace = InferSelectModel<typeof places>
 export type InsertPlace = InferInsertModel<typeof places>
@@ -174,6 +178,27 @@ export const updatePlace = async (options: Identifier, data: UpdatePlace) => {
     const currentPlace = await getRawPlace(options)
 
     if (!currentPlace) throw new Error('Place not found')
+
+    if (data.avatar || data.cover) {
+      let whereConditions = null as any
+
+      if (data.avatar && !data.cover)
+        whereConditions = eq(medias.uuid, data.avatar)
+      if (data.cover && !data.avatar)
+        whereConditions = eq(medias.uuid, data.cover)
+      if (data.avatar && data.cover)
+        whereConditions = or(
+          eq(medias.uuid, data.avatar),
+          eq(medias.uuid, data.cover),
+        )
+
+      const selectedMedias = await db
+        .select()
+        .from(medias)
+        .where(whereConditions)
+
+      if (!selectedMedias.length) throw new Error('Media not found')
+    }
 
     const payload = {
       ...(data?.name && { name: data.name }),

@@ -8,7 +8,7 @@ import {
   int,
   uniqueIndex,
   boolean,
-  // primaryKey,
+  primaryKey,
   json,
 } from 'drizzle-orm/mysql-core'
 
@@ -69,7 +69,7 @@ export const places = mysqlTable(
     id: bigint('id', { mode: 'number' }).autoincrement().primaryKey().notNull(),
     uuid: varchar('uuid', { length: 12 }).notNull(),
     name: text('name').notNull(),
-    slug: varchar('slug', { length: 100 }).notNull(),
+    slug: varchar('slug', { length: 100 }).unique('place_slug').notNull(),
     description: text('description'),
     ratingLevel: double('rating_level'),
     ratingCount: int('rating_count'),
@@ -107,14 +107,35 @@ export const attractions = mysqlTable(
     description: text('description'),
     mediaId: bigint('media_id', { mode: 'number' }),
     featured: int('featured').notNull(),
+    order: int('order').notNull().default(0),
     createdAt: timestamp('created_at', { mode: 'string' })
       .defaultNow()
       .notNull(),
     updatedAt: timestamp('updated_at', { mode: 'string' }),
   },
-  (table) => {
-    return {
-      uuid: uniqueIndex('uuid').on(table.uuid),
-    }
+  (table) => ({
+    uuid: uniqueIndex('uuid').on(table.uuid),
+  }),
+)
+
+export const placesToTags = mysqlTable(
+  'places_to_tags',
+  {
+    tagId: bigint('tag_id', { mode: 'number' }).notNull(),
+    placeId: bigint('place_id', { mode: 'number' }).notNull(),
   },
+  (t) => ({
+    pk: primaryKey(t.tagId, t.placeId),
+  }),
+)
+
+export const placesToCategories = mysqlTable(
+  'places_to_categories',
+  {
+    categoryId: bigint('category_id', { mode: 'number' }).notNull(),
+    placeId: bigint('place_id', { mode: 'number' }).notNull(),
+  },
+  (t) => ({
+    pk: primaryKey(t.categoryId, t.placeId),
+  }),
 )

@@ -18,7 +18,7 @@ export const medias = mysqlTable(
   {
     id: bigint('id', { mode: 'number' }).autoincrement().primaryKey().notNull(),
     uuid: varchar('uuid', { length: 12 }).notNull(),
-    type: text('type').notNull(),
+    type: mysqlEnum('status', ['image', 'video']).notNull(),
     title: text('title'),
     description: text('description'),
     alternativeText: text('alternative_text'),

@@ -11,7 +11,7 @@ Authorization: Bearer {{token}}
 
 {
   "name": "Hamburgeria do Seu Zé",
-  "slug": "hamburgeria-do-seu-ze8",
+  "slug": "hamburgeria-do-seu-ze10",
   "description": "O melhor hamburguer da cidade",
   "ratingLevel": 5,
   "ratingCount": 100,
@@ -45,15 +45,8 @@ PUT {{host}}/api/v1/places/{{id}} HTTP/1.1
 Authorization: Bearer {{token}}
 
 {
-  "actions": [
-    {
-      "type": "social",
-      "name": "Facebook",
-      "link": "https://www.facebook.com/hamburgueriadoseuze",
-      "iconName": "facebook",
-      "iconClasses": "text-blue-500"
-    }
-  ]
+  "avatar": "ZKvlJ0Kvit2N",
+  "cover": "TkFEAWG1BtYS"
 }
 ###
 GET {{host}}/api/v1/places/{{id}} HTTP/1.1
