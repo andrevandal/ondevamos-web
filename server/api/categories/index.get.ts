@@ -6,8 +6,9 @@ export default defineEventHandler(async () => {
   const selectedCategories = await db
     .select({
       uuid: categories.uuid,
-      name: categories.name,
       slug: categories.slug,
+      name: categories.name,
+      label: categories.label,
       description: categories.description,
       icon: categories.icon,
     })

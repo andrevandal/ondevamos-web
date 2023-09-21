@@ -4,13 +4,12 @@ import {
   validateBody,
 } from '@/server/services/schemaValidation'
 import {
-  updateCategorySchema,
-  type UpdateCategorySchema,
-  type ParamsUUIDSlugSchema,
+  updateTagSchema,
+  UpdateTagSchema,
   paramsUUIDSlugSchema,
+  ParamsUUIDSlugSchema,
 } from '@/server/schemas/endpoints'
-import { updateCategory } from '@/server/repositories/categories'
-
+import { updateTag } from '@/server/repositories/tags'
 // import { getPlaceId } from '@/server/repositories/places'
 // import { getMediaId } from '@/server/repositories/medias'
 
@@ -28,12 +27,9 @@ export default defineEventHandler(async (event) => {
     ? ({ uuid } as { uuid: string })
     : ({ slug: uuid } as { slug: string })
 
-  const body = await validateBody<UpdateCategorySchema>(
-    event,
-    updateCategorySchema,
-  )
+  const body = await validateBody<UpdateTagSchema>(event, updateTagSchema)
 
-  // return { success: true, message: 'ok', params: { uuid }, body }
+  // return { success: true, message: 'ok', params: identifier, body }
 
   // const [placeId, mediaId] = await Promise.allSettled([
   //   body.place !== undefined
@@ -51,7 +47,7 @@ export default defineEventHandler(async (event) => {
   //   })
   // }
 
-  const updatedCategory = {
+  const updatedTag = {
     name: body.name,
     label: body.label,
     description: body.description,
@@ -59,7 +55,7 @@ export default defineEventHandler(async (event) => {
       name: body.iconName,
       pack: body.iconClasses,
     },
-  } as UpdateCategorySchema
+  } as UpdateTagSchema
 
   // if (placeId.value && placeId.status === 'fulfilled') {
   //   updatedAttraction.placeId = placeId.value
@@ -69,9 +65,11 @@ export default defineEventHandler(async (event) => {
   //   updatedAttraction.mediaId = mediaId.value
   // }
 
-  const category = await updateCategory(identifier, updatedCategory)
+  const tag = await updateTag(identifier, updatedTag)
+
+  return tag
 
   // const attraction = await updateAttraction({ uuid }, updatedAttraction)
 
-  return category
+  // return attraction
 })

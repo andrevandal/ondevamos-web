@@ -1,10 +1,10 @@
 import { useAuth } from '@/server/services/auth'
 import { validateParams } from '@/server/services/schemaValidation'
 import {
-  type ParamsUUIDSlugSchema,
   paramsUUIDSlugSchema,
+  type ParamsUUIDSlugSchema,
 } from '@/server/schemas/endpoints'
-import { getCategory } from '~/server/repositories/categories'
+import { getTag } from '~/server/repositories/tags'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     ? ({ uuid } as { uuid: string })
     : ({ slug: uuid } as { slug: string })
 
-  const category = await getCategory(identifier)
+  const tag = await getTag(identifier)
 
-  return category
+  return tag
 })

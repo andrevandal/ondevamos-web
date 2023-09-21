@@ -1,4 +1,5 @@
 import * as _ from 'radash'
+
 import { consola } from 'consola'
 import {
   and,
@@ -17,7 +18,7 @@ import {
 type SelectAttraction = InferSelectModel<typeof AttractionsDb>
 type InsertAttraction = InferInsertModel<typeof AttractionsDb>
 
-type Identifier = Pick<SelectAttraction, 'id' | 'uuid' | 'placeId'>
+type Identifier = Pick<SelectAttraction, 'id' | 'uuid'>
 export type NewAttraction = Omit<
   InsertAttraction,
   'id' | 'uuid' | 'createdAt' | 'updatedAt'
@@ -36,17 +37,16 @@ const logError = (error: unknown, context: string) => {
 }
 
 const prepareCondition = (options: Partial<Identifier>) => {
-  const { id, uuid, placeId } = options
+  const { id, uuid } = options
 
   if (id) return eq(AttractionsDb.id, id)
   if (uuid) return eq(AttractionsDb.uuid, uuid)
-  if (placeId) return eq(AttractionsDb.placeId, placeId)
 
   throw new Error('No attraction identifier provided')
 }
 
 export const getAttractionsFromPlace = async (
-  placeId: Identifier['placeId'],
+  placeId: SelectAttraction['placeId'],
 ) => {
   try {
     const whereConditions = and(
@@ -133,7 +133,16 @@ export const createAttraction = async (data: NewAttraction) => {
 
     return _.omit({ uuid, ...data }, ['placeId'])
   } catch (error) {
+    const { message } = error as Error
     logError(error, 'Attraction Repository - createAttraction')
+    if (message.includes('code = AlreadyExists')) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'You cannot create a attraction',
+        data: undefined,
+        stack: undefined,
+      })
+    }
     throw error
   }
 }

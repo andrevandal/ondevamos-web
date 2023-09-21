@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const CreateAttractionsSchema = z.object({
+export const createAttractionSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
   media: z
@@ -11,9 +11,10 @@ export const CreateAttractionsSchema = z.object({
   active: z.coerce.boolean().default(false),
   order: z.coerce.number().default(0),
 })
-export type CreateAttractions = z.infer<typeof CreateAttractionsSchema>
 
-export const UpdateAttractionsSchema = z.object({
+export type CreateAttractionSchema = z.infer<typeof createAttractionSchema>
+
+export const updateAttractionsSchema = z.object({
   place: z
     .string()
     .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
@@ -28,4 +29,5 @@ export const UpdateAttractionsSchema = z.object({
   active: z.coerce.boolean().optional(),
   order: z.coerce.number().default(0),
 })
-export type UpdateAttractions = z.infer<typeof UpdateAttractionsSchema>
+
+export type UpdateAttractionsSchema = z.infer<typeof updateAttractionsSchema>

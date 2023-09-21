@@ -5,11 +5,11 @@
 
 
 ###
-GET http://localhost:3000/api/v1/places/{{placeId}}/attractions
+GET {{host}}/api/v1/places/{{placeId}}/attractions
 Authorization: Bearer {{token}}
 
 ###
-POST http://localhost:3000/api/v1/places/{{placeId}}/attractions
+POST {{host}}/api/v1/places/{{placeId}}/attractions
 Authorization: Bearer {{token}}
 
 {
@@ -22,11 +22,11 @@ Authorization: Bearer {{token}}
 }
 
 ###
-GET http://localhost:3000/api/v1/attractions/ysEbrLXi9Uvv
+GET {{host}}/api/v1/attractions/{{attractionId}}
 Authorization: Bearer {{token}}
 
 ###
-PUT http://localhost:3000/api/v1/attractions/ysEbrLXi9Uvv
+PUT {{host}}/api/v1/attractions/{{attractionId}}
 Authorization: Bearer {{token}}
 
 {

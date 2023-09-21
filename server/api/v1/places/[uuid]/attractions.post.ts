@@ -5,8 +5,8 @@ import {
   validateBody,
 } from '@/server/services/schemaValidation'
 import {
-  CreateAttractions,
-  CreateAttractionsSchema,
+  type CreateAttractionSchema,
+  createAttractionSchema,
 } from '@/server/schemas/endpoints'
 import {
   createAttraction,
@@ -32,9 +32,9 @@ export default defineEventHandler(async (event) => {
     ? ({ uuid } as { uuid: string })
     : ({ slug: uuid } as { slug: string })
 
-  const body = await validateBody<CreateAttractions>(
+  const body = await validateBody<CreateAttractionSchema>(
     event,
-    CreateAttractionsSchema,
+    createAttractionSchema,
   )
 
   const [placeId, mediaId] = await Promise.allSettled([

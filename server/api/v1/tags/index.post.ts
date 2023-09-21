@@ -1,39 +1,16 @@
 import { useAuth } from '@/server/services/auth'
-import {
-  validateParams,
-  validateBody,
-} from '@/server/services/schemaValidation'
-import {
-  updateCategorySchema,
-  type UpdateCategorySchema,
-  type ParamsUUIDSlugSchema,
-  paramsUUIDSlugSchema,
-} from '@/server/schemas/endpoints'
-import { updateCategory } from '@/server/repositories/categories'
-
+import { validateBody } from '@/server/services/schemaValidation'
+import { createTagSchema, CreateTagSchema } from '@/server/schemas/endpoints'
+import { createTag } from '@/server/repositories/tags'
 // import { getPlaceId } from '@/server/repositories/places'
 // import { getMediaId } from '@/server/repositories/medias'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const { uuid } = await validateParams<ParamsUUIDSlugSchema>(
-    event,
-    paramsUUIDSlugSchema,
-  )
+  const body = await validateBody<CreateTagSchema>(event, createTagSchema)
 
-  const isUuid = /^[0-9A-Za-z_]{12}$/.test(uuid)
-
-  const identifier = isUuid
-    ? ({ uuid } as { uuid: string })
-    : ({ slug: uuid } as { slug: string })
-
-  const body = await validateBody<UpdateCategorySchema>(
-    event,
-    updateCategorySchema,
-  )
-
-  // return { success: true, message: 'ok', params: { uuid }, body }
+  // return { success: true, message: 'ok', body }
 
   // const [placeId, mediaId] = await Promise.allSettled([
   //   body.place !== undefined
@@ -51,7 +28,8 @@ export default defineEventHandler(async (event) => {
   //   })
   // }
 
-  const updatedCategory = {
+  const newTag = {
+    slug: body.slug,
     name: body.name,
     label: body.label,
     description: body.description,
@@ -59,7 +37,7 @@ export default defineEventHandler(async (event) => {
       name: body.iconName,
       pack: body.iconClasses,
     },
-  } as UpdateCategorySchema
+  } as CreateTagSchema
 
   // if (placeId.value && placeId.status === 'fulfilled') {
   //   updatedAttraction.placeId = placeId.value
@@ -69,9 +47,9 @@ export default defineEventHandler(async (event) => {
   //   updatedAttraction.mediaId = mediaId.value
   // }
 
-  const category = await updateCategory(identifier, updatedCategory)
+  const tag = await createTag(newTag)
 
   // const attraction = await updateAttraction({ uuid }, updatedAttraction)
 
-  return category
+  return tag
 })

@@ -1,28 +1,54 @@
 @host=http://localhost:3000
 @token=aLJZqrCq3yY$jD3XKUkU8b#GvUYpBjA6bFZBw2au!BS33
-@id=1
+@tagId=vegetarian
 
-POST {{host}}/api/tags HTTP/1.1
+###
+GET {{ host }}/api/v1/tags HTTP/1.1
+Authorization: Bearer {{token}}
+
+###
+GET {{ host }}/api/v1/tags/{{ tagId }} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+###
+POST {{ host }}/api/v1/tags HTTP/1.1
 Authorization: Bearer {{token}}
 
 {
   "slug": "pet-friendly",
+  "name": "Pet Friendly",
   "label": "Pet Friendly",
-  "description": "This is a pet friendly place"
+  "description": "This place is pet friendly",
+  "iconName": "pet-friendly",
+  "iconClasses": "w-4"
 }
 
 ###
-
-POST {{host}}/api/tags/{{id}} HTTP/1.1
+POST {{ host }}/api/v1/tags HTTP/1.1
 Authorization: Bearer {{token}}
 
 {
-  "slug": "pet-friendly",
-  "label": "Pet Friendly",
-  "description": "This is a pet friendly place",
+  "slug": "vegetarian",
+  "name": "Vegetarianw",
+  "label": "Vegetariane",
+  "description": "This place is vegetariean",
+  "iconName": "vegetqarian",
+  "iconClasses": "w-4"
+}
+
+###
+PUT {{ host }}/api/v1/tags/{{ tagId }} HTTP/1.1
+Authorization: Bearer {{token}}
+
+{
+  "slug": "vegetarian",
+  "name": "Vegetarian",
+  "label": "Vegetarian",
+  "description": "This place is vegetarian",
+  "iconName": "vegetarian",
+  "iconClasses": "w-4",
   "active": true
 }
 
-###
 
-GET {{host}}/api/tags HTTP/1.1

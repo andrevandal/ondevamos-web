@@ -1,16 +1,17 @@
 import { consola } from 'consola'
-import { eq, InferModel } from 'drizzle-orm'
+import { eq, type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { tags } from '@/server/schemas/db/tags'
+import { tags as TagsTable } from '@/server/schemas/db/tags'
 
-type Identifier = Partial<Pick<InferModel<typeof tags>, 'id' | 'uuid' | 'slug'>>
-export type NewTag = Omit<
-  InferModel<typeof tags, 'insert'>,
-  'id' | 'uuid' | 'createdAt' | 'updatedAt'
->
+type SelectTag = InferSelectModel<typeof TagsTable>
+type InsertTag = InferInsertModel<typeof TagsTable>
+
+type Identifier = Pick<SelectTag, 'id' | 'uuid' | 'slug'>
+
+export type NewTag = Omit<InsertTag, 'id' | 'uuid' | 'createdAt' | 'updatedAt'>
 export type UpdateTag = Partial<
-  Pick<InferModel<typeof tags>, 'slug' | 'description' | 'label' | 'active'>
+  Pick<SelectTag, 'slug' | 'description' | 'label' | 'active'>
 >
 
 const logError = (error: unknown, context: string) => {
@@ -19,78 +20,100 @@ const logError = (error: unknown, context: string) => {
   )
 }
 
-const prepareCondition = (options: Identifier) => {
+const prepareCondition = (options: Partial<Identifier>) => {
   const { id, uuid, slug } = options
 
-  if (id) return eq(tags.id, id)
-  if (uuid) return eq(tags.uuid, uuid)
-  if (slug) return eq(tags.slug, slug)
+  if (id) return eq(TagsTable.id, id)
+  if (uuid) return eq(TagsTable.uuid, uuid)
+  if (slug) return eq(TagsTable.slug, slug)
 
   throw new Error('No tag identifier provided')
 }
 
-export const getTag = async (options: Identifier) => {
+export const getTags = async () => {
+  try {
+    const tagsData = await db.select().from(TagsTable)
+
+    return tagsData
+  } catch (error) {
+    logError(error, 'Tag Repository - getTags')
+    throw error
+  }
+}
+
+export const getTag = async (options: Partial<Identifier>) => {
   try {
     const whereConditions = prepareCondition(options)
     const [tagData] = await db
       .select()
-      .from(tags)
+      .from(TagsTable)
       .where(whereConditions)
       .limit(1)
+
+    if (tagData?.id === undefined) throw new Error('Tag not found')
     return tagData
   } catch (error) {
-    logError(error, 'Tag Repository - getTagById')
+    logError(error, 'Tag Repository - getTag')
     throw error
   }
 }
 
 export const createTag = async (data: NewTag) => {
   try {
-    if (await getTag({ slug: data.slug })) throw new Error('Tag already exists')
     const uuid = generateUuid()
 
     const newTag = await db
-      .insert(tags)
+      .insert(TagsTable)
       .values({ active: false, ...data, uuid })
 
     if (!newTag.insertId) throw new Error('Tag not created')
     return newTag
   } catch (error) {
+    const { message } = error as Error
     logError(error, 'Tag Repository - createTag')
+
+    if (message.includes('code = AlreadyExists')) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'You cannot create a tag with this slug',
+        data: undefined,
+        stack: undefined,
+      })
+    }
     throw error
   }
 }
 
-export const updateTag = async (options: Identifier, data: UpdateTag) => {
+export const updateTag = async (
+  options: Partial<Identifier>,
+  data: UpdateTag,
+) => {
   try {
     const whereConditions = prepareCondition(options)
-    const updatedTag = await db.update(tags).set(data).where(whereConditions)
 
-    if (!updatedTag.rowsAffected) throw new Error('Tag not created')
-    return updatedTag
+    const updatedData = {
+      ...data,
+      updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    }
+
+    const updatedTag = await db
+      .update(TagsTable)
+      .set(updatedData)
+      .where(whereConditions)
+
+    if (!updatedTag.rowsAffected) throw new Error('Tag not updated')
+    return updatedData
   } catch (error) {
     logError(error, 'Tag Repository - updateTag')
     throw error
   }
 }
 
-export const activateTag = (options: Identifier) =>
+export const activateTag = (options: Partial<Identifier>) =>
   updateTag(options, { active: true })
 
-export const deactivateTag = (options: Identifier) =>
+export const deactivateTag = (options: Partial<Identifier>) =>
   updateTag(options, { active: false })
-
-export const deleteTag = async (options: Identifier) => {
-  try {
-    const whereConditions = prepareCondition(options)
-    const deletedTag = await db.delete(tags).where(whereConditions)
-    if (!deletedTag.rowsAffected) throw new Error('Tag not deleted')
-    return deletedTag
-  } catch (error) {
-    logError(error, 'Tag Repository - deleteTag')
-    throw error
-  }
-}
 
 export default {
   getTag,
@@ -98,5 +121,4 @@ export default {
   updateTag,
   activateTag,
   deactivateTag,
-  deleteTag,
 }

@@ -1,12 +1,13 @@
-import { z } from 'zod'
 import { useAuth } from '@/server/services/auth'
 import {
   validateParams,
   validateBody,
 } from '@/server/services/schemaValidation'
 import {
-  UpdateAttractions,
-  UpdateAttractionsSchema,
+  type UpdateAttractionsSchema,
+  updateAttractionsSchema,
+  type ParamsUUIDSchema,
+  paramsUUIDSchema,
 } from '@/server/schemas/endpoints'
 import {
   updateAttraction,
@@ -15,20 +16,17 @@ import {
 import { getPlaceId } from '@/server/repositories/places'
 import { getMediaId } from '@/server/repositories/medias'
 
-const paramsSchema = z.object({
-  uuid: z.string().regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' }),
-})
-
-type ParamsSchema = z.infer<typeof paramsSchema>
-
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const { uuid } = await validateParams<ParamsSchema>(event, paramsSchema)
-
-  const body = await validateBody<UpdateAttractions>(
+  const { uuid } = await validateParams<ParamsUUIDSchema>(
     event,
-    UpdateAttractionsSchema,
+    paramsUUIDSchema,
+  )
+
+  const body = await validateBody<UpdateAttractionsSchema>(
+    event,
+    updateAttractionsSchema,
   )
 
   const [placeId, mediaId] = await Promise.allSettled([

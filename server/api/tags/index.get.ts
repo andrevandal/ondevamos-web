@@ -3,15 +3,17 @@ import { db } from '@/server/services/database'
 import { tags } from '@/server/schemas/db/tags'
 
 export default defineEventHandler(async () => {
-  const selectedCategories = await db
+  const selectedTags = await db
     .select({
       uuid: tags.uuid,
-      label: tags.label,
       slug: tags.slug,
+      name: tags.name,
+      label: tags.label,
       description: tags.description,
+      icon: tags.icon,
     })
     .from(tags)
     .where(eq(tags.active, true))
 
-  return selectedCategories
+  return selectedTags
 })
