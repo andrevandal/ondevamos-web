@@ -11,8 +11,11 @@ import {
 import { categories as CategoriesTable } from '@/server/schemas/db/categories'
 import { tags as TagsTable } from '@/server/schemas/db/tags'
 import { medias as MediasTable } from '~/server/schemas/db/medias'
+import { useAuth } from '@/server/services/auth'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  useAuth(event)
+
   const placesRows = await db
     .select({
       places: PlacesTables,

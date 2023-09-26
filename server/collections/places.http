@@ -4,6 +4,7 @@
 
 ###
 GET http://localhost:3000/api/v1/places
+Authorization: Bearer {{token}}
 
 ###
 POST {{host}}/api/v1/places 
@@ -145,3 +146,4 @@ Authorization: Bearer {{token}}
 
 ###
 GET {{host}}/api/v1/cities HTTP/1.1
+Authorization: Bearer {{token}}

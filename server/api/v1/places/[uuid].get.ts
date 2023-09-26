@@ -57,6 +57,7 @@ import { useAuth } from '@/server/services/auth'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
+
   const params = await zh.useSafeValidatedParams(
     event,
     z.object({
