@@ -1,8 +1,9 @@
 import { consola } from 'consola'
-import { eq, type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
+import { eq, InferSelectModel, InferInsertModel, or } from 'drizzle-orm'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
 import { tags as TagsTable } from '@/server/schemas/db/tags'
+// import {categories as CategoriesTable} from '@/server/schemas/db/categories';
 
 type SelectTag = InferSelectModel<typeof TagsTable>
 type InsertTag = InferInsertModel<typeof TagsTable>
@@ -37,6 +38,28 @@ export const getTags = async () => {
     return tagsData
   } catch (error) {
     logError(error, 'Tag Repository - getTags')
+    throw error
+  }
+}
+
+export const getTagsByKeys = async (
+  keys: Identifier['slug'][] | Identifier['uuid'][],
+) => {
+  try {
+    const tagsData = await db
+      .select()
+      .from(TagsTable)
+      .where(
+        or(
+          ...keys.map((key) =>
+            or(eq(TagsTable.uuid, key), eq(TagsTable.slug, key)),
+          ),
+        ),
+      )
+
+    return tagsData
+  } catch (error) {
+    logError(error, 'Tag Repository - getTagsByKeys')
     throw error
   }
 }

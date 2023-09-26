@@ -16,5 +16,30 @@ export default defineEventHandler(async (event) => {
 
   const attractions = await getAttractionFormated({ uuid })
 
-  return attractions
+  return {
+    uuid: attractions.uuid,
+    title: attractions.title,
+    description: attractions.description,
+    featured: attractions.featured,
+    order: attractions.order,
+    active: attractions.active,
+    mediaUuid: attractions.media?.uuid,
+    mediaUrl: attractions.media?.url,
+    place: attractions.place,
+  }
+
+  // return attractions.map((attraction) => ({
+
+  // })
+
+  // return cities.map((city) => ({
+  //   uuid: city.uuid,
+  //   ibgeCode: city.ibgeCode,
+  //   name: city.name,
+  //   state: city.state,
+  //   country: city.country,
+  //   label: city.label,
+  //   createdAt: city.createdAt,
+  //   updatedAt: city.updatedAt,
+  // }))
 })

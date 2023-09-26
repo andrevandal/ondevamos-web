@@ -1,5 +1,5 @@
 import { consola } from 'consola'
-import { eq, type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
+import { or, eq, InferSelectModel, InferInsertModel } from 'drizzle-orm'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
 import { categories as CategoriesTable } from '@/server/schemas/db/categories'
@@ -40,6 +40,28 @@ export const getCategories = async () => {
     return categoriesData
   } catch (error) {
     logError(error, 'Category Repository - getCategory')
+    throw error
+  }
+}
+
+export const getCategoriesByKeys = async (
+  keys: Identifier['slug'][] | Identifier['uuid'][],
+) => {
+  try {
+    const categoriesData = await db
+      .select()
+      .from(CategoriesTable)
+      .where(
+        or(
+          ...keys.map((key) =>
+            or(eq(CategoriesTable.uuid, key), eq(CategoriesTable.slug, key)),
+          ),
+        ),
+      )
+
+    return categoriesData
+  } catch (error) {
+    logError(error, 'Category Repository - getCategoriesByKeys')
     throw error
   }
 }

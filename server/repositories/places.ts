@@ -1,3 +1,4 @@
+import * as _ from 'radash'
 import { consola } from 'consola'
 import {
   or,
@@ -6,14 +7,28 @@ import {
   type InferInsertModel,
 } from 'drizzle-orm'
 
-import { UpdatePlace, CreatePlace } from '@/server/schemas/endpoints'
+import {
+  UpdatePlace,
+  CreatePlace,
+  UpdatePlaceCategories,
+  UpdatePlaceTags,
+} from '@/server/schemas/endpoints'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { places, cities } from '@/server/schemas/db/places'
+import {
+  places as PlacesTable,
+  cities as CitiesTable,
+  placesToCategories as PlacesToCategoriesTable,
+  placesToTags as PlacesToTagsTable,
+} from '@/server/schemas/db/places'
+import { categories as CategoriesTable } from '@/server/schemas/db/categories'
+import { tags as TagsTable } from '@/server/schemas/db/tags'
 import { medias } from '@/server/schemas/db/medias'
+import { getTagsByKeys } from '@/server/repositories/tags'
+import { getCategoriesByKeys } from '@/server/repositories/categories'
 
-export type SelectPlace = InferSelectModel<typeof places>
-export type InsertPlace = InferInsertModel<typeof places>
+export type SelectPlace = InferSelectModel<typeof PlacesTable>
+export type InsertPlace = InferInsertModel<typeof PlacesTable>
 
 export type Identifier = Partial<{
   id: number | string
@@ -48,9 +63,9 @@ const logError = (error: unknown, context: string) => {
 const prepareCondition = (options: Identifier) => {
   const { id, uuid, slug } = options
 
-  if (id) return eq(places.id, Number(id))
-  if (uuid) return eq(places.uuid, uuid)
-  if (slug) return eq(places.slug, slug)
+  if (id) return eq(PlacesTable.id, Number(id))
+  if (uuid) return eq(PlacesTable.uuid, uuid)
+  if (slug) return eq(PlacesTable.slug, slug)
 
   throw new Error('No place identifier provided')
 }
@@ -58,7 +73,7 @@ const prepareCondition = (options: Identifier) => {
 export const getRawPlace = async (identifiers: Identifier) => {
   const whereConditions = prepareCondition(identifiers)
 
-  const [place] = await db.select().from(places).where(whereConditions)
+  const [place] = await db.select().from(PlacesTable).where(whereConditions)
 
   return place
 }
@@ -69,9 +84,9 @@ export const getPlaceId = async (identifiers: Identifier) => {
 
     const [place] = await db
       .select({
-        id: places.id,
+        id: PlacesTable.id,
       })
-      .from(places)
+      .from(PlacesTable)
       .where(whereConditions)
 
     return place?.id ?? null
@@ -87,36 +102,86 @@ export const getPlace = async (identifiers: Identifier) => {
 
     const [placeData] = await db
       .select({
-        uuid: places.uuid,
-        name: places.name,
-        slug: places.slug,
-        description: places.description,
-        ratingLevel: places.ratingLevel,
-        ratingCount: places.ratingCount,
-        pricingLevel: places.pricingLevel,
-        pricingCount: places.pricingCount,
-        coverMedia: places.coverMedia,
-        avatarMedia: places.avatarMedia,
-        address: places.address,
-        actions: places.actions,
+        uuid: PlacesTable.uuid,
+        name: PlacesTable.name,
+        slug: PlacesTable.slug,
+        description: PlacesTable.description,
+        ratingLevel: PlacesTable.ratingLevel,
+        ratingCount: PlacesTable.ratingCount,
+        pricingLevel: PlacesTable.pricingLevel,
+        pricingCount: PlacesTable.pricingCount,
+        coverMedia: PlacesTable.coverMedia,
+        avatarMedia: PlacesTable.avatarMedia,
+        address: PlacesTable.address,
+        actions: PlacesTable.actions,
         city: {
-          uuid: cities.uuid,
-          name: cities.name,
+          uuid: CitiesTable.uuid,
+          name: CitiesTable.name,
         },
-        externalId: places.externalId,
-        active: places.active,
-        createdAt: places.createdAt,
-        updatedAt: places.updatedAt,
-        externalMetadata: places.externalMetadata,
+        externalId: PlacesTable.externalId,
+        active: PlacesTable.active,
+        createdAt: PlacesTable.createdAt,
+        updatedAt: PlacesTable.updatedAt,
+        externalMetadata: PlacesTable.externalMetadata,
       })
-      .from(places)
+      .from(PlacesTable)
       .where(whereConditions)
-      .leftJoin(cities, eq(places.city, cities.id))
-      .groupBy(places.id)
+      .leftJoin(CitiesTable, eq(PlacesTable.city, CitiesTable.id))
+      .groupBy(PlacesTable.id)
 
     return placeData
   } catch (error) {
     logError(error, 'Place Repository - getPlace')
+    throw error
+  }
+}
+
+export const getPlaceCategories = async (identifiers: Identifier) => {
+  try {
+    const whereConditions = prepareCondition(identifiers)
+
+    const placeData = await db
+      .select({
+        // places: PlacesTable,
+        categories: CategoriesTable,
+      })
+      .from(PlacesTable)
+      .leftJoin(
+        PlacesToCategoriesTable,
+        eq(PlacesTable.id, PlacesToCategoriesTable.placeId),
+      )
+      .leftJoin(
+        CategoriesTable,
+        eq(PlacesToCategoriesTable.categoryId, CategoriesTable.id),
+      )
+      .where(whereConditions)
+
+    return placeData?.map((el) => _.omit({ ...el.categories }, ['id'])) ?? []
+  } catch (error) {
+    logError(error, 'Place Repository - getPlaceCategories')
+    throw error
+  }
+}
+
+export const getPlaceTags = async (identifiers: Identifier) => {
+  try {
+    const whereConditions = prepareCondition(identifiers)
+
+    const placeData = await db
+      .select({
+        tags: TagsTable,
+      })
+      .from(PlacesTable)
+      .leftJoin(
+        PlacesToTagsTable,
+        eq(PlacesTable.id, PlacesToTagsTable.placeId),
+      )
+      .leftJoin(TagsTable, eq(PlacesToTagsTable.tagId, TagsTable.id))
+      .where(whereConditions)
+
+    return placeData?.map((el) => _.omit({ ...el.tags }, ['id'])) ?? []
+  } catch (error) {
+    logError(error, 'Place Repository - getPlaceTags')
     throw error
   }
 }
@@ -127,10 +192,10 @@ export const createPlace = async (data: CreatePlace) => {
 
     const [city] = await db
       .select({
-        id: cities.id,
+        id: CitiesTable.id,
       })
-      .from(cities)
-      .where(eq(cities.uuid, data.city))
+      .from(CitiesTable)
+      .where(eq(CitiesTable.uuid, data.city))
 
     if (!city) throw new Error('City not found')
 
@@ -170,7 +235,7 @@ export const createPlace = async (data: CreatePlace) => {
       city: city.id,
     }
 
-    const newPlace = await db.insert(places).values(payload)
+    const newPlace = await db.insert(PlacesTable).values(payload)
 
     if (!newPlace.insertId) throw new Error('Place not created')
     return getPlace({ id: newPlace.insertId })
@@ -215,8 +280,20 @@ export const updatePlace = async (options: Identifier, data: UpdatePlace) => {
         .from(medias)
         .where(whereConditions)
 
-      if (!selectedMedias.length) throw new Error('Media not found')
+      if (!selectedMedias.length) {
+        throw createError({ status: 400, statusMessage: 'Media not found' })
+      }
     }
+
+    const [categories, tags] =
+      data.categories || data.tags
+        ? await Promise.all([
+            data.categories
+              ? getCategoriesByKeys(data.categories)
+              : Promise.resolve([]),
+            data.tags ? getTagsByKeys(data.tags) : Promise.resolve([]),
+          ])
+        : []
 
     const payload = {
       ...(data?.name && { name: data.name }),
@@ -246,26 +323,64 @@ export const updatePlace = async (options: Identifier, data: UpdatePlace) => {
           ...(data.addressZipCode && { zipCode: data.addressZipCode }),
         },
       }),
-      actions: Array.isArray(data.actions)
-        ? Array.from(data.actions).map((action) => ({
-            name: action.name,
-            type: action.type,
-            link: action.link,
-            ...(action.iconName && {
-              icon: {
-                name: action.iconName,
-                className: action.iconClasses,
-              },
-            }),
-          }))
-        : [],
+      actions:
+        Array.isArray(data.actions) && data.actions.length
+          ? Array.from(data.actions).map((action) => ({
+              name: action.name,
+              type: action.type,
+              link: action.link,
+              ...(action.iconName && {
+                icon: {
+                  name: action.iconName,
+                  className: action.iconClasses,
+                },
+              }),
+            }))
+          : [],
     }
 
-    const updatedPlace = await db
-      .update(places)
-      .set(payload)
-      .where(whereConditions)
-    if (!updatedPlace.rowsAffected) throw new Error('Place not updated')
+    await db.transaction(async (tx) => {
+      if (categories || tags) {
+        const tasks = [categories, tags].reduce(
+          (acc: Promise<any>[], values, index) => {
+            if (values) {
+              const tableName =
+                index === 0 ? PlacesToCategoriesTable : PlacesToTagsTable
+              const columnName = index === 0 ? 'categoryId' : 'tagId'
+
+              const task = tx
+                .delete(tableName)
+                .where(eq(tableName.placeId, currentPlace.id))
+                .then(() => {
+                  // Prepares the new entries to be inserted to the place
+                  const entriesInsert = values.map((value) => ({
+                    [columnName]: value.id,
+                    placeId: currentPlace.id,
+                  }))
+
+                  // Inserts all the new entries to the place
+                  return tx.insert(tableName).values(entriesInsert)
+                })
+
+              acc.push(task)
+            }
+
+            return acc
+          },
+          [],
+        )
+        await Promise.allSettled(tasks)
+      }
+
+      const updatedPlace = await tx
+        .update(PlacesTable)
+        .set(payload)
+        .where(whereConditions)
+      if (!updatedPlace.rowsAffected) {
+        await tx.rollback()
+        throw createError({ status: 400, statusMessage: 'Place not updated' })
+      }
+    })
 
     return getPlace(options)
   } catch (error) {
@@ -275,10 +390,106 @@ export const updatePlace = async (options: Identifier, data: UpdatePlace) => {
   }
 }
 
+export const updatePlaceCategories = async (
+  options: Identifier,
+  data: UpdatePlaceCategories,
+) => {
+  try {
+    const currentPlace = await getRawPlace(options)
+
+    if (!currentPlace)
+      throw createError({
+        status: 404,
+        statusMessage: 'Place not found',
+      })
+
+    const categories = await getCategoriesByKeys(data)
+
+    await db.transaction(async (tx) => {
+      const tasks = [categories].reduce((acc: Promise<any>[], values) => {
+        if (values) {
+          const task = tx
+            .delete(PlacesToCategoriesTable)
+            .where(eq(PlacesToCategoriesTable.placeId, currentPlace.id))
+            .then(() => {
+              // Prepares the new entries to be inserted to the place
+              const entriesInsert = values.map((value) => ({
+                categoryId: value.id,
+                placeId: currentPlace.id,
+              }))
+
+              // Inserts all the new entries to the place
+              return tx.insert(PlacesToCategoriesTable).values(entriesInsert)
+            })
+
+          acc.push(task)
+        }
+
+        return acc
+      }, [])
+
+      await Promise.allSettled(tasks)
+    })
+
+    return getPlaceCategories(options)
+  } catch (error) {
+    logError(error, 'Place Repository - updatePlaceCategories')
+    throw error
+  }
+}
+
+export const updatePlaceTags = async (
+  options: Identifier,
+  data: UpdatePlaceTags,
+) => {
+  try {
+    const currentPlace = await getRawPlace(options)
+
+    if (!currentPlace)
+      throw createError({
+        status: 404,
+        statusMessage: 'Place not found',
+      })
+
+    const tags = await getTagsByKeys(data)
+
+    await db.transaction(async (tx) => {
+      const tasks = [tags].reduce((acc: Promise<any>[], values) => {
+        if (values) {
+          const task = tx
+            .delete(PlacesToTagsTable)
+            .where(eq(PlacesToTagsTable.placeId, currentPlace.id))
+            .then(() => {
+              // Prepares the new entries to be inserted to the place
+              const entriesInsert = values.map((value) => ({
+                tagId: value.id,
+                placeId: currentPlace.id,
+              }))
+
+              // Inserts all the new entries to the place
+              return tx.insert(PlacesToTagsTable).values(entriesInsert)
+            })
+
+          acc.push(task)
+        }
+
+        return acc
+      }, [])
+
+      await Promise.allSettled(tasks)
+    })
+
+    return getPlaceTags(options)
+  } catch (error) {
+    logError(error, 'Place Repository - updatePlaceTags')
+    throw error
+  }
+}
+
 export const deletePlace = async (options: Identifier) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedPlace = await db.delete(places).where(whereConditions)
+    const deletedPlace = await db.delete(PlacesTable).where(whereConditions)
     if (!deletedPlace.rowsAffected) throw new Error('Place not deleted')
     return deletedPlace
   } catch (error) {

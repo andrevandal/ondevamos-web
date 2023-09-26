@@ -28,6 +28,19 @@ POST {{ host }}/api/v1/categories HTTP/1.1
 Authorization: Bearer {{token}}
 
 {
+  "slug": "lanchonete",
+  "name": "Lanchonete",
+  "label": "Lanchonete",
+  "description": "This place sells lanches",
+  "iconName": "lanche",
+  "iconClasses": "w-4"
+}
+
+###
+POST {{ host }}/api/v1/categories HTTP/1.1
+Authorization: Bearer {{token}}
+
+{
   "slug": "pizzarie",
   "name": "Pizzari3",
   "label": "Pizzarie",

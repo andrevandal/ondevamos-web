@@ -1,8 +1,17 @@
 import { db } from '@/server/services/database'
-import { cities } from '@/server/schemas/db/places'
+import { cities as CitiesTable } from '@/server/schemas/db/places'
 
 export default defineEventHandler(async () => {
-  const result = await db.select().from(cities).orderBy(cities.id)
+  const cities = await db.select().from(CitiesTable).orderBy(CitiesTable.id)
 
-  return result
+  return cities.map((city) => ({
+    uuid: city.uuid,
+    ibgeCode: city.ibgeCode,
+    name: city.name,
+    state: city.state,
+    country: city.country,
+    label: city.label,
+    createdAt: city.createdAt,
+    updatedAt: city.updatedAt,
+  }))
 })

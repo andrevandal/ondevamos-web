@@ -22,5 +22,16 @@ export default defineEventHandler(async (event) => {
 
   const tag = await getTag(identifier)
 
-  return tag
+  return {
+    uuid: tag.uuid,
+    slug: tag.slug,
+    name: tag.name,
+    label: tag.label,
+    description: tag.description,
+    iconName: tag.icon?.name,
+    iconClasses: tag.icon?.className,
+    active: tag.active,
+    createdAt: tag.createdAt,
+    updatedAt: tag.updatedAt,
+  }
 })

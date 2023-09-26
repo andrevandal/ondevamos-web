@@ -4,7 +4,10 @@ import {
   createCategorySchema,
   type CreateCategorySchema,
 } from '@/server/schemas/endpoints'
-import { createCategory } from '@/server/repositories/categories'
+import {
+  createCategory,
+  type NewCategory,
+} from '@/server/repositories/categories'
 
 // import { getPlaceId } from '@/server/repositories/places'
 // import { getMediaId } from '@/server/repositories/medias'
@@ -44,7 +47,7 @@ export default defineEventHandler(async (event) => {
       name: body.iconName,
       pack: body.iconClasses,
     },
-  } as CreateCategorySchema
+  } as NewCategory
 
   const category = await createCategory(newCategory)
 

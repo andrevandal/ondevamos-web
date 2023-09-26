@@ -1,13 +1,10 @@
 import { z } from 'zod'
-
+import consola from 'consola'
 import { useAuth } from '@/server/services/auth'
+import { validateParams } from '@/server/services/schemaValidation'
+import { getPlaceCategories } from '@/server/repositories/places'
 
-import { type UpdatePlace, UpdatePlaceSchema } from '@/server/schemas/endpoints'
-import {
-  validateBody,
-  validateParams,
-} from '@/server/services/schemaValidation'
-import { updatePlace } from '@/server/repositories/places'
+const logger = consola.withTag('api:places:categories:get')
 
 const paramsSchema = z.object({
   uuid: z.string(),
@@ -26,10 +23,9 @@ export default defineEventHandler(async (event) => {
     ? ({ uuid } as { uuid: string })
     : ({ slug: uuid } as { slug: string })
 
-  const body = await validateBody<UpdatePlace>(event, UpdatePlaceSchema)
+  logger.log('identifier', identifier)
 
-  console.debug('body', body)
+  const categories = await getPlaceCategories(identifier)
 
-  const place = await updatePlace(identifier, body)
-  return place
+  return categories
 })
