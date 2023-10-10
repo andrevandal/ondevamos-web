@@ -1,0 +1,10 @@
+@host=https://maps.googleapis.com/maps/api
+@token=
+@placeId=ChIJ0djvmiBhzpQRAW54XZMlRz8
+
+
+
+###
+GET {{host}}/place/details/json
+  ?place_id={{placeId}}
+  &key={{token}}

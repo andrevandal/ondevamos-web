@@ -3,6 +3,7 @@ import { eq, InferSelectModel, InferInsertModel, or } from 'drizzle-orm'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
 import { tags as TagsTable } from '@/server/schemas/db/tags'
+import { parseMysqlInsertStatement } from '@/server/utils'
 // import {categories as CategoriesTable} from '@/server/schemas/db/categories';
 
 type SelectTag = InferSelectModel<typeof TagsTable>
@@ -90,7 +91,13 @@ export const createTag = async (data: NewTag) => {
       .values({ active: false, ...data, uuid })
 
     if (!newTag.insertId) throw new Error('Tag not created')
-    return newTag
+    const parsedStatement = parseMysqlInsertStatement(newTag.statement)
+
+    if (!parsedStatement) {
+      return newTag.statement
+    }
+
+    return parsedStatement[0]
   } catch (error) {
     const { message } = error as Error
     logError(error, 'Tag Repository - createTag')

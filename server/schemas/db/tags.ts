@@ -8,6 +8,7 @@ import {
   boolean,
   json,
 } from 'drizzle-orm/mysql-core'
+import { sql } from 'drizzle-orm'
 
 type Icon = {
   name: string
@@ -27,7 +28,7 @@ export const tags = mysqlTable(
     icon: json('icon').$type<Icon>(),
     active: boolean('active').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
-      .defaultNow()
+      .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp('updated_at', { mode: 'string' }),
   },

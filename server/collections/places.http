@@ -1,6 +1,6 @@
 @host=http://localhost:3000
-@token=aLJZqrCq3yY$jD3XKUkU8b#GvUYpBjA6bFZBw2au!BS33
-@id=hamburgeria-do-seu-ze
+@token=
+@id=hamburgeria-do-seu-ze2
 
 ###
 GET http://localhost:3000/api/v1/places
@@ -12,7 +12,7 @@ Authorization: Bearer {{token}}
 
 {
   "name": "Hamburgeria do Seu Zé",
-  "slug": "hamburgeria-do-seu-ze",
+  "slug": "hamburgeria-do-seu-ze2",
   "description": "O melhor hamburguer da cidade",
   "ratingLevel": 5,
   "ratingCount": 100,
@@ -64,7 +64,9 @@ Authorization: Bearer {{token}}
       "createdAt": "2023-09-20 23:24:26",
       "updatedAt": null
     }
-  ]
+  ],
+  "categories": ["hamburgeria"],
+  "tags": ["pet-friendly", "vegetarian"]
 }
 ###
 POST {{host}}/api/v1/places 
@@ -106,15 +108,6 @@ PUT {{host}}/api/v1/places/{{id}} HTTP/1.1
 Authorization: Bearer {{token}}
 
 {
-  "actions": [
-    {
-      "type": "social",
-      "name": "Facebook",
-      "link": "https://www.facebook.com/hambugueriadoseuze",
-      "iconName": "facebook",
-      "iconClasses": "text-blue-500"
-    }
-  ],
   "categories": ["lanchonete", "hamburgueria"],
   "tags": ["pet-friendly", "vegetarian"]
 }
@@ -131,7 +124,7 @@ Authorization: Bearer {{token}}
 POST {{host}}/api/v1/places/{{id}}/categories HTTP/1.1
 Authorization: Bearer {{token}}
 
-["lanchonete", "hamburgueria"]
+["pizzaria", "comida-italiana"]
 
 
 ###

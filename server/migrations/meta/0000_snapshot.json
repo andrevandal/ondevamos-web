@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "342806db-72de-4369-a755-da3f4f5c5959",
+  "id": "f9517f68-4e2e-4e6a-924f-144af60d7711",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -70,7 +70,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "CURRENT_TIMESTAMP"
         },
         "updated_at": {
           "name": "updated_at",
@@ -181,7 +181,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "CURRENT_TIMESTAMP"
         },
         "updated_at": {
           "name": "updated_at",
@@ -249,31 +249,30 @@
           "notNull": true,
           "autoincrement": false
         },
-        "open_time": {
-          "name": "open_time",
-          "type": "time",
+        "open_time1": {
+          "name": "open_time1",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "close_time": {
-          "name": "close_time",
-          "type": "time",
+        "close_time1": {
+          "name": "close_time1",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
+        "open_time2": {
+          "name": "open_time2",
+          "type": "int",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "notNull": false,
+          "autoincrement": false
         },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
+        "close_time2": {
+          "name": "close_time2",
+          "type": "int",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -285,6 +284,37 @@
           "notNull": false,
           "autoincrement": false,
           "default": false
+        },
+        "is_open_24_hours": {
+          "name": "is_open_24_hours",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
+        "is_closed": {
+          "name": "is_closed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -338,26 +368,63 @@
           "notNull": false,
           "autoincrement": false
         },
-        "date": {
-          "name": "date",
+        "start_date": {
+          "name": "start_date",
           "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "open_time": {
-          "name": "open_time",
-          "type": "time",
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "close_time": {
-          "name": "close_time",
-          "type": "time",
+        "open_time1": {
+          "name": "open_time1",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "close_time1": {
+          "name": "close_time1",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "open_time2": {
+          "name": "open_time2",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "close_time2": {
+          "name": "close_time2",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_open_24_hours": {
+          "name": "is_open_24_hours",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
+        "is_closed": {
+          "name": "is_closed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -365,7 +432,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "CURRENT_TIMESTAMP"
         },
         "updated_at": {
           "name": "updated_at",
@@ -723,7 +790,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "CURRENT_TIMESTAMP"
         },
         "updated_at": {
           "name": "updated_at",
@@ -902,7 +969,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "CURRENT_TIMESTAMP"
         },
         "updated_at": {
           "name": "updated_at",

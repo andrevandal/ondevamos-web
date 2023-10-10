@@ -75,4 +75,22 @@ export default defineNuxtConfig({
   tailwindcss: {
     cssPath: '~/assets/css/main.css',
   },
+
+  vite: {
+    define: {
+      'process.dev': false,
+      'import.meta.dev': false,
+      'process.test': false,
+      'import.meta.test': false,
+      'import.meta.vitest': false,
+    },
+  },
+
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        types: ['vitest/importMeta'],
+      },
+    },
+  },
 })

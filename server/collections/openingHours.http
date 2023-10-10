@@ -1,0 +1,121 @@
+@host=http://localhost:3000/api/v1
+@token=
+@placeId=pizzaria-do-andre
+@specialOpeningHoursId=J71EDpEMLaIl
+
+###
+GET {{host}}/places/{{placeId}}/is-open
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/places/{{placeId}}/opening-hours
+Authorization: Bearer {{token}}
+
+### The end date is before the start date.
+POST {{host}}/places/{{placeId}}/opening-hours
+Authorization: Bearer {{token}}
+
+[
+  {
+    "dayOfWeek": 1,
+    "isClosed": true
+  },
+  {
+    "dayOfWeek": 2,
+    "period": [
+      [800, 1200],
+      [1300, 1800]
+    ]
+  },
+  {
+    "dayOfWeek": 3,
+    "period": [
+      [800, 1200],
+      [1300, 1800]
+    ]
+  },
+  {
+    "dayOfWeek": 4,
+    "period": [
+      [800, 1200],
+      [1300, 1800]
+    ]
+  },
+  {
+    "dayOfWeek": 5,
+    "period": [
+      [800, 1200],
+      [1300, 1800]
+    ]
+  },
+  {
+    "dayOfWeek": 6,
+    "active": true,
+    "period": [
+      [800, 1200],
+      [1300, 1800]
+    ]
+  },
+  {
+    "dayOfWeek": 7,
+    "active": true,
+    "period": [
+      [800, 1200]
+    ]
+  }
+]
+
+###
+GET {{host}}/places/{{placeId}}/special-opening-hours
+Authorization: Bearer {{token}}
+
+###
+POST {{host}}/places/{{placeId}}/special-opening-hours
+Authorization: Bearer {{token}}
+
+{
+  "description": "Feriado",
+  "startDate": "2023-10-01",
+  "endDate": "2023-10-03",
+  "period": [
+    [800, 1200],
+    [1300, 1800]
+  ]
+}
+
+###
+POST {{host}}/places/{{placeId}}/special-opening-hours
+Authorization: Bearer {{token}}
+
+{
+  "description": "Ano novo",
+  "startDate": "2023-12-31",
+  "endDate": "2024-01-01",
+  "isClosed": true
+}
+
+###
+PUT {{host}}/special-opening-hours/y_GbGOWjIyQ2
+Authorization: Bearer {{token}}
+
+{
+  "description": "Feriado Alterado",
+  "startDate": "2021-04-22",
+  "endDate": "2021-04-22",
+  "period": [
+    [900, 1200],
+    [1300, 1700]
+  ]
+}
+
+###
+PUT {{host}}/special-opening-hours/p4NGF49JGrKv
+Authorization: Bearer {{token}}
+
+{
+  "description": "Ano novo",
+  "startDate": "2023-12-31",
+  "endDate": "2024-01-01",
+  "isOpen24Hours": false,
+  "isClosed": true
+}

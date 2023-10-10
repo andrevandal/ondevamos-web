@@ -14,7 +14,6 @@ export default defineEventHandler(async (event) => {
   useAuth(event)
 
   const { uuid } = await validateParams<ParamsSchema>(event, paramsSchema)
-
   const isUuid = /^[0-9A-Za-z_]{12}$/.test(uuid)
 
   const identifier = isUuid

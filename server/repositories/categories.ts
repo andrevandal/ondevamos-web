@@ -3,6 +3,7 @@ import { or, eq, InferSelectModel, InferInsertModel } from 'drizzle-orm'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
 import { categories as CategoriesTable } from '@/server/schemas/db/categories'
+import { parseMysqlInsertStatement } from '@/server/utils'
 
 type SelectCategory = InferSelectModel<typeof CategoriesTable>
 type InsertCategory = InferInsertModel<typeof CategoriesTable>
@@ -93,7 +94,13 @@ export const createCategory = async (data: NewCategory) => {
 
     if (!newCategory.insertId) throw new Error('Category not created')
 
-    return newCategory
+    const parsedStatement = parseMysqlInsertStatement(newCategory.statement)
+
+    if (!parsedStatement) {
+      return newCategory.statement
+    }
+
+    return parsedStatement[0]
   } catch (error) {
     const { message } = error as Error
     logError(error, 'Category Repository - createCategory')
@@ -119,7 +126,7 @@ export const updateCategory = async (
 
     const updatedData = {
       ...data,
-      updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      // updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
     }
 
     const updatedCategory = await db

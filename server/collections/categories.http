@@ -1,6 +1,6 @@
 @host=http://localhost:3000
-@token=aLJZqrCq3yY$jD3XKUkU8b#GvUYpBjA6bFZBw2au!BS33
-@categoryId=pizzarie
+@token=
+@categoryId=pizzaria
 
 ###
 GET {{ host }}/api/v1/categories HTTP/1.1
@@ -23,6 +23,21 @@ Authorization: Bearer {{token}}
   "iconClasses": "w-4"
 }
 
+
+###
+POST {{ host }}/api/v1/categories HTTP/1.1
+Authorization: Bearer {{token}}
+
+{
+  "slug": "comida-italiana",
+  "name": "Comida Italiana",
+  "label": "Comida Italiana",
+  "description": "This place sells itallian food",
+  "iconName": "comida-italiana",
+  "iconClasses": "w-4"
+}
+
+
 ###
 POST {{ host }}/api/v1/categories HTTP/1.1
 Authorization: Bearer {{token}}
@@ -37,11 +52,23 @@ Authorization: Bearer {{token}}
 }
 
 ###
+PUT {{ host }}/api/v1/categories/lanchonete HTTP/1.1
+Authorization: Bearer {{token}}
+
+{
+  "name": "Lanchonete",
+  "label": "Lanchonete",
+  "description": "This place sells lanches",
+  "iconName": "lanche",
+  "iconClasses": "w-4"
+}
+
+###
 POST {{ host }}/api/v1/categories HTTP/1.1
 Authorization: Bearer {{token}}
 
 {
-  "slug": "pizzarie",
+  "slug": "pizzaria",
   "name": "Pizzari3",
   "label": "Pizzarie",
   "description": "Thiasds place sells pizza",
@@ -51,10 +78,11 @@ Authorization: Bearer {{token}}
 
 ###
 
-PUT {{ host }}/api/v1/categories/{{ categoryId }} HTTP/1.1
+PUT {{ host }}/api/v1/categories/pizzaria HTTP/1.1
 Authorization: Bearer {{token}}
 
 {
+  "name": "Pizzaria",
   "name": "Pizzaria",
   "label": "Pizzaria",
   "description": "This place sells pizza",

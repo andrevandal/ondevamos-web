@@ -11,6 +11,7 @@ import {
   primaryKey,
   json,
 } from 'drizzle-orm/mysql-core'
+import { sql } from 'drizzle-orm'
 
 type externalMetadata = Partial<{}>
 
@@ -83,7 +84,7 @@ export const places = mysqlTable(
     externalId: varchar('external_id', { length: 128 }),
     active: boolean('active').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
-      .defaultNow()
+      .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp('updated_at', { mode: 'string' }),
     externalMetadata: json('external_metadata').$type<externalMetadata>(),

@@ -1,18 +1,18 @@
-import { z } from 'zod'
 import { useAuth } from '@/server/services/auth'
 import { validateParams } from '@/server/services/schemaValidation'
-import { getPlaceCategories } from '@/server/repositories/places'
-
-const paramsSchema = z.object({
-  uuid: z.string(),
-})
-
-type ParamsSchema = z.infer<typeof paramsSchema>
+import {
+  type ParamsUUIDSlugSchema,
+  paramsUUIDSlugSchema,
+} from '@/server/schemas/endpoints'
+import { isPlaceOpen } from '@/server/repositories/places'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const { uuid } = await validateParams<ParamsSchema>(event, paramsSchema)
+  const { uuid } = await validateParams<ParamsUUIDSlugSchema>(
+    event,
+    paramsUUIDSlugSchema,
+  )
 
   const isUuid = /^[0-9A-Za-z_]{12}$/.test(uuid)
 
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     ? ({ uuid } as { uuid: string })
     : ({ slug: uuid } as { slug: string })
 
-  const categories = await getPlaceCategories(identifier)
+  const place = await isPlaceOpen(identifier)
 
-  return categories
+  return place
 })

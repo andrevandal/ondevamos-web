@@ -1,4 +1,4 @@
-import { eq, asc } from 'drizzle-orm'
+import { eq, asc, and, lte, gte } from 'drizzle-orm'
 import { db } from '@/server/services/database'
 import {
   places as PlacesTables,
@@ -8,13 +8,23 @@ import {
   placesToTags as PlacesToTagsTable,
 } from '@/server/schemas/db/places'
 
+import {
+  openingHours as OpeningHoursTable,
+  specialOpeningHours as SpecialOpeningHoursTable,
+} from '@/server/schemas/db/openingHours'
+
 import { categories as CategoriesTable } from '@/server/schemas/db/categories'
 import { tags as TagsTable } from '@/server/schemas/db/tags'
 import { medias as MediasTable } from '~/server/schemas/db/medias'
 import { useAuth } from '@/server/services/auth'
+import { checkHours } from '@/server/utils'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
+
+  const today = new Date()
+  const dayOfWeek = today.getDay()
+  const currentTime = today.getHours() * 100 + today.getMinutes()
 
   const placesRows = await db
     .select({
@@ -24,6 +34,8 @@ export default defineEventHandler(async (event) => {
       categories: CategoriesTable,
       tags: TagsTable,
       medias: MediasTable,
+      openingHours: OpeningHoursTable,
+      specialOpeningHours: SpecialOpeningHoursTable,
     })
     .from(PlacesTables)
     .leftJoin(CitiesTable, eq(PlacesTables.city, CitiesTable.id))
@@ -39,14 +51,40 @@ export default defineEventHandler(async (event) => {
     )
     .leftJoin(PlacesToTagsTable, eq(PlacesTables.id, PlacesToTagsTable.placeId))
     .leftJoin(TagsTable, eq(PlacesToTagsTable.tagId, TagsTable.id))
+    .leftJoin(
+      OpeningHoursTable,
+      and(
+        eq(PlacesTables.id, OpeningHoursTable.placeId),
+        eq(OpeningHoursTable.dayOfWeek, dayOfWeek),
+      ),
+    )
+    .leftJoin(
+      SpecialOpeningHoursTable,
+      and(
+        eq(PlacesTables.id, SpecialOpeningHoursTable.placeId),
+        lte(
+          SpecialOpeningHoursTable.startDate,
+          today.toISOString().split('T')[0],
+        ),
+        gte(
+          SpecialOpeningHoursTable.endDate,
+          today.toISOString().split('T')[0],
+        ),
+      ),
+    )
     .groupBy(
       PlacesTables.id,
       AttractionsTable.id,
       PlacesToCategoriesTable.categoryId,
       PlacesToTagsTable.tagId,
       MediasTable.id,
+      OpeningHoursTable.id,
+      SpecialOpeningHoursTable.id,
     )
     .orderBy(asc(PlacesTables.id), asc(AttractionsTable.order))
+
+  console.log('placesRows', placesRows)
+
   const result = placesRows.reduce<Record<string, any>>((acc, row) => {
     const place = row.places
     const city = row.cities
@@ -54,6 +92,18 @@ export default defineEventHandler(async (event) => {
     const category = row.categories
     const tag = row.tags
     const media = row.medias
+    const openingHoursToday = row.openingHours
+    const specialOpeningHoursToday = row.specialOpeningHours
+
+    let openNow = false
+    if (openingHoursToday && checkHours(openingHoursToday, currentTime)) {
+      openNow = true
+    } else if (
+      specialOpeningHoursToday &&
+      checkHours(specialOpeningHoursToday, currentTime)
+    ) {
+      openNow = true
+    }
 
     if (!acc[place.id]) {
       acc[place.id] = {
@@ -82,6 +132,7 @@ export default defineEventHandler(async (event) => {
         attractions: [],
         categories: [],
         tags: [],
+        open_now: openNow,
       }
     }
 

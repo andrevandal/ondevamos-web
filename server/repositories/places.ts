@@ -1,10 +1,13 @@
 import * as _ from 'radash'
 import { consola } from 'consola'
 import {
+  and,
   or,
   eq,
   type InferSelectModel,
   type InferInsertModel,
+  gte,
+  lte,
 } from 'drizzle-orm'
 
 import {
@@ -26,15 +29,24 @@ import { tags as TagsTable } from '@/server/schemas/db/tags'
 import { medias } from '@/server/schemas/db/medias'
 import { getTagsByKeys } from '@/server/repositories/tags'
 import { getCategoriesByKeys } from '@/server/repositories/categories'
+import {
+  CreateOpeningHours,
+  CreateSpecialOpeningHours,
+  UpdateSpecialOpeningHours,
+} from '@/server/schemas/endpoints/openingHours'
+import {
+  openingHours as OpeningHoursTable,
+  specialOpeningHours as SpecialOpeningHoursTable,
+} from '@/server/schemas/db/openingHours'
 
 export type SelectPlace = InferSelectModel<typeof PlacesTable>
 export type InsertPlace = InferInsertModel<typeof PlacesTable>
 
-export type Identifier = Partial<{
+export type Identifier = {
   id: number | string
   uuid: string
   slug: string
-}>
+}
 
 export type UpdatePlacePayload = Partial<
   Pick<
@@ -54,13 +66,13 @@ export type UpdatePlacePayload = Partial<
   >
 >
 
+const logger = consola.withTag('api:repository:places')
+
 const logError = (error: unknown, context: string) => {
-  consola.error(
-    `[${context}] ${error instanceof Error ? error.message : error}`,
-  )
+  logger.error(`[${context}] ${error instanceof Error ? error.message : error}`)
 }
 
-const prepareCondition = (options: Identifier) => {
+const prepareCondition = (options: Partial<Identifier>) => {
   const { id, uuid, slug } = options
 
   if (id) return eq(PlacesTable.id, Number(id))
@@ -70,7 +82,7 @@ const prepareCondition = (options: Identifier) => {
   throw new Error('No place identifier provided')
 }
 
-export const getRawPlace = async (identifiers: Identifier) => {
+export const getRawPlace = async (identifiers: Partial<Identifier>) => {
   const whereConditions = prepareCondition(identifiers)
 
   const [place] = await db.select().from(PlacesTable).where(whereConditions)
@@ -78,7 +90,7 @@ export const getRawPlace = async (identifiers: Identifier) => {
   return place
 }
 
-export const getPlaceId = async (identifiers: Identifier) => {
+export const getPlaceId = async (identifiers: Partial<Identifier>) => {
   try {
     const whereConditions = prepareCondition(identifiers)
 
@@ -89,14 +101,21 @@ export const getPlaceId = async (identifiers: Identifier) => {
       .from(PlacesTable)
       .where(whereConditions)
 
-    return place?.id ?? null
+    if (!place?.id) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Place not found',
+      })
+    }
+
+    return place.id
   } catch (error) {
     logError(error, 'Place Repository - getPlaceId')
     throw error
   }
 }
 
-export const getPlace = async (identifiers: Identifier) => {
+export const getPlace = async (identifiers: Partial<Identifier>) => {
   try {
     const whereConditions = prepareCondition(identifiers)
 
@@ -136,7 +155,7 @@ export const getPlace = async (identifiers: Identifier) => {
   }
 }
 
-export const getPlaceCategories = async (identifiers: Identifier) => {
+export const getPlaceCategories = async (identifiers: Partial<Identifier>) => {
   try {
     const whereConditions = prepareCondition(identifiers)
 
@@ -163,7 +182,7 @@ export const getPlaceCategories = async (identifiers: Identifier) => {
   }
 }
 
-export const getPlaceTags = async (identifiers: Identifier) => {
+export const getPlaceTags = async (identifiers: Partial<Identifier>) => {
   try {
     const whereConditions = prepareCondition(identifiers)
 
@@ -182,6 +201,105 @@ export const getPlaceTags = async (identifiers: Identifier) => {
     return placeData?.map((el) => _.omit({ ...el.tags }, ['id'])) ?? []
   } catch (error) {
     logError(error, 'Place Repository - getPlaceTags')
+    throw error
+  }
+}
+
+export const getPlaceOpeningHours = async (
+  identifiers: Partial<Identifier>,
+) => {
+  try {
+    const whereConditions = prepareCondition(identifiers)
+
+    const placeData = await db
+      .select({
+        openingHours: OpeningHoursTable,
+        places: PlacesTable,
+      })
+      .from(OpeningHoursTable)
+      .leftJoin(PlacesTable, eq(OpeningHoursTable.placeId, PlacesTable.id))
+      .where(whereConditions)
+
+    return (
+      placeData?.map((el) =>
+        _.omit(
+          {
+            ...el.openingHours,
+            placeUuid: el.places?.uuid,
+            placeSlug: el.places?.slug,
+          },
+          ['id', 'placeId'],
+        ),
+      ) ?? []
+    )
+  } catch (error) {
+    logError(error, 'Place Repository - getPlaceOpeningHours')
+    throw error
+  }
+}
+
+export const getPlaceSpecialOpeningHours = async (
+  identifiers: Partial<Identifier>,
+) => {
+  try {
+    const whereConditions = prepareCondition(identifiers)
+
+    const placeData = await db
+      .select({
+        specialOpeningHours: SpecialOpeningHoursTable,
+        places: PlacesTable,
+      })
+      .from(SpecialOpeningHoursTable)
+      .leftJoin(
+        PlacesTable,
+        eq(SpecialOpeningHoursTable.placeId, PlacesTable.id),
+      )
+      .where(whereConditions)
+
+    return (
+      placeData?.map((el) =>
+        _.omit(
+          {
+            ...el.specialOpeningHours,
+            placeUuid: el.places?.uuid,
+            placeSlug: el.places?.slug,
+          },
+          ['id', 'placeId'],
+        ),
+      ) ?? []
+    )
+  } catch (error) {
+    logError(error, 'Place Repository - getPlaceOpeningHours')
+    throw error
+  }
+}
+
+export const getPlaceSpecialOpeningHoursById = async (id: Identifier['id']) => {
+  try {
+    const placeData = await db
+      .select()
+      .from(SpecialOpeningHoursTable)
+      .where(eq(SpecialOpeningHoursTable.id, Number(id)))
+
+    return placeData?.map((el) => _.omit(el, ['id'])) ?? []
+  } catch (error) {
+    logError(error, 'Place Repository - getPlaceSpecialOpeningHoursById')
+    throw error
+  }
+}
+
+export const getPlaceSpecialOpeningHoursByUuid = async (
+  uuid: Identifier['uuid'],
+) => {
+  try {
+    const placeData = await db
+      .select()
+      .from(SpecialOpeningHoursTable)
+      .where(eq(SpecialOpeningHoursTable.uuid, uuid))
+
+    return placeData?.map((el) => _.omit(el, ['id'])) ?? []
+  } catch (error) {
+    logError(error, 'Place Repository - getPlaceSpecialOpeningHoursByUuid')
     throw error
   }
 }
@@ -238,6 +356,15 @@ export const createPlace = async (data: CreatePlace) => {
     const newPlace = await db.insert(PlacesTable).values(payload)
 
     if (!newPlace.insertId) throw new Error('Place not created')
+
+    if (data.categories?.length) {
+      await updatePlaceCategories({ id: newPlace.insertId }, data.categories)
+    }
+
+    if (data.tags?.length) {
+      await updatePlaceTags({ id: newPlace.insertId }, data.tags)
+    }
+
     return getPlace({ id: newPlace.insertId })
   } catch (error) {
     const { message } = error as Error
@@ -255,7 +382,88 @@ export const createPlace = async (data: CreatePlace) => {
   }
 }
 
-export const updatePlace = async (options: Identifier, data: UpdatePlace) => {
+export const createPlaceOpeningHours = async (
+  options: Partial<Identifier>,
+  data: CreateOpeningHours,
+) => {
+  try {
+    const placeId = await getPlaceId(options)
+    if (!placeId) throw new Error('Place not found')
+
+    const payload = data.map((openingHour) => {
+      const period = openingHour.period ?? [[0, 0]]
+      return {
+        placeId,
+        uuid: generateUuid(),
+        dayOfWeek: openingHour.dayOfWeek,
+        active: openingHour.active,
+        isOpen24Hours: openingHour.isOpen24Hours,
+        isClosed: openingHour.isClosed,
+        openTime1: period[0][0],
+        closeTime1: period[0][1],
+        openTime2: period[1]?.[0],
+        closeTime2: period[1]?.[1],
+      }
+    })
+
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(OpeningHoursTable)
+        .where(eq(OpeningHoursTable.placeId, placeId))
+
+      await tx.insert(OpeningHoursTable).values(payload)
+    })
+    return getPlaceOpeningHours(options)
+  } catch (error) {
+    logger.error(error)
+    logError(error, 'Place Repository - createPlaceOpeningHours')
+    throw error
+  }
+}
+
+export const createPlaceSpecialOpeningHours = async (
+  options: Partial<Identifier>,
+  data: CreateSpecialOpeningHours,
+) => {
+  try {
+    const placeId = await getPlaceId(options)
+    if (!placeId) throw new Error('Place not found')
+
+    const period = data.period ?? [[0, 0]]
+
+    const payload = {
+      placeId,
+      uuid: generateUuid(),
+      description: data.description,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      isOpen24Hours: data.isOpen24Hours,
+      isClosed: data.isClosed,
+      openTime1: period[0][0],
+      closeTime1: period[0][1],
+      openTime2: period[1]?.[0],
+      closeTime2: period[1]?.[1],
+    }
+
+    const newSpecialOpeningHours = await db
+      .insert(SpecialOpeningHoursTable)
+      .values(payload)
+
+    if (!newSpecialOpeningHours.insertId)
+      throw new Error('Special Opening Hours not created')
+
+    return getPlaceSpecialOpeningHoursById(newSpecialOpeningHours.insertId)
+  } catch (error) {
+    logger.error(error)
+    logError(error, 'Place Repository - createPlaceSpecialOpeningHours')
+    throw error
+  }
+}
+
+export const updatePlace = async (
+  options: Partial<Identifier>,
+  data: UpdatePlace,
+) => {
   try {
     const whereConditions = prepareCondition(options)
     const currentPlace = await getRawPlace(options)
@@ -384,20 +592,20 @@ export const updatePlace = async (options: Identifier, data: UpdatePlace) => {
 
     return getPlace(options)
   } catch (error) {
-    consola.error(error)
+    logger.error(error)
     logError(error, 'Place Repository - updatePlace')
     throw error
   }
 }
 
 export const updatePlaceCategories = async (
-  options: Identifier,
+  options: Partial<Identifier>,
   data: UpdatePlaceCategories,
 ) => {
   try {
-    const currentPlace = await getRawPlace(options)
+    const placeId = await getPlaceId(options)
 
-    if (!currentPlace)
+    if (!placeId)
       throw createError({
         status: 404,
         statusMessage: 'Place not found',
@@ -410,12 +618,12 @@ export const updatePlaceCategories = async (
         if (values) {
           const task = tx
             .delete(PlacesToCategoriesTable)
-            .where(eq(PlacesToCategoriesTable.placeId, currentPlace.id))
+            .where(eq(PlacesToCategoriesTable.placeId, placeId))
             .then(() => {
               // Prepares the new entries to be inserted to the place
               const entriesInsert = values.map((value) => ({
                 categoryId: value.id,
-                placeId: currentPlace.id,
+                placeId,
               }))
 
               // Inserts all the new entries to the place
@@ -439,13 +647,13 @@ export const updatePlaceCategories = async (
 }
 
 export const updatePlaceTags = async (
-  options: Identifier,
+  options: Partial<Identifier>,
   data: UpdatePlaceTags,
 ) => {
   try {
-    const currentPlace = await getRawPlace(options)
+    const placeId = await getPlaceId(options)
 
-    if (!currentPlace)
+    if (!placeId)
       throw createError({
         status: 404,
         statusMessage: 'Place not found',
@@ -458,12 +666,12 @@ export const updatePlaceTags = async (
         if (values) {
           const task = tx
             .delete(PlacesToTagsTable)
-            .where(eq(PlacesToTagsTable.placeId, currentPlace.id))
+            .where(eq(PlacesToTagsTable.placeId, placeId))
             .then(() => {
               // Prepares the new entries to be inserted to the place
               const entriesInsert = values.map((value) => ({
                 tagId: value.id,
-                placeId: currentPlace.id,
+                placeId,
               }))
 
               // Inserts all the new entries to the place
@@ -486,7 +694,140 @@ export const updatePlaceTags = async (
   }
 }
 
-export const deletePlace = async (options: Identifier) => {
+export const updateSpecialOpeningHours = async (
+  uuid: Identifier['uuid'],
+  data: UpdateSpecialOpeningHours,
+) => {
+  try {
+    const period = data.period ?? [[0, 0]]
+
+    const payload = {
+      ...(typeof data.description === 'string' && {
+        description: data.description,
+      }),
+      ...(typeof data.isOpen24Hours === 'boolean' && {
+        isOpen24Hours: data.isOpen24Hours,
+      }),
+      ...(typeof data.isClosed === 'boolean' && { isClosed: data.isClosed }),
+      ...(data.period && {
+        openTime1: period[0][0],
+        closeTime1: period[0][1],
+        openTime2: period[1]?.[0],
+        closeTime2: period[1]?.[1],
+      }),
+
+      ...(data.startDate && { startDate: data.startDate }),
+      ...(data.endDate && { endDate: data.endDate }),
+    }
+
+    const updatedSpecialOpeningHours = await db
+      .update(SpecialOpeningHoursTable)
+      .set(payload)
+      .where(eq(SpecialOpeningHoursTable.uuid, uuid))
+
+    if (!updatedSpecialOpeningHours.rowsAffected)
+      throw new Error('Special Opening Hours not updated')
+
+    logger.log(updatedSpecialOpeningHours)
+
+    return getPlaceSpecialOpeningHoursByUuid(uuid)
+  } catch (error) {
+    logError(error, 'Place Repository - updateSpecialOpeningHours')
+    throw error
+  }
+}
+
+const checkHours = (
+  hours: Pick<
+    InferSelectModel<typeof OpeningHoursTable>,
+    | 'isClosed'
+    | 'isOpen24Hours'
+    | 'openTime1'
+    | 'closeTime1'
+    | 'openTime2'
+    | 'closeTime2'
+  >,
+  currentTime: number,
+) => {
+  if (hours.isClosed) {
+    return false
+  } else if (hours.isOpen24Hours) {
+    return true
+  } else if (
+    (hours.openTime1 <= currentTime && currentTime <= hours.closeTime1) ||
+    (hours.openTime2 !== null &&
+      hours.closeTime2 !== null &&
+      hours.openTime2 <= currentTime &&
+      currentTime <= hours.closeTime2)
+  ) {
+    return true
+  }
+  return false
+}
+
+export const isPlaceOpen = async (identifiers: Partial<Identifier>) => {
+  try {
+    const localLogger = logger.withTag('isPlaceOpen')
+    const placeId = await getPlaceId(identifiers)
+
+    const today = new Date() // pega data e horário UTC
+    const todayDate = today.toISOString().split('T')[0]
+    const dayOfWeek = today.getDay() + 1
+    const currentTime = today.getHours() * 100 + today.getMinutes() // Hora atual no mesmo formato que o tempo de abertura
+
+    localLogger.log('dayOfWeek', dayOfWeek, today, dayOfWeek)
+
+    const openingHours = await db
+      .select()
+      .from(OpeningHoursTable)
+      .where(
+        and(
+          eq(OpeningHoursTable.placeId, placeId),
+          eq(OpeningHoursTable.dayOfWeek, dayOfWeek),
+        ),
+      )
+
+    const specialOpeningHours = await db
+      .select()
+      .from(SpecialOpeningHoursTable)
+      .where(
+        and(
+          eq(SpecialOpeningHoursTable.placeId, placeId),
+          and(
+            lte(SpecialOpeningHoursTable.startDate, todayDate),
+            gte(SpecialOpeningHoursTable.endDate, todayDate),
+          ),
+        ),
+      )
+
+    // Verifica o horário especial
+    const specialHour = specialOpeningHours.find(
+      (hours) => hours.startDate <= todayDate && hours.endDate >= todayDate,
+    )
+
+    if (specialHour) {
+      localLogger.log('specialHour', specialHour, currentTime)
+      return checkHours(specialHour, currentTime)
+    }
+
+    // Verifica o horário regular
+    const regularHour = openingHours.find(
+      (hours) => hours?.dayOfWeek === dayOfWeek,
+    )
+
+    if (regularHour) {
+      localLogger.log('regularHour', regularHour, currentTime)
+      return checkHours(regularHour, currentTime)
+    }
+
+    return false
+  } catch (error) {
+    logError(error, 'Place Repository - isPlaceOpen')
+    throw error
+  }
+}
+
+export const deletePlace = async (options: Partial<Identifier>) => {
   try {
     const whereConditions = prepareCondition(options)
     const deletedPlace = await db.delete(PlacesTable).where(whereConditions)
@@ -500,7 +841,16 @@ export const deletePlace = async (options: Identifier) => {
 
 export default {
   getPlace,
+  getPlaceCategories,
+  getPlaceTags,
+  getPlaceOpeningHours,
+  getPlaceSpecialOpeningHours,
+  getPlaceSpecialOpeningHoursById,
   createPlace,
+  createPlaceOpeningHours,
+  createPlaceSpecialOpeningHours,
   updatePlace,
+  updatePlaceCategories,
+  updatePlaceTags,
   deletePlace,
 }

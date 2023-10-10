@@ -37,8 +37,8 @@ export const CreatePlaceSchema = z.object({
     .string()
     .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
     .optional(), // coverMediaId
-  categories: z.array(z.string()),
-  tags: z.array(z.string()),
+  categories: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
 })
 
 export type CreatePlace = z.infer<typeof CreatePlaceSchema>
@@ -73,8 +73,8 @@ export const UpdatePlaceSchema = z.object({
     .string()
     .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
     .optional(), // coverMediaId
-  categories: z.array(z.string()),
-  tags: z.array(z.string()),
+  categories: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
 })
 
 export type UpdatePlace = z.infer<typeof UpdatePlaceSchema>

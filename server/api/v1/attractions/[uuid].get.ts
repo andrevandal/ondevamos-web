@@ -13,33 +13,26 @@ export default defineEventHandler(async (event) => {
     event,
     paramsUUIDSchema,
   )
+  const attraction = await getAttractionFormated({ uuid })
 
-  const attractions = await getAttractionFormated({ uuid })
-
-  return {
-    uuid: attractions.uuid,
-    title: attractions.title,
-    description: attractions.description,
-    featured: attractions.featured,
-    order: attractions.order,
-    active: attractions.active,
-    mediaUuid: attractions.media?.uuid,
-    mediaUrl: attractions.media?.url,
-    place: attractions.place,
+  if (!attraction) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Attraction not found',
+      data: null,
+      stack: undefined,
+    })
   }
 
-  // return attractions.map((attraction) => ({
-
-  // })
-
-  // return cities.map((city) => ({
-  //   uuid: city.uuid,
-  //   ibgeCode: city.ibgeCode,
-  //   name: city.name,
-  //   state: city.state,
-  //   country: city.country,
-  //   label: city.label,
-  //   createdAt: city.createdAt,
-  //   updatedAt: city.updatedAt,
-  // }))
+  return {
+    uuid: attraction.uuid,
+    title: attraction.title,
+    description: attraction.description,
+    featured: attraction.featured,
+    order: attraction.order,
+    active: attraction.active,
+    mediaUuid: attraction.media?.uuid,
+    mediaUrl: attraction.media?.url,
+    place: attraction.place,
+  }
 })

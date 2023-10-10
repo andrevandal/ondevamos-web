@@ -8,8 +8,8 @@ import {
   uniqueIndex,
   boolean,
   date,
-  time,
 } from 'drizzle-orm/mysql-core'
+import { sql } from 'drizzle-orm'
 
 // Opening Hours table
 export const openingHours = mysqlTable(
@@ -19,13 +19,17 @@ export const openingHours = mysqlTable(
     uuid: varchar('uuid', { length: 12 }).notNull(),
     placeId: bigint('place_id', { mode: 'number' }).notNull(),
     dayOfWeek: int('day_of_week').notNull(),
-    openTime: time('open_time').notNull(),
-    closeTime: time('close_time').notNull(),
+    openTime1: int('open_time1').notNull(),
+    closeTime1: int('close_time1').notNull(),
+    openTime2: int('open_time2'),
+    closeTime2: int('close_time2'),
+    active: boolean('active').default(false),
+    isOpen24Hours: boolean('is_open_24_hours').default(false),
+    isClosed: boolean('is_closed').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
-      .defaultNow()
+      .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp('updated_at', { mode: 'string' }),
-    active: boolean('active').default(false),
   },
   (table) => {
     return {
@@ -42,11 +46,16 @@ export const specialOpeningHours = mysqlTable(
     uuid: varchar('uuid', { length: 12 }).notNull(),
     placeId: bigint('place_id', { mode: 'number' }).notNull(),
     description: text('description'),
-    date: date('date').notNull(),
-    openTime: time('open_time').notNull(),
-    closeTime: time('close_time').notNull(),
+    startDate: date('start_date', { mode: 'string' }).notNull(),
+    endDate: date('end_date', { mode: 'string' }).notNull(),
+    openTime1: int('open_time1').notNull(),
+    closeTime1: int('close_time1').notNull(),
+    openTime2: int('open_time2'),
+    closeTime2: int('close_time2'),
+    isOpen24Hours: boolean('is_open_24_hours').default(false),
+    isClosed: boolean('is_closed').default(false),
     createdAt: timestamp('created_at', { mode: 'string' })
-      .defaultNow()
+      .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp('updated_at', { mode: 'string' }),
   },
