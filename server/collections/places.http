@@ -1,5 +1,5 @@
 @host=http://localhost:3000
-@token=
+@token=token
 @id=hamburgeria-do-seu-ze2
 
 ###
@@ -12,7 +12,7 @@ Authorization: Bearer {{token}}
 
 {
   "name": "Hamburgeria do Seu Zé",
-  "slug": "hamburgeria-do-seu-ze2",
+  "slug": "hamburgeria-do-seu-ze12",
   "description": "O melhor hamburguer da cidade",
   "ratingLevel": 5,
   "ratingCount": 100,

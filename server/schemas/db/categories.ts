@@ -10,7 +10,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 
-type Icon = {
+export type Icon = {
   name: string
   className?: string
 }

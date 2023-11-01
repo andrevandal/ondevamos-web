@@ -1,5 +1,5 @@
 @host=http://localhost:3000
-@token=
+@token=token
 @tagId=vegetarian
 
 ###
@@ -49,5 +49,3 @@ Authorization: Bearer {{token}}
   "iconClasses": "w-4",
   "active": true
 }
-
-

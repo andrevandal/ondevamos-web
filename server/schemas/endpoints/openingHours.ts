@@ -3,13 +3,13 @@ import { z } from 'zod'
 const periodSchema = z.array(
   z
     .tuple([
-      z
+      z.coerce
         .number()
         .min(
           0,
           'A hora de abertura deve ser uma unidade de tempo entre 0000 e 2359',
         ),
-      z
+      z.coerce
         .number()
         .max(
           2359,
@@ -57,17 +57,18 @@ const refinePeriod = (val: any, ctx: any) => {
 
 export type Period = z.infer<typeof periodSchema>
 
-export const createOpeningHoursSchema = z.array(
-  z
-    .object({
-      dayOfWeek: z.number(),
-      active: z.boolean().default(true),
-      isOpen24Hours: z.boolean().default(false),
-      isClosed: z.boolean().default(false),
-      period: periodSchema.optional(),
-    })
-    .superRefine((val, ctx) => refinePeriod(val, ctx)),
-)
+export const openingHourSchema = z
+  .object({
+    dayOfWeek: z.number(),
+    active: z.boolean().default(true),
+    isOpen24Hours: z.boolean().default(false),
+    isClosed: z.boolean().default(false),
+    period: periodSchema.optional(),
+  })
+  .superRefine((val, ctx) => refinePeriod(val, ctx))
+export type OpeningHour = z.infer<typeof openingHourSchema>
+
+export const createOpeningHoursSchema = z.array(openingHourSchema)
 
 export type CreateOpeningHours = z.infer<typeof createOpeningHoursSchema>
 

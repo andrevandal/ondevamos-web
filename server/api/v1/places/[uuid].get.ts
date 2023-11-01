@@ -50,31 +50,22 @@
 //     { day: 'Quinta-feira', hour: '07:00-23:00' },
 //   ],
 // }
-import { z } from 'zod'
-import { zh } from 'h3-zod'
 import { getPlace } from '@/server/repositories/places'
 import { useAuth } from '@/server/services/auth'
+import { validateParams } from '@/server/services/schemaValidation'
+
+import {
+  type ParamsUUIDSchema,
+  paramsUUIDSchema,
+} from '@/server/schemas/endpoints'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const params = await zh.useSafeValidatedParams(
+  const { uuid } = await validateParams<ParamsUUIDSchema>(
     event,
-    z.object({
-      uuid: z.string(),
-    }),
+    paramsUUIDSchema,
   )
-
-  if (!params.success) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid request params',
-      data: params.error,
-      stack: undefined,
-    })
-  }
-
-  const { uuid } = params.data
 
   const isUuid = /^[0-9A-Za-z_]{12}$/.test(uuid)
 

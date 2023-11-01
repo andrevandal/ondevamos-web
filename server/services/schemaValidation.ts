@@ -1,4 +1,5 @@
-import { H3Event } from 'h3'
+// import { consola } from 'consola'
+import { H3Event, EventHandlerRequest } from 'h3'
 import { z } from 'zod'
 import { zh } from 'h3-zod'
 
@@ -6,9 +7,12 @@ export async function validateParams<T>(
   event: H3Event,
   schema: z.ZodType<any, any, any>,
 ) {
-  const params = await zh.useSafeValidatedParams(event, schema)
+  // const localLogger = consola.withTag('validateParams')
 
+  const params = await zh.useSafeValidatedParams(event as any, schema)
+  // localLogger.log('params', params)
   if (!params.success) {
+    // localLogger.error('params.error', params.error)
     throw createError({
       statusCode: 400,
       statusMessage: 'Invalid request params',
@@ -21,10 +25,10 @@ export async function validateParams<T>(
 }
 
 export async function validateQuery<T>(
-  event: H3Event,
+  event: H3Event<EventHandlerRequest>,
   schema: z.ZodType<any, any, any>,
 ) {
-  const query = await zh.useSafeValidatedQuery(event, schema)
+  const query = await zh.useSafeValidatedQuery(event as any, schema)
 
   if (!query.success) {
     throw createError({
@@ -42,9 +46,13 @@ export async function validateBody<T>(
   event: H3Event,
   schema: z.ZodType<any, any, any>,
 ) {
-  const body = await zh.useSafeValidatedBody(event, schema)
+  // const localLogger = consola.withTag('validateBody')
+
+  const body = await zh.useSafeValidatedBody(event as any, schema)
+  // localLogger.log('body', await readBody(event))
 
   if (!body.success) {
+    // localLogger.error('body.error', JSON.stringify(body.error, null, 2))
     throw createError({
       statusCode: 400,
       statusMessage: 'Invalid request body',

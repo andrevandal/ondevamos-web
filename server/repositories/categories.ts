@@ -2,8 +2,12 @@ import { consola } from 'consola'
 import { or, eq, InferSelectModel, InferInsertModel } from 'drizzle-orm'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { categories as CategoriesTable } from '@/server/schemas/db/categories'
-import { parseMysqlInsertStatement } from '@/server/utils'
+import {
+  categories as CategoriesTable,
+  type Icon,
+} from '@/server/schemas/db/categories'
+import { parseMysqlInsertStatement } from '@/server/utils/helpers'
+import { UpdateCategorySchema } from '@/server/schemas/endpoints'
 
 type SelectCategory = InferSelectModel<typeof CategoriesTable>
 type InsertCategory = InferInsertModel<typeof CategoriesTable>
@@ -49,6 +53,20 @@ export const getCategoriesByKeys = async (
   keys: Identifier['slug'][] | Identifier['uuid'][],
 ) => {
   try {
+    consola.info(
+      keys,
+      db
+        .select()
+        .from(CategoriesTable)
+        .where(
+          or(
+            ...keys.map((key) =>
+              or(eq(CategoriesTable.uuid, key), eq(CategoriesTable.slug, key)),
+            ),
+          ),
+        )
+        .toSQL(),
+    )
     const categoriesData = await db
       .select()
       .from(CategoriesTable)
@@ -59,7 +77,7 @@ export const getCategoriesByKeys = async (
           ),
         ),
       )
-
+    consola.info(categoriesData)
     return categoriesData
   } catch (error) {
     logError(error, 'Category Repository - getCategoriesByKeys')
@@ -88,16 +106,16 @@ export const getCategory = async (options: Partial<Identifier>) => {
 export const createCategory = async (data: NewCategory) => {
   try {
     const uuid = generateUuid()
-    const newCategory = await db
+    const [newCategory] = await db
       .insert(CategoriesTable)
       .values({ ...data, uuid, active: false })
 
     if (!newCategory.insertId) throw new Error('Category not created')
 
-    const parsedStatement = parseMysqlInsertStatement(newCategory.statement)
+    const parsedStatement = parseMysqlInsertStatement('')
 
     if (!parsedStatement) {
-      return newCategory.statement
+      return {}
     }
 
     return parsedStatement[0]
@@ -119,22 +137,30 @@ export const createCategory = async (data: NewCategory) => {
 
 export const updateCategory = async (
   options: Partial<Identifier>,
-  data: UpdateCategory,
+  data: UpdateCategorySchema,
 ) => {
   try {
     const whereConditions = prepareCondition(options)
 
     const updatedData = {
+      ...(data?.name && { name: data.name }),
+      ...(data?.label && { label: data.label }),
+      ...(data?.description && { description: data.description }),
+      ...((data.iconName || data.iconClasses) && {
+        icon: {
+          ...(data.iconName && { name: data.iconName }),
+          ...(data.iconClasses && { className: data.iconClasses }),
+        } as Icon,
+      }),
       ...data,
-      // updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
     }
 
-    const updatedCategory = await db
+    const [updatedCategory] = await db
       .update(CategoriesTable)
       .set(updatedData)
       .where(whereConditions)
 
-    if (!updatedCategory.rowsAffected) throw new Error('Category not updated')
+    if (!updatedCategory.affectedRows) throw new Error('Category not updated')
     return updatedData
   } catch (error) {
     logError(error, 'Category Repository - updateCategory')

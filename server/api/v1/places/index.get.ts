@@ -17,7 +17,7 @@ import { categories as CategoriesTable } from '@/server/schemas/db/categories'
 import { tags as TagsTable } from '@/server/schemas/db/tags'
 import { medias as MediasTable } from '~/server/schemas/db/medias'
 import { useAuth } from '@/server/services/auth'
-import { checkHours } from '@/server/utils'
+import { checkHours } from '@/server/utils/helpers'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
@@ -82,8 +82,6 @@ export default defineEventHandler(async (event) => {
       SpecialOpeningHoursTable.id,
     )
     .orderBy(asc(PlacesTables.id), asc(AttractionsTable.order))
-
-  console.log('placesRows', placesRows)
 
   const result = placesRows.reduce<Record<string, any>>((acc, row) => {
     const place = row.places

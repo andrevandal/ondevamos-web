@@ -52,20 +52,25 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['nuxt-icons', '@vueuse/nuxt', '@nuxtjs/tailwindcss'],
+  modules: ['nuxt-icons', '@vueuse/nuxt', '@nuxtjs/tailwindcss', 'nuxt-vitest'],
 
   hooks: {
     'pages:extend'(routes) {
       routes.push({
         name: 'custom',
         path: '/:slug/',
-        file: resolve(__dirname, 'pages/index.vue'),
+        file: resolve(resolve(), 'pages/index.vue'),
       })
     },
   },
 
   nitro: {
     preset: 'cloudflare_pages',
+    esbuild: {
+      options: {
+        target: 'esnext',
+      },
+    },
   },
 
   devtools: {

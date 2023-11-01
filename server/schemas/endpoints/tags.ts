@@ -17,5 +17,6 @@ export const updateTagSchema = z.object({
   description: z.string().optional(),
   iconName: z.string().optional(),
   iconClasses: z.string().optional(),
+  active: z.boolean().optional(),
 })
 export type UpdateTagSchema = z.infer<typeof updateTagSchema>

@@ -1,12 +1,14 @@
 import { z } from 'zod'
 
-export const ActionsSchema = z.object({
+export const ActionSchema = z.object({
   type: z.string(),
   name: z.string(),
   link: z.string().optional(),
   iconName: z.string().optional(),
   iconClasses: z.string().optional(),
 })
+
+export type Action = z.infer<typeof ActionSchema>
 
 export const CreatePlaceSchema = z.object({
   name: z.string(),
@@ -25,7 +27,7 @@ export const CreatePlaceSchema = z.object({
   addressZipCode: z.string().optional(),
   addressLatitude: z.coerce.number().optional(),
   addressLongitude: z.coerce.number().optional(),
-  actions: z.array(ActionsSchema).optional(),
+  actions: z.array(ActionSchema).optional(),
   city: z
     .string()
     .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid City UUID' }),
@@ -39,6 +41,13 @@ export const CreatePlaceSchema = z.object({
     .optional(), // coverMediaId
   categories: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
+  featuredMedias: z
+    .array(
+      z.string().regex(/^[0-9A-Za-z_]{12}$/, {
+        message: 'Featured medias: Invalid UUID',
+      }),
+    )
+    .optional(),
 })
 
 export type CreatePlace = z.infer<typeof CreatePlaceSchema>
@@ -60,7 +69,7 @@ export const UpdatePlaceSchema = z.object({
   addressLatitude: z.coerce.number().optional(),
   addressLongitude: z.coerce.number().optional(),
   addressZipCode: z.string().optional(),
-  actions: z.array(ActionsSchema).optional(),
+  actions: z.array(ActionSchema).optional(),
   city: z
     .string()
     .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid City UUID' })
@@ -75,6 +84,13 @@ export const UpdatePlaceSchema = z.object({
     .optional(), // coverMediaId
   categories: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
+  featuredMedias: z
+    .array(
+      z.string().regex(/^[0-9A-Za-z_]{12}$/, {
+        message: 'Featured medias: Invalid UUID',
+      }),
+    )
+    .optional(),
 })
 
 export type UpdatePlace = z.infer<typeof UpdatePlaceSchema>

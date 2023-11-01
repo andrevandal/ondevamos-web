@@ -17,5 +17,6 @@ export const updateCategorySchema = z.object({
   description: z.string().optional(),
   iconName: z.string().optional(),
   iconClasses: z.string().optional(),
+  active: z.boolean().optional(),
 })
 export type UpdateCategorySchema = z.infer<typeof updateCategorySchema>

@@ -315,6 +315,8 @@ export const createPlace = async (data: CreatePlace) => {
       .from(CitiesTable)
       .where(eq(CitiesTable.uuid, data.city))
 
+    consola.log('city', city)
+
     if (!city) throw new Error('City not found')
 
     const payload = {
@@ -351,17 +353,22 @@ export const createPlace = async (data: CreatePlace) => {
         zipCode: data.addressZipCode,
       },
       city: city.id,
+      featuredMedias: data.featuredMedias,
+      avatarMedia: data.avatar,
+      coverMedia: data.cover,
     }
-
-    const newPlace = await db.insert(PlacesTable).values(payload)
-
-    if (!newPlace.insertId) throw new Error('Place not created')
+    consola.log('payload', payload)
+    const [newPlace] = await db.insert(PlacesTable).values(payload)
+    consola.log('newPlace', newPlace)
+    if (!newPlace) throw new Error('Place not created')
 
     if (data.categories?.length) {
+      consola.log('data.categories?.length', data.categories?.length)
       await updatePlaceCategories({ id: newPlace.insertId }, data.categories)
     }
 
     if (data.tags?.length) {
+      consola.log('data.tags?.length', data.tags?.length)
       await updatePlaceTags({ id: newPlace.insertId }, data.tags)
     }
 
@@ -406,13 +413,11 @@ export const createPlaceOpeningHours = async (
       }
     })
 
-    await db.transaction(async (tx) => {
-      await tx
-        .delete(OpeningHoursTable)
-        .where(eq(OpeningHoursTable.placeId, placeId))
+    await db
+      .delete(OpeningHoursTable)
+      .where(eq(OpeningHoursTable.placeId, placeId))
 
-      await tx.insert(OpeningHoursTable).values(payload)
-    })
+    await db.insert(OpeningHoursTable).values(payload)
     return getPlaceOpeningHours(options)
   } catch (error) {
     logger.error(error)
@@ -445,7 +450,7 @@ export const createPlaceSpecialOpeningHours = async (
       closeTime2: period[1]?.[1],
     }
 
-    const newSpecialOpeningHours = await db
+    const [newSpecialOpeningHours] = await db
       .insert(SpecialOpeningHoursTable)
       .values(payload)
 
@@ -502,7 +507,6 @@ export const updatePlace = async (
             data.tags ? getTagsByKeys(data.tags) : Promise.resolve([]),
           ])
         : []
-
     const payload = {
       ...(data?.name && { name: data.name }),
       ...(data.description && { description: data.description }),
@@ -512,6 +516,9 @@ export const updatePlace = async (
       ...(data.pricingLevel && { pricingLevel: data.pricingLevel }),
       ...(data.pricingCount && { pricingCount: data.pricingCount }),
       ...(data.active && { active: data.active }),
+      ...(data.avatar && { avatarMedia: data.avatar }),
+      ...(data.cover && { coverMedia: data.cover }),
+      ...(data.featuredMedias && { featuredMedias: data.featuredMedias }),
       ...((data.addressStreet ||
         data.addressNumber ||
         data.addressComplement ||
@@ -580,11 +587,12 @@ export const updatePlace = async (
         await Promise.allSettled(tasks)
       }
 
-      const updatedPlace = await tx
+      const [updatedPlace] = await tx
         .update(PlacesTable)
         .set(payload)
         .where(whereConditions)
-      if (!updatedPlace.rowsAffected) {
+
+      if (!updatedPlace.affectedRows) {
         await tx.rollback()
         throw createError({ status: 400, statusMessage: 'Place not updated' })
       }
@@ -613,31 +621,26 @@ export const updatePlaceCategories = async (
 
     const categories = await getCategoriesByKeys(data)
 
-    await db.transaction(async (tx) => {
-      const tasks = [categories].reduce((acc: Promise<any>[], values) => {
-        if (values) {
-          const task = tx
-            .delete(PlacesToCategoriesTable)
-            .where(eq(PlacesToCategoriesTable.placeId, placeId))
-            .then(() => {
-              // Prepares the new entries to be inserted to the place
-              const entriesInsert = values.map((value) => ({
-                categoryId: value.id,
-                placeId,
-              }))
+    if (!categories.length) return []
 
-              // Inserts all the new entries to the place
-              return tx.insert(PlacesToCategoriesTable).values(entriesInsert)
-            })
+    await db
+      .delete(PlacesToCategoriesTable)
+      .where(eq(PlacesToCategoriesTable.placeId, placeId))
 
-          acc.push(task)
-        }
+    consola.log(
+      'categories',
+      categories.map((category) => ({
+        categoryId: category.id,
+        placeId,
+      })),
+    )
 
-        return acc
-      }, [])
-
-      await Promise.allSettled(tasks)
-    })
+    await db.insert(PlacesToCategoriesTable).values(
+      categories.map((category) => ({
+        categoryId: category.id,
+        placeId,
+      })),
+    )
 
     return getPlaceCategories(options)
   } catch (error) {
@@ -661,31 +664,18 @@ export const updatePlaceTags = async (
 
     const tags = await getTagsByKeys(data)
 
-    await db.transaction(async (tx) => {
-      const tasks = [tags].reduce((acc: Promise<any>[], values) => {
-        if (values) {
-          const task = tx
-            .delete(PlacesToTagsTable)
-            .where(eq(PlacesToTagsTable.placeId, placeId))
-            .then(() => {
-              // Prepares the new entries to be inserted to the place
-              const entriesInsert = values.map((value) => ({
-                tagId: value.id,
-                placeId,
-              }))
+    if (tags.length === 0) return []
 
-              // Inserts all the new entries to the place
-              return tx.insert(PlacesToTagsTable).values(entriesInsert)
-            })
+    await db
+      .delete(PlacesToTagsTable)
+      .where(eq(PlacesToTagsTable.placeId, placeId))
 
-          acc.push(task)
-        }
-
-        return acc
-      }, [])
-
-      await Promise.allSettled(tasks)
-    })
+    await db.insert(PlacesToTagsTable).values(
+      tags.map((tag) => ({
+        tagId: tag.id,
+        placeId,
+      })),
+    )
 
     return getPlaceTags(options)
   } catch (error) {
@@ -720,12 +710,12 @@ export const updateSpecialOpeningHours = async (
       ...(data.endDate && { endDate: data.endDate }),
     }
 
-    const updatedSpecialOpeningHours = await db
+    const [updatedSpecialOpeningHours] = await db
       .update(SpecialOpeningHoursTable)
       .set(payload)
       .where(eq(SpecialOpeningHoursTable.uuid, uuid))
 
-    if (!updatedSpecialOpeningHours.rowsAffected)
+    if (!updatedSpecialOpeningHours.affectedRows)
       throw new Error('Special Opening Hours not updated')
 
     logger.log(updatedSpecialOpeningHours)
@@ -830,8 +820,8 @@ export const isPlaceOpen = async (identifiers: Partial<Identifier>) => {
 export const deletePlace = async (options: Partial<Identifier>) => {
   try {
     const whereConditions = prepareCondition(options)
-    const deletedPlace = await db.delete(PlacesTable).where(whereConditions)
-    if (!deletedPlace.rowsAffected) throw new Error('Place not deleted')
+    const [deletedPlace] = await db.delete(PlacesTable).where(whereConditions)
+    if (!deletedPlace.affectedRows) throw new Error('Place not deleted')
     return deletedPlace
   } catch (error) {
     logError(error, 'Place Repository - deletePlace')

@@ -2,8 +2,9 @@ import { consola } from 'consola'
 import { eq, InferSelectModel, InferInsertModel, or } from 'drizzle-orm'
 import { generateUuid } from '@/server/services/nanoid'
 import { db } from '@/server/services/database'
-import { tags as TagsTable } from '@/server/schemas/db/tags'
-import { parseMysqlInsertStatement } from '@/server/utils'
+import { tags as TagsTable, type Icon } from '@/server/schemas/db/tags'
+import { parseMysqlInsertStatement } from '@/server/utils/helpers'
+import { UpdateTagSchema } from '@/server/schemas/endpoints'
 // import {categories as CategoriesTable} from '@/server/schemas/db/categories';
 
 type SelectTag = InferSelectModel<typeof TagsTable>
@@ -116,14 +117,22 @@ export const createTag = async (data: NewTag) => {
 
 export const updateTag = async (
   options: Partial<Identifier>,
-  data: UpdateTag,
+  data: UpdateTagSchema,
 ) => {
   try {
     const whereConditions = prepareCondition(options)
 
     const updatedData = {
+      ...(data?.name && { name: data.name }),
+      ...(data?.label && { label: data.label }),
+      ...(data?.description && { description: data.description }),
+      ...((data.iconName || data.iconClasses) && {
+        icon: {
+          ...(data.iconName && { name: data.iconName }),
+          ...(data.iconClasses && { className: data.iconClasses }),
+        } as Icon,
+      }),
       ...data,
-      updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
     }
 
     const updatedTag = await db
