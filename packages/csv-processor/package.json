@@ -1,6 +1,6 @@
 {
-  "name": "ondevamos",
-  "description": "ondevamos.app mono repo",
+  "name": "@ondevamos/csv-processor",
+  "description": "ondevamos.app csv processor",
   "private": false,
   "author": {
     "name": "André Vandal",
@@ -23,9 +23,5 @@
   "bugs": {
     "url": "https://github.com/lenyeg/ondevamos-web/issues"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "homepage": "https://ondevamos.app"
 }

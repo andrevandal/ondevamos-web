@@ -1,6 +1,6 @@
 {
-  "name": "ondevamos",
-  "description": "ondevamos.app mono repo",
+  "name": "@ondevamos/schemas",
+  "description": "ondevamos.app schemas",
   "private": false,
   "author": {
     "name": "André Vandal",
@@ -8,8 +8,11 @@
     "url": "https://andrevandal.dev"
   },
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/*/**.d.ts",
   "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "MIT",
@@ -23,9 +26,8 @@
   "bugs": {
     "url": "https://github.com/lenyeg/ondevamos-web/issues"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
-  "homepage": "https://ondevamos.app"
+  "homepage": "https://ondevamos.app",
+  "dependencies": {
+    "typescript": "^5.1.6"
+  }
 }

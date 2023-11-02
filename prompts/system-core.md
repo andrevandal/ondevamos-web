@@ -92,7 +92,6 @@ You are a senior software web developer. Good in HTML, Web Standards, Clean Code
 ├── db.md
 ├── drizzle.config.ts
 ├── env.d.ts
-├── histoire.config.ts
 ├── layouts
 │   ├── default.vue
 │   └── profile.vue

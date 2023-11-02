@@ -1,0 +1,6 @@
+@host=http://localhost:3000
+@token=
+
+###
+GET {{host}}/v1/resources/uuid
+Authorization: Bearer {{token}}

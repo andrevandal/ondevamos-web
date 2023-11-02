@@ -1,6 +1,0 @@
-@host=http://localhost:3000
-@token=
-
-###
-GET {{host}}/api/v1/resources/uuid
-Authorization: Bearer {{token}}

@@ -1,6 +1,6 @@
 {
-  "name": "ondevamos",
-  "description": "ondevamos.app mono repo",
+  "name": "@ondevamos/api-server",
+  "description": "ondevamos.app api sever",
   "private": false,
   "author": {
     "name": "André Vandal",
@@ -10,7 +10,11 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepare": "nitropack prepare",
+    "dev": "nitropack dev",
+    "build": "nitropack build",
+    "preview": "node .output/server/index.mjs",
+    "test": "vitest"
   },
   "license": "MIT",
   "engines": {
@@ -23,9 +27,8 @@
   "bugs": {
     "url": "https://github.com/lenyeg/ondevamos-web/issues"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
-  "homepage": "https://ondevamos.app"
+  "homepage": "https://ondevamos.app",
+  "dependencies": {
+    "nitropack": "latest"
+  }
 }

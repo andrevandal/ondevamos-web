@@ -1,0 +1,65 @@
+@host=http://localhost:3000
+@token=
+@placeId=hamburgeria-do-seu-ze
+@attractionId=2i8sLOljL731
+
+
+###
+GET {{host}}/v1/places/{{placeId}}/attractions
+Authorization: Bearer {{token}}
+
+###
+POST {{host}}/v1/places/{{placeId}}/attractions
+Authorization: Bearer {{token}}
+
+{
+  "title": "Attraction 1",
+  "description": "Attraction 1 description",
+  "media": "J71EDpEMLaIl",
+  "featured": true,
+  "active": true,
+  "order": 1
+}
+
+###
+POST {{host}}/v1/places/{{placeId}}/attractions
+Authorization: Bearer {{token}}
+
+{
+  "title": "Attraction 2",
+  "description": "Attraction 2 description",
+  "media": "J71EDpEMLaIl",
+  "featured": true,
+  "active": true,
+  "order": 2
+}
+
+###
+POST {{host}}/v1/places/{{placeId}}/attractions
+Authorization: Bearer {{token}}
+
+{
+  "title": "Attraction 3",
+  "description": "Attraction 3 description",
+  "media": "J71EDpEMLaIl",
+  "featured": true,
+  "active": true,
+  "order": 3
+}
+
+###
+GET {{host}}/v1/attractions/{{attractionId}}
+Authorization: Bearer {{token}}
+
+###
+PUT {{host}}/v1/attractions/{{attractionId}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Attraction 2",
+  "description": "Attraction 2 description",
+  "media": "Efwy30wzntZI",
+  "featured": true,
+  "active": true,
+  "order": 1
+}
