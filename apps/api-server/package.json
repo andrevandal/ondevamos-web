@@ -9,12 +9,17 @@
   },
   "version": "0.1.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "prepare": "nitropack prepare",
     "dev": "nitropack dev",
     "build": "nitropack build",
     "preview": "node .output/server/index.mjs",
-    "test": "vitest"
+    "test": "vitest",
+    "drizzle:introspect": "drizzle-kit introspect:pg",
+    "drizzle:generate": "drizzle-kit generate:pg",
+    "drizzle:migrator": "cross-env NODE_ENV=migration vite-node utils/migrator.ts",
+    "drizzle:studio": "drizzle-kit studio"
   },
   "license": "MIT",
   "engines": {
@@ -29,6 +34,12 @@
   },
   "homepage": "https://ondevamos.app",
   "dependencies": {
-    "nitropack": "latest"
+    "drizzle-kit": "0.20.2",
+    "drizzle-orm": "0.29.0",
+    "nitropack": "latest",
+    "pg": "^8.11.3",
+    "postgres": "^3.4.3",
+    "utils": "workspace:^",
+    "uuidv4": "^6.2.13"
   }
 }

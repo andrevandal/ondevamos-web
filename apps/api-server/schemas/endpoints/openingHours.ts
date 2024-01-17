@@ -76,8 +76,8 @@ export type CreateOpeningHours = z.infer<typeof createOpeningHoursSchema>
 export const createSpecialOpeningHoursSchema = z
   .object({
     description: z.string().optional(),
-    startDate: z.string(),
-    endDate: z.string(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
     isOpen24Hours: z.boolean().default(false),
     isClosed: z.boolean().default(false),
     period: periodSchema.optional(),
@@ -90,7 +90,7 @@ export type CreateSpecialOpeningHours = z.infer<
 
 export const updateOpeningHoursSchema = z
   .object({
-    dayOfWeek: z.number().optional(),
+    dayOfWeek: z.coerce.number().optional(),
     active: z.boolean().optional(),
     isOpen24Hours: z.boolean().optional(),
     isClosed: z.boolean().optional(),
@@ -103,8 +103,8 @@ export type UpdateOpeningHours = z.infer<typeof updateOpeningHoursSchema>
 export const updateSpecialOpeningHoursSchema = z
   .object({
     description: z.string().optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
+    startDate: z.coerce.date().optional(),
+    endDate: z.coerce.date().optional(),
     isOpen24Hours: z.boolean().optional(),
     isClosed: z.boolean().optional(),
     period: periodSchema.optional(),

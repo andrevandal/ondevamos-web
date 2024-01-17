@@ -1,26 +1,12 @@
 {
   "version": "5",
-  "dialect": "mysql",
+  "dialect": "pg",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1695773480765,
-      "tag": "0000_reflective_robin_chapel",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1697581592239,
-      "tag": "0001_lyrical_valeria_richards",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1697582343992,
-      "tag": "0002_salty_jasper_sitwell",
+      "when": 1699997877728,
+      "tag": "0000_useful_chamber",
       "breakpoints": true
     }
   ]

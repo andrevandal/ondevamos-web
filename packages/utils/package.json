@@ -1,6 +1,6 @@
 {
-  "name": "@ondevamos/schemas",
-  "description": "ondevamos.app schemas",
+  "name": "utils",
+  "description": "ondevamos.app utils",
   "private": false,
   "author": {
     "name": "André Vandal",
@@ -8,10 +8,20 @@
     "url": "https://andrevandal.dev"
   },
   "version": "0.1.0",
-  "main": "dist/index.js",
-  "types": "dist/*/**.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "unbuild",
     "build:watch": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -28,6 +38,8 @@
   },
   "homepage": "https://ondevamos.app",
   "dependencies": {
-    "typescript": "^5.1.6"
+    "consola": "3.2.3",
+    "typescript": "^5.1.6",
+    "unbuild": "^2.0.0"
   }
 }

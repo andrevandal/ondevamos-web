@@ -140,3 +140,7 @@ Authorization: Bearer {{token}}
 ###
 GET {{host}}/v1/cities HTTP/1.1
 Authorization: Bearer {{token}}
+
+###
+GET {{host}}/v1/places/ChIJAc1mKk71zpQRp_-oGe10Wm0/from-external HTTP/1.1
+Authorization: Bearer {{token}}

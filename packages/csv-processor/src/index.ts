@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable require-await */
 import 'dotenv/config'
 
 import * as fs from 'fs'
@@ -10,25 +8,22 @@ import slugify from 'slugify'
 
 import { parse } from 'csv-parse'
 import { consola } from 'consola'
-import { omit, pick, shake } from 'radash'
-import { eq } from 'drizzle-orm'
+import { pick, shake } from 'radash'
 
 import type { queueAsPromised } from 'fastq'
 
-import {
-  type Action,
-  type CreatePlace,
-  type UpdatePlace,
-} from '../schemas/endpoints/places'
-import { places as PlacesTable } from '../schemas/db/places'
-import { db } from '../services/database'
-import { generateUuid } from '../services/nanoid'
+import { type Action } from './schemas'
+
 import { camelize, transformPeriods } from './helpers'
 import { defaultCities } from './defaults'
 import { MockedPlaces } from './mocks'
 import type { Place, Row, TaskData, EnhancedPlace } from './types'
-
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN
+import {
+  createPlace,
+  updatePlace,
+  findPlaceByExternalId,
+  updateOpeningHours,
+} from './repositories'
 
 const logger = consola.withTag('utils:processPlacesCsv')
 
@@ -45,6 +40,11 @@ async function asyncWorker(data: TaskData): Promise<void> {
 
   const place = await createOrUpdatePlace(enhancedPlace)
 
+  if (!place) {
+    localLogger.error('Error on create or update place', place)
+    return
+  }
+
   localLogger.success('Place created', place)
 }
 
@@ -52,99 +52,7 @@ async function createOrUpdatePlace(place: EnhancedPlace) {
   const localLogger = logger.withTag('[Create or Update Place]')
   const existPlace = await findPlaceByExternalId(place.externalId)
 
-  async function createPlace(data: CreatePlace) {
-    const localLogger = logger.withTag('[Create Place]')
-    localLogger.info('Creating place', place.name)
-
-    const url = new URL('places', 'http://localhost:3000/api/v1/').toString()
-    try {
-      const result = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${ADMIN_TOKEN}`,
-        },
-        body: JSON.stringify(data as CreatePlace),
-      })
-
-      localLogger.log(JSON.stringify(result, null, 2))
-
-      if (!result.ok) {
-        localLogger.error('Error on create place', await result.json())
-        return null
-      }
-
-      return result.json()
-    } catch (error) {
-      localLogger.error(error)
-    }
-  }
-
-  async function updatePlace(uuid: string, data: UpdatePlace) {
-    const localLogger = logger.withTag('[Update Place]')
-    localLogger.info('Updating place', place.name)
-
-    const url = new URL(
-      `places/${uuid}`,
-      'http://localhost:3000/api/v1/',
-    ).toString()
-
-    const result = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ADMIN_TOKEN}`,
-      },
-      body: JSON.stringify(data as UpdatePlace),
-    })
-
-    if (!result.ok) {
-      localLogger.error('Error on update place', result)
-      return null
-    }
-
-    return result.json()
-  }
-
-  async function updateOpeningHours(
-    identifier: string,
-    openingHours: EnhancedPlace['openingHours'],
-  ) {
-    const localLogger = logger.withTag('[Update Place Opening Hours]')
-    localLogger.info(
-      'Updating place',
-      place.name,
-      JSON.stringify(openingHours, null, 2),
-    )
-
-    const url = new URL(
-      `places/${identifier}/opening-hours`,
-      'http://localhost:3000/api/v1/',
-    ).toString()
-
-    const result = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ADMIN_TOKEN}`,
-      },
-      body: JSON.stringify(openingHours),
-    })
-
-    if (!result.ok) {
-      const { data } = await result.json()
-      localLogger.error(
-        'Error on update place opening hours',
-        openingHours,
-        data,
-      )
-      return null
-    }
-
-    return result.json()
-  }
-
-  if (existPlace) {
+  if (existPlace?.uuid) {
     localLogger.info('Place already exist', place.name)
     await updatePlace(existPlace.uuid, {
       ratingLevel: place.ratingLevel,
@@ -162,7 +70,10 @@ async function createOrUpdatePlace(place: EnhancedPlace) {
 
   const createdPlace = await createPlace(place)
 
-  localLogger.success('Place created', createdPlace)
+  if (!createdPlace) {
+    localLogger.error('Error on create place', place)
+    return null
+  }
 
   await updateOpeningHours(createdPlace.uuid, place.openingHours)
   await updatePlace(createdPlace.uuid, {
@@ -171,34 +82,6 @@ async function createOrUpdatePlace(place: EnhancedPlace) {
   })
 
   return createdPlace
-}
-
-async function findPlaceByExternalId(externalId?: string) {
-  const localLogger = logger.withTag('[Find Place By External Id]')
-  localLogger.info('Searching place by external id', externalId)
-
-  if (!externalId) {
-    localLogger.warn('External id not provided')
-    return null
-  }
-
-  const [place] = await db
-    .select({
-      uuid: PlacesTable.uuid,
-      externalId: PlacesTable.externalId,
-      name: PlacesTable.name,
-      slug: PlacesTable.slug,
-    })
-    .from(PlacesTable)
-    .where(eq(PlacesTable.externalId, externalId))
-    .limit(1)
-
-  if (!place) {
-    localLogger.warn('Place not found', externalId)
-    return null
-  }
-
-  return place
 }
 
 async function enhancePlace(place: TaskData) {

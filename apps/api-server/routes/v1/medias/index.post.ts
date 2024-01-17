@@ -1,62 +1,56 @@
 import { z } from 'zod'
-import { validateBody } from '../../../services/schemaValidation'
-import { useAuth } from '../../../services/auth'
-import { generateUuid } from '../../../services'
-import { db } from '../../../services/database'
-import { medias } from '../../../schemas/db/medias'
-import { client, bucketName, endPoint } from '../../../services/minio'
+import { uuid as uuidv4 } from 'uuidv4';
+import { useAuth } from '@/services/auth'
+import { db } from '@/services/database'
+import { MediasTable } from '@/schemas/db'
+import { client, bucketName, endPoint } from '@/services/minio'
 
 const bodySchema = z.object({
-  lastModified: z.coerce.number(),
-  name: z.string(),
+  lastModified: z.coerce.date(),
+  filename: z.string(),
   size: z.coerce.number(),
   type: z.enum(['image/jpeg', 'image/png']),
 })
-
-type BodySchema = z.infer<typeof bodySchema>
 
 const TypeTable = {
   'image/jpeg': 'image',
   'image/png': 'image',
 }
 
-const grabExtension = (name: string) => name.split('.').pop()
-
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const data = await validateBody<BodySchema>(event, bodySchema)
-  const type = TypeTable[data.type] as 'image'
-  const uuid = generateUuid()
-  const extension = grabExtension(data.name)
-  const filename = `${uuid}.${extension}`
+  const data = await readValidatedBody(event, bodySchema.parse)
+  const type = TypeTable[data?.type] as 'image'
+  const uuid = uuidv4()
 
-  const urlToUpload = await client.presignedPutObject(
-    bucketName,
-    `medias/${filename}`,
-  )
+  const url = `https://${endPoint}/${bucketName}/medias/${uuid}/${data.filename}`
 
-  const url = `https://${endPoint}/${bucketName}/medias/${filename}`
-
-  const newMedia = await db.insert(medias).values({
+  const payload = {
     uuid,
     type,
-    title: data.name,
-    description: '',
-    alternativeText: '',
+    filename: data?.filename,
     url,
-    externalMetadata: { ...data },
-    status: 'pending',
-  })
+    externalMetadata: {
+      ...data
+    }
+  }
 
-  if (!newMedia) {
-    throw createError({
+  const [ media ] = await db.insert(MediasTable).values(payload).returning()
+
+  if (!media) {
+    return createError({
       statusCode: 500,
       statusMessage: 'Error creating media',
       data: { uuid },
       stack: undefined,
     })
   }
+
+  const urlToUpload = await client.presignedPutObject(
+    bucketName,
+    `medias/${uuid}/${data.filename}`,
+  )
 
   return {
     url: urlToUpload,

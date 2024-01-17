@@ -10,6 +10,8 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
+    "build:utils": "pnpm run --filter utils build",
+    "start:csv-processor": "pnpm run --filter csv-processor start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "MIT",

@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const ActionSchema = z.object({
   type: z.string(),
   name: z.string(),
+  label: z.string(),
   link: z.string().optional(),
   iconName: z.string().optional(),
   iconClasses: z.string().optional(),
@@ -14,10 +15,10 @@ export const CreatePlaceSchema = z.object({
   name: z.string(),
   slug: z.string(),
   description: z.string(),
-  ratingLevel: z.number().min(0).max(5).optional().default(0),
-  ratingCount: z.number().optional().default(0),
-  pricingLevel: z.number().min(0).max(4).optional().default(0),
-  pricingCount: z.number().optional().default(0),
+  ratingLevel: z.coerce.number().min(0).max(5).optional().default(0),
+  ratingCount: z.coerce.number().optional().default(0),
+  pricingLevel: z.coerce.number().min(0).max(4).optional().default(0),
+  pricingCount: z.coerce.number().optional().default(0),
   externalId: z.string().optional(),
   active: z.boolean().optional().default(false),
   addressStreet: z.string().optional(),
@@ -28,22 +29,14 @@ export const CreatePlaceSchema = z.object({
   addressLatitude: z.coerce.number().optional(),
   addressLongitude: z.coerce.number().optional(),
   actions: z.array(ActionSchema).optional(),
-  city: z
-    .string()
-    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid City UUID' }),
-  avatar: z
-    .string()
-    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-    .optional(), // avatarMediaId
-  cover: z
-    .string()
-    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-    .optional(), // coverMediaId
+  city: z.string().uuid({ message: 'Invalid City UUID' }),
+  avatar: z.string().uuid({ message: 'Invalid UUID' }).optional(),
+  cover: z.string().uuid({ message: 'Invalid UUID' }).optional(),
   categories: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   featuredMedias: z
     .array(
-      z.string().regex(/^[0-9A-Za-z_]{12}$/, {
+      z.string().uuid({
         message: 'Featured medias: Invalid UUID',
       }),
     )
@@ -56,10 +49,10 @@ export const UpdatePlaceSchema = z.object({
   name: z.string().optional(),
   slug: z.string().optional(),
   description: z.string().optional(),
-  ratingLevel: z.number().min(0).max(5).optional(),
-  ratingCount: z.number().optional(),
-  pricingLevel: z.number().min(0).max(4).optional(),
-  pricingCount: z.number().optional(),
+  ratingLevel: z.coerce.number().min(0).max(5).optional(),
+  ratingCount: z.coerce.number().optional(),
+  pricingLevel: z.coerce.number().min(0).max(4).optional(),
+  pricingCount: z.coerce.number().optional(),
   externalId: z.string().optional(),
   active: z.boolean().optional(),
   addressStreet: z.string().optional(),
@@ -70,23 +63,14 @@ export const UpdatePlaceSchema = z.object({
   addressLongitude: z.coerce.number().optional(),
   addressZipCode: z.string().optional(),
   actions: z.array(ActionSchema).optional(),
-  city: z
-    .string()
-    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid City UUID' })
-    .optional(),
-  avatar: z
-    .string()
-    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-    .optional(), // avatarMediaId
-  cover: z
-    .string()
-    .regex(/^[0-9A-Za-z_]{12}$/, { message: 'Invalid UUID' })
-    .optional(), // coverMediaId
+  city: z.string().uuid({ message: 'Invalid City UUID' }).optional(),
+  avatar: z.string().uuid({ message: 'Invalid UUID' }).optional(),
+  cover: z.string().uuid({ message: 'Invalid UUID' }).optional(),
   categories: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   featuredMedias: z
     .array(
-      z.string().regex(/^[0-9A-Za-z_]{12}$/, {
+      z.string().uuid({
         message: 'Featured medias: Invalid UUID',
       }),
     )

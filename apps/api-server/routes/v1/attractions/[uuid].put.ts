@@ -1,66 +1,77 @@
-import { useAuth } from '../../../services/auth'
+import { shake } from 'radash'
+import { useAuth } from '@/services/auth'
 import {
-  validateParams,
-  validateBody,
-} from '../../../services/schemaValidation'
-import {
-  type UpdateAttractionsSchema,
   updateAttractionsSchema,
-  type ParamsUUIDSchema,
-  paramsUUIDSchema,
-} from '../../../schemas/endpoints'
+} from '@/schemas/endpoints'
+import { db } from '@/services'
 import {
-  updateAttraction,
-  UpdateAttraction,
-} from '../../../repositories/attractions'
-import { getPlaceId } from '../../../repositories/places'
-import { getMediaId } from '../../../repositories/medias'
+  AttractionsTable,
+  MediasTable,
+  PlacesTable,
+  PlacesToMediasTable,
+} from '@/schemas/db'
+import { eq, type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
+  const uuid = getRouterParam(event, 'uuid')
 
-  const { uuid } = await validateParams<ParamsUUIDSchema>(
-    event,
-    paramsUUIDSchema,
-  )
+  const body = await readValidatedBody(event, updateAttractionsSchema.parse)
 
-  const body = await validateBody<UpdateAttractionsSchema>(
-    event,
-    updateAttractionsSchema,
-  )
-
-  const [placeId, mediaId] = await Promise.allSettled([
+  const [rawPlace, rawMedia] = await Promise.allSettled([
     body.place !== undefined
-      ? getPlaceId({ uuid: body.place })
+      ? db.query.PlacesTable.findFirst({
+          where: (PlacesTable, { eq }) => eq(PlacesTable.id, body.place),
+        })
       : Promise.resolve(undefined),
     body.media !== undefined
-      ? getMediaId({ uuid: body.media })
+      ? db.query.MediasTable.findFirst({
+          where: (MediasTable, { eq }) => eq(MediasTable.id, body.media),
+        })
       : Promise.resolve(undefined),
   ])
 
-  if (placeId.status !== 'fulfilled' || mediaId.status !== 'fulfilled') {
+  if (rawPlace.status !== 'fulfilled' || rawMedia.status !== 'fulfilled') {
     throw createError({
       statusCode: 404,
       message: 'Place or media not found',
     })
   }
 
+  const place = (rawPlace?.value ?? {}) as unknown as Partial<
+    InferSelectModel<typeof PlacesTable>
+  >
+  const media = (rawPlace?.value ?? {}) as unknown as Partial<
+    InferSelectModel<typeof MediasTable>
+  >
+
   const updatedAttraction = {
-    title: body.title,
-    description: body.description,
-    featured: body.featured,
-    order: body.order,
-  } as UpdateAttraction
-
-  if (placeId.value && placeId.status === 'fulfilled') {
-    updatedAttraction.placeId = placeId.value
+    ...shake({
+      title: body.title,
+      description: body?.description,
+      featured: body?.featured,
+      order: body?.order,
+    }),
+    placeId: place?.id,
+    mediaId: media?.id,
+    updatedAt: new Date().toISOString(),
   }
 
-  if (mediaId.value && mediaId.status === 'fulfilled') {
-    updatedAttraction.mediaId = mediaId.value
+  const [attraction] = await db
+    .update(AttractionsTable)
+    .set(shake(updatedAttraction))
+    .where(eq(AttractionsTable.id, uuid))
+    .returning()
+
+  if (media?.id) {
+    await db
+      .insert(PlacesToMediasTable)
+      .values({
+        placeId: place?.id || attraction.placeId,
+        mediaId: media.id,
+        active: true,
+      })
+      .onConflictDoNothing()
   }
-
-  const attraction = await updateAttraction({ uuid }, updatedAttraction)
-
   return attraction
 })

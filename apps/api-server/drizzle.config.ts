@@ -3,9 +3,9 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 export default {
-  schema: './schemas/db/**/*.ts',
+  schema: './schemas/db/index.ts',
   out: './migrations/',
-  driver: 'mysql2',
+  driver: 'pg',
   dbCredentials: {
     connectionString: process.env.DATABASE_URL as string,
   },

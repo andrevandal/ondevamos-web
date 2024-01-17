@@ -9,14 +9,18 @@ const {
   MINIO_ACCESS_KEY,
   MINIO_SECRET_KEY,
   MINIO_BUCKET_NAME,
+  GOOGLE_PLACES_API_KEY,
 } = process.env
 
 export default defineNitroConfig({
+  rootDir: './',
+  srcDir: './',
   esbuild: {
     options: {
       target: 'esnext',
     },
   },
+  alias: { '@': __dirname },
   runtimeConfig: {
     databaseUrl: DATABASE_URL,
     sessionSecret: SESSION_SECRET,
@@ -26,5 +30,6 @@ export default defineNitroConfig({
     minioAccessKey: MINIO_ACCESS_KEY,
     minioSecretKey: MINIO_SECRET_KEY,
     minioBucketName: MINIO_BUCKET_NAME,
+    googlePlacesApiKey: GOOGLE_PLACES_API_KEY,
   },
 })

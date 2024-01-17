@@ -1,4 +1,4 @@
-import { type Action } from '../schemas/endpoints/places'
+import { type Action } from '@ondevamos/schemas'
 import { type OpeningHour } from '../schemas/endpoints/openingHours'
 
 export type AddressComponent = {

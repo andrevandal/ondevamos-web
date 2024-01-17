@@ -4,8 +4,10 @@
     "vitest/importMeta"
   ],
   "compilerOptions": {
+    "baseUrl": "./",
     "module": "es2022",
     "target": "ESNext",
+    "paths": { "@/*": ["./*"] }
   },
   
 }

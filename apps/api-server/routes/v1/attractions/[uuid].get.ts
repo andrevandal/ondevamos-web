@@ -1,22 +1,29 @@
-import { useAuth } from '../../../services/auth'
-import { validateParams } from '../../../services/schemaValidation'
-import { getAttractionFormated } from '../../../repositories/attractions'
-import {
-  type ParamsUUIDSchema,
-  paramsUUIDSchema,
-} from '../../../schemas/endpoints'
+import { useAuth } from '@/services/auth'
+import { db } from '@/services/database'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const { uuid } = await validateParams<ParamsUUIDSchema>(
-    event,
-    paramsUUIDSchema,
-  )
-  const attraction = await getAttractionFormated({ uuid })
+  const uuid = getRouterParam(event, 'uuid')
+  const attraction = await db.query.AttractionsTable.findFirst({
+    where: (AttractionsTable, { eq }) => eq(AttractionsTable.id, uuid),
+    columns: {
+      createdAt: false,
+      updatedAt: false,
+    },
+    with: {
+      media: {
+        columns: {
+          id: true,
+          alternativeText: true,
+          url: true,
+        }
+      },
+    },
+  })
 
   if (!attraction) {
-    throw createError({
+    return createError({
       statusCode: 404,
       statusMessage: 'Attraction not found',
       data: null,
@@ -24,15 +31,5 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return {
-    uuid: attraction.uuid,
-    title: attraction.title,
-    description: attraction.description,
-    featured: attraction.featured,
-    order: attraction.order,
-    active: attraction.active,
-    mediaUuid: attraction.media?.uuid,
-    mediaUrl: attraction.media?.url,
-    place: attraction.place,
-  }
+  return attraction
 })

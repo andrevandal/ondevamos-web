@@ -1,30 +1,16 @@
-import type { RuntimeConfig } from 'nuxt/schema'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 
-import { drizzle } from 'drizzle-orm/mysql2'
-import mysql from 'mysql2/promise'
-// import { drizzle } from 'drizzle-orm/planetscale-serverless'
-// import { connect } from '@planetscale/database'
+import * as schema from '@/schemas/db'
 
 const isMigrationEnv = process.env.NODE_ENV === 'migration'
 
-const { databaseUrl } = (
-  isMigrationEnv
-    ? { databaseUrl: process.env.DATABASE_URL }
-    : useRuntimeConfig()
-) as RuntimeConfig
+const { databaseUrl } = isMigrationEnv
+  ? { databaseUrl: process.env.DATABASE_URL }
+  : useRuntimeConfig()
 
-const connection = isMigrationEnv
-  ? await mysql.createConnection({
-      uri: databaseUrl,
-    })
-  : mysql.createPool({
-      uri: databaseUrl,
-    })
+const queryClient = postgres(databaseUrl, isMigrationEnv ? {} : { max: 1 })
 
-// const connection = connect({
-//   url: databaseUrl,
-// })
-
-export const db = drizzle(connection)
+export const db = drizzle(queryClient, { schema })
 
 export default db

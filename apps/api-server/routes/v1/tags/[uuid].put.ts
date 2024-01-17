@@ -1,33 +1,33 @@
-import { useAuth } from '../../../services/auth'
-import {
-  validateParams,
-  validateBody,
-} from '../../../services/schemaValidation'
-import {
-  updateTagSchema,
-  UpdateTagSchema,
-  paramsUUIDSlugSchema,
-  ParamsUUIDSlugSchema,
-} from '../../../schemas/endpoints'
-import { updateTag } from '../../../repositories/tags'
+import { shake } from 'radash'
+import { useAuth } from '@/services/auth'
+import { updateTagSchema } from '@/schemas/endpoints'
+import { db } from '@/services'
+import { TagsTable } from '@/schemas/db'
+import { eq, or } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const { uuid } = await validateParams<ParamsUUIDSlugSchema>(
-    event,
-    paramsUUIDSlugSchema,
-  )
+  const uuid = getRouterParam(event, 'uuid')
 
-  const isUuid = /^[0-9A-Za-z_]{12}$/.test(uuid)
+  const body = await readValidatedBody(event, updateTagSchema.parse)
 
-  const identifier = isUuid
-    ? ({ uuid } as { uuid: string })
-    : ({ slug: uuid } as { slug: string })
-
-  const updatedTag = await validateBody<UpdateTagSchema>(event, updateTagSchema)
-
-  const tag = await updateTag(identifier, updatedTag)
+  const [tag] = await db
+    .update(TagsTable)
+    .set({
+      ...(body?.name && { name: body?.name }),
+      ...(body?.label && { label: body?.label }),
+      ...(body?.description && { description: body?.description }),
+      ...((body?.iconName || body.iconClassName) && {
+        icon: {
+          ...(body?.iconName && { name: body.iconName }),
+          ...(body?.iconClassName && { className: body.iconClassName }),
+        },
+      }),
+      updatedAt: new Date().toISOString(),
+    })
+    .where(or(eq(TagsTable.id, uuid), eq(TagsTable.slug, uuid)))
+    .returning()
 
   return tag
 })

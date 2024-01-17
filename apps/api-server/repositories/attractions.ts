@@ -1,32 +1,29 @@
-import * as _ from 'radash'
+import { shake } from 'radash'
 
 import { consola } from 'consola'
-import {
-  and,
-  eq,
-  type InferSelectModel,
-  type InferInsertModel,
-} from 'drizzle-orm'
-import { generateUuid } from '../services/nanoid'
-import { db } from '../services/database'
-import { medias as mediasDb } from '../schemas/db/medias'
-import {
-  places as placesDb,
-  attractions as AttractionsDb,
-} from '../schemas/db/places'
+import { eq, type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
+import { db } from '@/services/database'
+import { AttractionsTable } from '@/schemas/db/index'
 
-type SelectAttraction = InferSelectModel<typeof AttractionsDb>
-type InsertAttraction = InferInsertModel<typeof AttractionsDb>
+type SelectAttraction = InferSelectModel<typeof AttractionsTable>
+type InsertAttraction = InferInsertModel<typeof AttractionsTable>
 
-type Identifier = Pick<SelectAttraction, 'id' | 'uuid'>
+type Identifier = Pick<SelectAttraction, 'id' | 'placeId'>
+
 export type NewAttraction = Omit<
   InsertAttraction,
-  'id' | 'uuid' | 'createdAt' | 'updatedAt'
+  'id' | 'createdAt' | 'updatedAt'
 >
 export type UpdateAttraction = Partial<
   Pick<
-    NewAttraction,
-    'title' | 'description' | 'mediaId' | 'featured' | 'order' | 'placeId'
+    InsertAttraction,
+    | 'title'
+    | 'description'
+    | 'mediaId'
+    | 'featured'
+    | 'order'
+    | 'placeId'
+    | 'active'
   >
 >
 
@@ -37,160 +34,77 @@ const logError = (error: unknown, context: string) => {
 }
 
 const prepareCondition = (options: Partial<Identifier>) => {
-  const { id, uuid } = options
+  const { id, placeId } = options
 
-  if (id) return eq(AttractionsDb.id, id)
-  if (uuid) return eq(AttractionsDb.uuid, uuid)
+  if (id) return eq(AttractionsTable.id, id)
+  if (placeId) return eq(AttractionsTable.placeId, placeId)
 
   throw new Error('No attraction identifier provided')
 }
 
-export const getAttractionsFromPlace = async (
-  placeId: SelectAttraction['placeId'],
-) => {
+export const createAttraction = async (data: NewAttraction) => {
   try {
-    const whereConditions = and(
-      eq(AttractionsDb.placeId, placeId),
-      // eq(AttractionsDb.active, true),
-    )
-
     const attractions = await db
-      .select({
-        uuid: AttractionsDb.uuid,
-        title: AttractionsDb.title,
-        description: AttractionsDb.description,
-        featured: AttractionsDb.featured,
-        order: AttractionsDb.order,
-        active: AttractionsDb.active,
-        media: {
-          uuid: mediasDb.uuid,
-          url: mediasDb.url,
-        },
-      })
-      .from(AttractionsDb)
-      .leftJoin(mediasDb, eq(AttractionsDb.mediaId, mediasDb.id))
-      .where(whereConditions)
+      .insert(AttractionsTable)
+      .values(data)
+      .returning()
 
     return attractions
   } catch (error) {
-    logError(error, 'Attraction Repository - getAttraction')
-    throw error
-  }
-}
-
-export const getAttraction = async (options: Partial<Identifier>) => {
-  try {
-    const whereConditions = prepareCondition(options)
-    const [attractionData] = await db
-      .select()
-      .from(AttractionsDb)
-      .where(whereConditions)
-      .limit(1)
-    return attractionData
-  } catch (error) {
-    logError(error, 'Attraction Repository - getAttraction')
-    throw error
-  }
-}
-
-export const getAttractionFormated = async (options: Partial<Identifier>) => {
-  try {
-    const whereConditions = prepareCondition(options)
-    const [attractionData] = await db
-      .select({
-        uuid: AttractionsDb.uuid,
-        title: AttractionsDb.title,
-        description: AttractionsDb.description,
-        featured: AttractionsDb.featured,
-        order: AttractionsDb.order,
-        active: AttractionsDb.active,
-        media: {
-          url: mediasDb.url,
-          uuid: mediasDb.uuid,
-        },
-        place: placesDb.slug,
-      })
-      .from(AttractionsDb)
-      .where(whereConditions)
-      .leftJoin(placesDb, eq(AttractionsDb.placeId, placesDb.id))
-      .leftJoin(mediasDb, eq(AttractionsDb.mediaId, mediasDb.id))
-      .limit(1)
-    return attractionData
-  } catch (error) {
-    logError(error, 'Attraction Repository - getAttraction')
-    throw error
-  }
-}
-
-export const createAttraction = async (data: NewAttraction) => {
-  try {
-    const uuid = generateUuid()
-    const [ newAttraction ] = await db
-      .insert(AttractionsDb)
-      .values({ uuid, ...data })
-
-    if (!newAttraction.insertId) throw new Error('Attraction not created')
-
-    return _.omit({ uuid, ...data }, ['placeId'])
-  } catch (error) {
-    const { message } = error as Error
     logError(error, 'Attraction Repository - createAttraction')
-    if (message.includes('code = AlreadyExists')) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'You cannot create a attraction',
-        data: undefined,
-        stack: undefined,
-      })
-    }
-    throw error
+    throw null
   }
 }
 
 export const updateAttraction = async (
-  options: Partial<Identifier>,
+  id: InsertAttraction['id'],
   data: UpdateAttraction,
 ) => {
   try {
-    const whereConditions = prepareCondition(options)
+    const values = shake(data)
 
-    const updatedData = {
-      ...data,
-      updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
-    }
+    const attractions = await db
+      .update(AttractionsTable)
+      .set({
+        ...values,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(AttractionsTable.id, id))
+      .returning()
 
-    const [updatedAttraction] = await db
-      .update(AttractionsDb)
-      .set(updatedData)
-      .where(whereConditions)
-
-    if (!updatedAttraction.affectedRows)
-      throw new Error('Attraction not updated')
-    return _.omit(updatedData, ['placeId'])
+    return attractions
   } catch (error) {
-    logError(error, 'Attraction Repository - updateAttraction')
-    throw error
+    logError(error, 'Attraction Repository - createAttraction')
+    return null
   }
 }
 
-export const deleteAttraction = async (options: Identifier) => {
+export const deleteAttraction = async (options: Partial<Identifier>) => {
   try {
     const whereConditions = prepareCondition(options)
-    const [deletedAttraction] = await db
-      .delete(AttractionsDb)
+
+    const deletedAttractions = await db
+      .delete(AttractionsTable)
       .where(whereConditions)
-    if (!deletedAttraction.affectedRows)
-      throw new Error('Attraction not deleted')
-    return deletedAttraction
+      .returning({ deletedId: AttractionsTable.id })
+
+    return deletedAttractions
   } catch (error) {
     logError(error, 'Attraction Repository - deleteAttraction')
-    throw error
+    return null
   }
 }
 
+export const activateAttraction = (options: InsertAttraction['id']) =>
+  updateAttraction(options, { active: true })
+
+export const deactivateAttraction = (options: InsertAttraction['id']) =>
+  updateAttraction(options, { active: false })
+
 export default {
-  getAttraction,
   createAttraction,
   updateAttraction,
   deleteAttraction,
+  activateAttraction,
+  deactivateAttraction,
 }

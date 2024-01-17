@@ -1,1 +1,0 @@
-ALTER TABLE `places` ADD `featured_medias` json;

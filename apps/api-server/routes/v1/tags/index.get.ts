@@ -1,22 +1,12 @@
-import { useAuth } from '../../../services/auth'
-import { getTags } from '../../../repositories/tags'
-// import { getAttractionFormated } from '../../../repositories/attractions'
+import { db } from '@/services'
+import { useAuth } from '@/services/auth'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const tags = await getTags()
+  const tags = await db.query.TagsTable.findMany({
+    limit: 10
+  })
 
-  return tags?.map((el) => ({
-    uuid: el.uuid,
-    slug: el.slug,
-    name: el.name,
-    label: el.label,
-    description: el.description,
-    iconName: el.icon?.name,
-    iconClasses: el.icon?.className,
-    active: el.active,
-    createdAt: el.createdAt,
-    updatedAt: el.updatedAt,
-  }))
+  return tags
 })

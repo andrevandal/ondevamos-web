@@ -1,39 +1,30 @@
-import { useAuth } from '../../../services/auth'
-import {
-  validateParams,
-  validateBody,
-} from '../../../services/schemaValidation'
-import {
-  updateCategorySchema,
-  type UpdateCategorySchema,
-  type ParamsUUIDSlugSchema,
-  paramsUUIDSlugSchema,
-} from '../../../schemas/endpoints'
-import { updateCategory } from '../../../repositories/categories'
-
-// import { getPlaceId } from '../../../repositories/places'
-// import { getMediaId } from '../../../repositories/medias'
+import { useAuth } from '@/services/auth'
+import { updateCategorySchema } from '@/schemas/endpoints'
+import { db } from '@/services'
+import { CategoriesTable } from '@/schemas/db'
+import { eq, or } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const { uuid } = await validateParams<ParamsUUIDSlugSchema>(
-    event,
-    paramsUUIDSlugSchema,
-  )
+  const uuid = getRouterParam(event, 'uuid')
 
-  const isUuid = /^[0-9A-Za-z_]{12}$/.test(uuid)
+  const body = await readValidatedBody(event, updateCategorySchema.parse)
 
-  const identifier = isUuid
-    ? ({ uuid } as { uuid: string })
-    : ({ slug: uuid } as { slug: string })
-
-  const updatedCategory = await validateBody<UpdateCategorySchema>(
-    event,
-    updateCategorySchema,
-  )
-
-  const category = await updateCategory(identifier, updatedCategory)
+  const category = await db
+    .update(CategoriesTable)
+    .set({
+      name: body.name,
+      label: body.label,
+      description: body.description,
+      icon: {
+        name: body.name,
+        className: body.iconClassName,
+      },
+      updatedAt: new Date().toISOString(),
+    })
+    .where(or(eq(CategoriesTable.id, uuid), eq(CategoriesTable.slug, uuid)))
+    .returning()
 
   return category
 })

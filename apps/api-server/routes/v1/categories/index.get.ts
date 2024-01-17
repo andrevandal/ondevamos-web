@@ -1,22 +1,27 @@
-import { useAuth } from '../../../services/auth'
-import { getCategories } from '../../../repositories/categories'
-// import { getAttractionFormated } from '../../../repositories/attractions'
+import { useAuth } from '@/services/auth'
+import { db } from '@/services'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const categories = await getCategories()
+  const categories = await db.query.CategoriesTable.findMany({
+    where: (CategoriesTable, { eq }) => eq(CategoriesTable.active, true),
+    columns: {
+      id: false,
+      createdAt: false,
+      updatedAt: false,
+      active: false,
+    },
+    limit: 10,
+    orderBy: (AttractionsTable, { asc }) => [asc(AttractionsTable.id)],
+  })
 
   return categories.map((el) => ({
-    uuid: el.uuid,
     slug: el.slug,
     name: el.name,
     label: el.label,
     description: el.description,
     iconName: el.icon?.name,
-    iconClasses: el.icon?.className,
-    active: el.active,
-    createdAt: el.createdAt,
-    updatedAt: el.updatedAt,
+    iconClassName: el.icon?.className,
   }))
 })

@@ -12,7 +12,7 @@ export default defineVitestConfig({
       ],
     },
     exclude: [...configDefaults.exclude],
-    include: ['utils/helpers.ts', '**/**/**.test.ts'],
+    include: ['**/**/**.test.ts'],
   },
   plugins: [tsconfigPaths()],
 })

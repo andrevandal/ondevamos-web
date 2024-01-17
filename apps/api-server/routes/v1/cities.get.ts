@@ -1,20 +1,12 @@
-import { db } from '../../services/database'
-import { cities as CitiesTable } from '../../schemas/db/places'
-import { useAuth } from '../../services/auth'
+import { db } from '@/services/database'
+import { useAuth } from '@/services/auth'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const cities = await db.select().from(CitiesTable).orderBy(CitiesTable.id)
+  const cities = await db.query.CitiesTable.findMany({
+    limit: 10
+  })
 
-  return cities.map((city) => ({
-    uuid: city.uuid,
-    ibgeCode: city.ibgeCode,
-    name: city.name,
-    state: city.state,
-    country: city.country,
-    label: city.label,
-    createdAt: city.createdAt,
-    updatedAt: city.updatedAt,
-  }))
+  return cities
 })

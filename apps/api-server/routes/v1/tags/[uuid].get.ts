@@ -1,37 +1,15 @@
-import { useAuth } from '../../../services/auth'
-import { validateParams } from '../../../services/schemaValidation'
-import {
-  paramsUUIDSlugSchema,
-  type ParamsUUIDSlugSchema,
-} from '../../../schemas/endpoints'
-import { getTag } from '../../../repositories/tags'
+import { useAuth } from '@/services/auth'
+import { db } from '@/services'
 
 export default defineEventHandler(async (event) => {
   useAuth(event)
 
-  const { uuid } = await validateParams<ParamsUUIDSlugSchema>(
-    event,
-    paramsUUIDSlugSchema,
-  )
+  const uuid = getRouterParam(event, 'uuid')
 
-  const isUuid = /^[0-9A-Za-z_]{12}$/.test(uuid)
+  const tag = await db.query.TagsTable.findFirst({
+    where: (TagsTable, { eq, or }) =>
+      or(eq(TagsTable.id, uuid), eq(TagsTable.slug, uuid)),
+  }).execute()
 
-  const identifier = isUuid
-    ? ({ uuid } as { uuid: string })
-    : ({ slug: uuid } as { slug: string })
-
-  const tag = await getTag(identifier)
-
-  return {
-    uuid: tag.uuid,
-    slug: tag.slug,
-    name: tag.name,
-    label: tag.label,
-    description: tag.description,
-    iconName: tag.icon?.name,
-    iconClasses: tag.icon?.className,
-    active: tag.active,
-    createdAt: tag.createdAt,
-    updatedAt: tag.updatedAt,
-  }
+  return tag
 })

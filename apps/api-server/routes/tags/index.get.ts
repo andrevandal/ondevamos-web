@@ -1,19 +1,9 @@
-import { eq } from 'drizzle-orm'
-import { db } from '../../services/database'
-import { tags } from '../../schemas/db/tags'
+import { db } from '@/services/database'
 
 export default defineEventHandler(async () => {
-  const selectedTags = await db
-    .select({
-      uuid: tags.uuid,
-      slug: tags.slug,
-      name: tags.name,
-      label: tags.label,
-      description: tags.description,
-      icon: tags.icon,
-    })
-    .from(tags)
-    .where(eq(tags.active, true))
+  const selectedTags = await db.query.TagsTable.findMany({
+    where: (tags, { eq }) => eq(tags.active, true),
+  })
 
   return selectedTags
 })
